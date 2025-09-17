@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans,
+        Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0b243f 0%, #1e3a8a 50%, #2563eb 100%);
+}
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+.brand-name {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: #0b1d59;
+    background: linear-gradient(135deg, #0b1d59, #2563eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.welcome {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 30px;
+    color: #6b7280;
+}
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+.input-group input {
+    width: 100%;
+    color: #0b1d59;
+    padding: 16px 60px 16px 50px;
+    border: 2px solid #e5e7eb;
+    border-radius: 15px;
+    outline: none;
+    font-size: 16px;
+    background: #f9fafb;
+}
+.input-group input:focus {
+    border-color: #0b1d59;
+    background: #fff;
+}
+.input-group input::placeholder {
+    color: #9ca3af;
+}
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 14px;
+    width: 35px;
+}
+.toggle-password:hover {
+    color: #0b1d59;
+}
+.login-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #0b1d59 0%, #1e3a8a 100%);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 20px rgba(11, 29, 89, 0.3);
+    margin-top: 10px;
+}
+.login-btn:hover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(11, 29, 89, 0.4);
+}
+.login-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(11, 29, 89, 0.3);
+}
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+    }
+    .login-container {
+        padding: 30px 25px;
+        border-radius: 16px;
+    }
+    .brand-name {
+        font-size: 32px;
+    }
+    .welcome {
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+    .input-group input {
+        padding: 14px 55px 14px 45px;
+        font-size: 15px;
+    }
+    .toggle-password {
+        width: 30px;
+        font-size: 13px;
+    }
+    .login-btn {
+        font-size: 12px;
+    }
+}
+@media (max-width: 320px) {
+    .login-container {
+        padding: 25px 20px;
+    }
+    .brand-name {
+        font-size: 28px;
+    }
+}
