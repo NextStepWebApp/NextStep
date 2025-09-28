@@ -426,22 +426,74 @@ tr.selected td {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
+    /* Responsive Table (Stacked on mobile) - IMPORTANT: Higher specificity */
+    .table-container table,
+    .table-container thead,
+    .table-container tbody,
+    .table-container th,
+    .table-container td,
+    .table-container tr {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .table-container {
+        overflow-x: hidden !important;
+        height: 200px !important;
+        overflow-y: auto !important;
+    }
+
+    .table-container thead {
+        display: none !important;
+    }
+
+    .table-container tr {
+        margin-bottom: 8px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 10px !important;
+        background: #fff !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+        padding: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .table-container td {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 4px 0 !important;
+        border: none !important;
+        border-bottom: none !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .table-container td::before {
+        content: attr(data-label) !important;
+        font-weight: 600 !important;
+        color: #0b1d59 !important;
+        flex: 0 0 auto !important;
+        padding-right: 15px !important;
+        min-width: 60px !important;
+    }
+
+    /* General Mobile Layout */
     .navbar {
         flex-direction: column;
         align-items: stretch;
         padding: 20px;
         gap: 15px;
     }
-
     .navbar .logo {
         justify-content: center;
     }
-
     .navbar .nav-buttons {
         justify-content: center;
         flex-wrap: wrap;
     }
-
     .action-buttons {
         top: 140px;
         left: 20px;
@@ -450,40 +502,28 @@ tr.selected td {
         padding: 16px;
         border-radius: 12px;
     }
-
     .workflow-indicator {
         display: none;
     }
-
     .content-container {
         margin-top: 280px;
         padding: 20px;
     }
-
     .table-section {
         padding: 20px;
         border-radius: 16px;
     }
-
     .table-header {
         flex-direction: column;
         gap: 15px;
         align-items: flex-start;
     }
-
     .search-row {
         flex-direction: column;
     }
-
     .modal-content {
         padding: 30px 25px;
         border-radius: 16px;
-    }
-
-    th,
-    td {
-        padding: 12px 16px;
-        font-size: 14px;
     }
 }
 
@@ -491,38 +531,27 @@ tr.selected td {
     .navbar .logo .brand-name {
         font-size: 24px;
     }
-
     .action-buttons {
         top: 160px;
         left: 16px;
         right: 16px;
         padding: 12px;
     }
-
     .content-container {
         margin-top: 300px;
         padding: 16px;
     }
-
     .table-section {
         padding: 16px;
         border-radius: 12px;
     }
-
     .modal-content {
         padding: 25px 20px;
     }
-
     .form-group input,
     .form-group textarea,
     .form-group select {
         padding: 14px 16px;
         font-size: 14px;
-    }
-
-    th,
-    td {
-        padding: 10px 12px;
-        font-size: 13px;
     }
 }
