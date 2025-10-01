@@ -426,17 +426,6 @@ tr.selected td {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    /* Responsive Table (Stacked on mobile) - IMPORTANT: Higher specificity */
-    .table-container table,
-    .table-container thead,
-    .table-container tbody,
-    .table-container th,
-    .table-container td,
-    .table-container tr {
-        display: block !important;
-        width: 100% !important;
-    }
-
     .table-container {
         overflow-x: hidden !important;
         height: 200px !important;
@@ -480,7 +469,6 @@ tr.selected td {
         min-width: 60px !important;
     }
 
-    /* General Mobile Layout */
     .navbar {
         flex-direction: column;
         align-items: stretch;
