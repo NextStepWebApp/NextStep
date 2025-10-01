@@ -174,8 +174,6 @@ body {
     border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     overflow: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
 }
 
 table {
@@ -245,7 +243,6 @@ tr.selected td {
     color: #991b1b;
 }
 
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
