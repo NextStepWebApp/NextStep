@@ -1,4 +1,6 @@
 <?php
+
+# function that generates a password with alternating characters and numbers
 function genPassword(int $length)
 {
     $password = "";
@@ -14,6 +16,7 @@ function genPassword(int $length)
     return $password;
 }
 
+# funtion to save files with information
 function savefile(string $location, string $name, string $text)
 {
     $filename = "{$location}/{$name}";
@@ -23,9 +26,9 @@ function savefile(string $location, string $name, string $text)
     }
 
     if (file_put_contents($filename, $text) !== false) {
-        echo "File '$filename' created successfully!\n";
+        echo " - File '$filename' created successfully!\n";
     } else {
-        echo "Error: Could not create file.\n";
+        echo " - Error: Could not create file.\n";
     }
 }
 
@@ -51,5 +54,18 @@ function flashMessages()
             htmlentities($_SESSION["success"]) .
             "</p>\n";
         unset($_SESSION["success"]);
+    }
+}
+
+# function to create tables, with some error checking
+# To not repeatingly do this in the dbcreate.php
+function tableCreate(string $query, SQLITE3 $db, string $name_table)
+{
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    if (!$stmt) {
+        echo $db->lastErrorMsg();
+    } else {
+        echo "$name_table table created successfully\n";
     }
 }
