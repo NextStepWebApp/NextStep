@@ -149,6 +149,7 @@ $query = <<<EOF
       students_name TEXT NOT NULL UNIQUE,
       students_email TEXT NOT NULL UNIQUE,
       students_phone_number TEXT UNIQUE,
+      students_created_date TEXT NOT NULL,
       students_class_id INTEGER,
       students_school_id INTEGER,
       students_education_program_id INTEGER,
