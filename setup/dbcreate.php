@@ -45,6 +45,10 @@ $password = genPassword(8);
 $query =
     "INSERT INTO TEACHERS (teacher_email, teacher_name, teacher_username, teacher_password) VALUES (:email, :name, :username, :password)";
 $stmt = $db->prepare($query);
+if (!$stmt) {
+    echo "Error preparing query: " . $db->lastErrorMsg() . "\n";
+}
+
 $stmt->bindValue(":email", "admin@admin.com", SQLITE3_TEXT);
 $stmt->bindValue(":name", "ADMIN", SQLITE3_TEXT);
 $stmt->bindValue(":username", "ADMIN", SQLITE3_TEXT);
@@ -53,7 +57,7 @@ $stmt->bindValue(":password", $password, SQLITE3_TEXT);
 $result = $stmt->execute();
 
 if (!$result) {
-    die("Error inserting admin teacher: " . $db->lastErrorMsg() . "\n");
+    echo "Error inserting admin: " . $db->lastErrorMsg() . "\n";
 } else {
     echo "ADMIN created and inserted successfully\n";
 
@@ -80,33 +84,29 @@ tableCreate($query, $db, "CLASS");
 
 # Create city and country table
 # These tables are for the school table
-$query = <<<EOF
-      CREATE TABLE SCHOOL_CITY (
-      city_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      city_name TEXT NOT NULL
-      );
-EOF;
-
-tableCreate($query, $db, "SCHOOL_CITY");
 
 $query = <<<EOF
-      CREATE TABLE SCHOOL_COUNTRY (
+      CREATE TABLE COUNTRY (
       country_id INTEGER PRIMARY KEY AUTOINCREMENT,
       country_name TEXT NOT NULL
       );
 EOF;
 
-tableCreate($query, $db, "SCHOOL_COUNTRY");
+tableCreate($query, $db, "COUNTRY");
+$query = <<<EOF
+      CREATE TABLE CITY (
+      city_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      city_name TEXT NOT NULL
+      );
+EOF;
+
+tableCreate($query, $db, "CITY");
 
 # Create school table
 $query = <<<EOF
       CREATE TABLE SCHOOL (
       school_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      school_name TEXT NOT NULL,
-      school_city_id INTEGER NOT NULL,
-      school_country_id INTEGER NOT NULL,
-      FOREIGN KEY (school_city_id) REFERENCES SCHOOL_CITY(city_id),
-      FOREIGN KEY (school_country_id) REFERENCES SCHOOL_COUNTRY(country_id)
+      school_name TEXT NOT NULL
       );
 EOF;
 
@@ -149,13 +149,18 @@ $query = <<<EOF
       students_name TEXT NOT NULL UNIQUE,
       students_email TEXT NOT NULL UNIQUE,
       students_phone_number TEXT UNIQUE,
-      students_created_date TEXT NOT NULL,
       students_class_id INTEGER,
+      students_country_id INTEGER,
+      students_city_id INTEGER,
       students_school_id INTEGER,
       students_education_program_id INTEGER,
       students_status_id INTEGER,
       students_accessibility_id INTEGER,
+      students_created_date TEXT NOT NULL,
+      students_last_updated TEXT NOT NULL,
       FOREIGN KEY (students_class_id) REFERENCES CLASS(class_id),
+      FOREIGN KEY (students_country_id) REFERENCES COUNTRY(country_id),
+      FOREIGN KEY (students_city_id) REFERENCES CITY(city_id),
       FOREIGN KEY (students_school_id) REFERENCES SCHOOL(school_id),
       FOREIGN KEY (students_education_program_id) REFERENCES EDUCATION_PROGRAM(program_id),
       FOREIGN KEY (students_status_id) REFERENCES STATUS(status_id),

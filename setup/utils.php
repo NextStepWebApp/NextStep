@@ -35,12 +35,31 @@ function savefile(string $location, string $name, string $text)
 
 # function to create tables, with some error checking
 # To not repeatingly do this in the dbcreate.php
-function tableCreate(string $query, SQLITE3 $db, string $name_table)
+/*function tableCreate(string $query, SQLite3 $db, string $name_table)
 {
-    $stmt = $db->prepare($query);
+   $stmt = $db->prepare($query);
     $result = $stmt->execute();
     if (!$result) {
         die("Error creating $name_table: " . $db->lastErrorMsg() . "\n");
+        $db->close();
+    } else {
+        echo "$name_table table created successfully\n";
+    }
+}*/
+function tableCreate(string $query, SQLite3 $db, string $name_table)
+{
+    $stmt = $db->prepare($query);
+
+    if (!$stmt) {
+        echo "Error preparing query for $name_table: " .
+            $db->lastErrorMsg() .
+            "\n";
+    }
+
+    $result = $stmt->execute();
+
+    if (!$result) {
+        echo "Error creating $name_table: " . $db->lastErrorMsg() . "\n";
     } else {
         echo "$name_table table created successfully\n";
     }

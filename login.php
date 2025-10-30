@@ -3,7 +3,8 @@ require_once "utils.php";
 
 session_start();
 
-$db_file = "nextstep_data.db";
+# This location is temporary!!!!!!!!!!
+$db_file = "setup/nextstep_data.db";
 $db = new SQLite3($db_file);
 // Check database connection
 if (!$db) {
