@@ -1,4 +1,5 @@
 <?php
+# This is the utils file for the setup part
 
 # function that generates a password with alternating characters and numbers
 function genPassword(int $length)
@@ -22,7 +23,7 @@ function savefile(string $location, string $name, string $text)
     $filename = "{$location}/{$name}";
 
     if (!is_dir($location)) {
-        mkdir($location, 0777, true);
+        mkdir($location, 0644, true);
     }
 
     if (file_put_contents($filename, $text) !== false) {
@@ -32,39 +33,14 @@ function savefile(string $location, string $name, string $text)
     }
 }
 
-function loginSecurity()
-{
-    if (!isset($_SESSION["teacher_username"])) {
-        $_SESSION["error"] = "You are not logged in, please log in";
-        header("Location: login.php");
-        exit();
-    }
-}
-
-function flashMessages()
-{
-    if (isset($_SESSION["error"])) {
-        echo '<p class="flash" style="color: red;">' .
-            htmlentities($_SESSION["error"]) .
-            "</p>\n";
-        unset($_SESSION["error"]);
-    }
-    if (isset($_SESSION["success"])) {
-        echo '<p class="flash" style="color: green;">' .
-            htmlentities($_SESSION["success"]) .
-            "</p>\n";
-        unset($_SESSION["success"]);
-    }
-}
-
 # function to create tables, with some error checking
 # To not repeatingly do this in the dbcreate.php
 function tableCreate(string $query, SQLITE3 $db, string $name_table)
 {
     $stmt = $db->prepare($query);
-    $stmt->execute();
-    if (!$stmt) {
-        echo $db->lastErrorMsg();
+    $result = $stmt->execute();
+    if (!$result) {
+        die("Error creating $name_table: " . $db->lastErrorMsg() . "\n");
     } else {
         echo "$name_table table created successfully\n";
     }
