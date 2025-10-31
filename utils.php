@@ -24,3 +24,11 @@ function flashMessages()
         unset($_SESSION["success"]);
     }
 }
+
+function errorMessages(string $message, string $details)
+{
+    error_log($message . ": " . $details);
+    $_SESSION["error"] = "$message";
+    header("Location: failure.php");
+    exit();
+}

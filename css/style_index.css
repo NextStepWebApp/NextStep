@@ -2,12 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family:
-        system-ui,
-        -apple-system,
-        "Segoe UI",
-        Roboto,
-        sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
@@ -17,6 +12,7 @@ body {
     flex-direction: column;
 }
 
+/* Navbar */
 .navbar {
     position: fixed;
     top: 0;
@@ -27,7 +23,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 16px 24px;
-    background: rgba(255, 255, 255, 1);
+    background: #fff;
 }
 
 .brand-name {
@@ -44,7 +40,7 @@ body {
     gap: 12px;
 }
 
-.nav-buttons button {
+.nav-btn {
     padding: 8px 16px;
     border: none;
     border-radius: 8px;
@@ -53,17 +49,19 @@ body {
     color: #fff;
     background: linear-gradient(135deg, #0b1d59, #1e3a8a);
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(11, 29, 89, 0.2);
+    text-decoration: none;
+    display: inline-block;
 }
 
-.nav-buttons button:hover {
+.nav-btn:hover {
     background: linear-gradient(135deg, #1e3a8a, #3b82f6);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(11, 29, 89, 0.3);
 }
-/* Action Buttons */
 
+/* Action Buttons */
 .action-buttons {
     position: fixed;
     top: 115px;
@@ -74,14 +72,14 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 25;
-    background: rgba(255, 255, 255, 1);
+    background: #fff;
     padding: 20px;
     border-radius: 16px;
 }
 
 .action-btn {
     padding: 12px 24px;
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.95);
     color: #0b1d59;
     cursor: pointer;
@@ -90,7 +88,6 @@ body {
     font-size: 15px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .action-btn:hover {
@@ -119,25 +116,21 @@ body {
     font-weight: 800;
 }
 
-/* Content Container */
-.content-container {
+/* Main Content */
+main {
     margin-top: 150px;
     padding: 20px;
-    display: static;
-    flex-direction: column;
 }
 
 /* Table Section */
 .table-section {
-    background: rgba(255, 255, 255, 1);
+    background: #fff;
     border-radius: 20px;
     padding: 30px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    display: block;
 }
 
-/* Header above the table */
 .table-header {
     display: flex;
     justify-content: space-between;
@@ -220,6 +213,14 @@ tr.selected td {
     background-color: rgba(11, 29, 89, 0.05);
 }
 
+.no-summaries {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+/* Status Badges */
 .status-badge {
     padding: 4px 12px;
     border-radius: 20px;
@@ -243,6 +244,7 @@ tr.selected td {
     color: #991b1b;
 }
 
+/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -273,6 +275,10 @@ tr.selected td {
     overflow: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+}
+
+.modal-content::-webkit-scrollbar {
+    display: none;
 }
 
 .modal-header {
@@ -308,6 +314,7 @@ tr.selected td {
     color: #0b1d59;
 }
 
+/* Forms */
 .form-group {
     margin-bottom: 20px;
 }
@@ -331,6 +338,7 @@ tr.selected td {
     background: #f9fafb;
     color: #0b1d59;
     outline: none;
+    transition: all 0.2s ease;
 }
 
 .form-group textarea {
@@ -423,89 +431,89 @@ tr.selected td {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .table-container {
-        overflow-x: hidden !important;
-        height: 200px !important;
-        overflow-y: auto !important;
-    }
-
-    .table-container thead {
-        display: none !important;
-    }
-
-    .table-container tr {
-        margin-bottom: 8px !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        border: 1px solid #e5e7eb !important;
-        border-radius: 10px !important;
-        background: #fff !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
-        padding: 8px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    .table-container td {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        padding: 4px 0 !important;
-        border: none !important;
-        border-bottom: none !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    .table-container td::before {
-        content: attr(data-label) !important;
-        font-weight: 600 !important;
-        color: #0b1d59 !important;
-        flex: 0 0 auto !important;
-        padding-right: 15px !important;
-        min-width: 60px !important;
-    }
-
     .navbar {
         flex-direction: column;
         align-items: stretch;
         padding: 20px;
         gap: 15px;
     }
-    .navbar .logo {
-        justify-content: center;
+
+    .brand-name {
+        text-align: center;
     }
-    .navbar .nav-buttons {
+
+    .nav-buttons {
         justify-content: center;
         flex-wrap: wrap;
     }
+
     .action-buttons {
         top: 140px;
-        left: 20px;
-        right: 20px;
         flex-direction: column;
         padding: 16px;
         border-radius: 12px;
     }
+
     .workflow-indicator {
         display: none;
     }
-    .content-container {
+
+    main {
         margin-top: 280px;
         padding: 20px;
     }
+
     .table-section {
         padding: 20px;
         border-radius: 16px;
     }
+
     .table-header {
         flex-direction: column;
         gap: 15px;
         align-items: flex-start;
     }
+
+    .table-container {
+        overflow-x: hidden;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .table-container thead {
+        display: none;
+    }
+
+    .table-container tr {
+        display: block;
+        margin-bottom: 8px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        padding: 8px;
+    }
+
+    .table-container td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+        border: none;
+    }
+
+    .table-container td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #0b1d59;
+        padding-right: 15px;
+        min-width: 60px;
+    }
+
     .search-row {
         flex-direction: column;
     }
+
     .modal-content {
         padding: 30px 25px;
         border-radius: 16px;
@@ -513,26 +521,31 @@ tr.selected td {
 }
 
 @media (max-width: 480px) {
-    .navbar .logo .brand-name {
+    .brand-name {
         font-size: 24px;
     }
+
     .action-buttons {
         top: 160px;
         left: 16px;
         right: 16px;
         padding: 12px;
     }
-    .content-container {
+
+    main {
         margin-top: 300px;
         padding: 16px;
     }
+
     .table-section {
         padding: 16px;
         border-radius: 12px;
     }
+
     .modal-content {
         padding: 25px 20px;
     }
+
     .form-group input,
     .form-group textarea,
     .form-group select {
