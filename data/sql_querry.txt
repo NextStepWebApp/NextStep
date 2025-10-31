@@ -1,3 +1,5 @@
+The full querry
+
 SELECT
     STUDENTS.students_name,
     STUDENTS.students_email,
@@ -19,3 +21,15 @@ LEFT JOIN SCHOOL ON STUDENTS.students_school_id = SCHOOL.school_id
 LEFT JOIN EDUCATION_PROGRAM ON STUDENTS.students_education_program_id = EDUCATION_PROGRAM.program_id
 LEFT JOIN STATUS ON STUDENTS.students_status_id = STATUS.status_id
 LEFT JOIN ACCESSIBILITY ON STUDENTS.students_accessibility_id = ACCESSIBILITY.accessibility_id;
+
+
+
+The index querry
+
+SELECT
+    STUDENTS.students_name,
+    STUDENTS.students_email,
+    STATUS.status_name,
+    STUDENTS.students_created_date
+FROM STUDENTS
+LEFT JOIN STATUS ON STUDENTS.students_status_id = STATUS.status_id;
