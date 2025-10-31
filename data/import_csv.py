@@ -2,13 +2,23 @@
 
 # temporary !!!!
 fname_data_import = "data.csv"
-fname_config_accessibility = "/home/william/Documents/programming/PWS/NextStep/config/accessibility.csv"
+fname_config_accessibility = (
+    "/home/william/Documents/programming/PWS/NextStep/config/accessibility.csv"
+)
 fname_config_city = "/home/william/Documents/programming/PWS/NextStep/config/city.csv"
 fname_config_class = "/home/william/Documents/programming/PWS/NextStep/config/class.csv"
-fname_config_country = "/home/william/Documents/programming/PWS/NextStep/config/country.csv"
-fname_config_education = "/home/william/Documents/programming/PWS/NextStep/config/education.csv"
-fname_config_school = "/home/william/Documents/programming/PWS/NextStep/config/school.csv"
-fname_config_status = "/home/william/Documents/programming/PWS/NextStep/config/status.csv"
+fname_config_country = (
+    "/home/william/Documents/programming/PWS/NextStep/config/country.csv"
+)
+fname_config_education = (
+    "/home/william/Documents/programming/PWS/NextStep/config/education.csv"
+)
+fname_config_school = (
+    "/home/william/Documents/programming/PWS/NextStep/config/school.csv"
+)
+fname_config_status = (
+    "/home/william/Documents/programming/PWS/NextStep/config/status.csv"
+)
 
 
 file_list = [
@@ -61,6 +71,7 @@ for line in file_contents["data_import"][1:]:  # skip the first line (header)
 # This is the csv standart used (from googled docs, with google email requierd)
 
 
+# This funtion compares the data from master csv file with the config functions
 def compare_data(data_number, config_name):
     data_exists = False
     for class_name in file_contents[config_name]:
@@ -89,23 +100,27 @@ for person in data_list:
         result_verification = False
 
 
-if result_verification == True:
-    print(f"SUCCES - all the data is verified")
-else:
-    print("ERROR - invalid data")
-
-
 # funtion that closes all the files
 def close_all_files():
     for name, f in file_handles.items():
         f.close()
 
 
+if result_verification == True:
+    print(f"SUCCES - all the data is verified")
+else:
+    print("ERROR - invalid data")
+    close_all_files
+    exit()
+
 # Popluate database
 import sqlite3
+
 # opening the database
 try:
-    conn = sqlite3.connect('/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db') # this is temporary !!!!!!!
+    conn = sqlite3.connect(
+        "/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db"
+    )  # this is temporary !!!!!!!
     cursor = conn.cursor()
     print("connection succes")
 except:
@@ -114,5 +129,69 @@ except:
     close_all_files()
     exit()
 
+# adding the data from the configs in the db if needed
+
+
+def INSERT_OR_IGNORE(TABLE_NAME, data_value_person):
+    if TABLE_NAME == "EDUCATION_PROGRAM":
+        column_name = "program_name"
+    else:
+        column_name = TABLE_NAME.lower() + "_name"
+    cursor.execute(f"INSERT OR IGNORE INTO {TABLE_NAME} ({column_name}) VALUES (?)", (data_value_person,))
+#TABLE_NAMES = ["ACCESSIBILITY", "CITY", "CLASS", "COUNTRY", "EDUCATION_PROGRAM", "SCHOOL", "STATUS"]
+# time ,  email1, email2, name, phone, class, country, city, school, education_program, status, accessibility
+# 0        1        2      3      4      5      6        7     8            9             10          11
+# This is the csv standart used (from googled docs, with google email requierd)
+for person in data_list:
+    INSERT_OR_IGNORE("ACCESSIBILITY", person[11])
+    INSERT_OR_IGNORE("CITY", person[7])
+    INSERT_OR_IGNORE("CLASS", person[5])
+    INSERT_OR_IGNORE("COUNTRY", person[6])
+    INSERT_OR_IGNORE("EDUCATION_PROGRAM", person[9])
+    INSERT_OR_IGNORE("SCHOOL", person[8])
+    INSERT_OR_IGNORE("STATUS", person[10])
+
+
+# This code block gets the id's of the different tables from specific person
+for person in data_list:
+    cursor.execute("SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = ?", (person[11],))
+    result = cursor.fetchone()
+    accessibility_id = result[0] if result else None
+
+    cursor.execute("SELECT city_id FROM CITY WHERE city_name = ?", (person[7],))
+    result = cursor.fetchone()
+    city_id = result[0] if result else None
+
+    cursor.execute("SELECT class_id FROM CLASS WHERE class_name = ?", (person[5],))
+    result = cursor.fetchone()
+    class_id = result[0] if result else None
+
+    cursor.execute("SELECT country_id FROM COUNTRY WHERE country_name = ?", (person[6],))
+    result = cursor.fetchone()
+    country_id = result[0] if result else None
+
+    cursor.execute("SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = ?", (person[9],))
+    result = cursor.fetchone()
+    program_id = result[0] if result else None
+
+    cursor.execute("SELECT school_id FROM SCHOOL WHERE school_name = ?", (person[8],))
+    result = cursor.fetchone()
+    school_id = result[0] if result else None
+
+    cursor.execute("SELECT status_id FROM STATUS WHERE status_name = ?", (person[10],))
+    result = cursor.fetchone()
+    status_id = result[0] if result else None
+
+    # Now insert with the correct IDs for this person
+    cursor.execute(
+        """INSERT OR REPLACE INTO STUDENTS (students_name, students_email, students_phone_number, students_class_id,
+        students_country_id, students_city_id, students_school_id, students_education_program_id, students_status_id,
+        students_accessibility_id, students_created_date, students_last_updated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y', 'now'), date('now'))""",
+        (person[3], person[2], person[4], class_id, country_id, city_id, school_id, program_id, status_id, accessibility_id))
+
+conn.commit()
+cursor.close()
+conn.close()
 
 close_all_files()
