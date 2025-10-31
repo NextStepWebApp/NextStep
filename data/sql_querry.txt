@@ -1,0 +1,21 @@
+SELECT
+    STUDENTS.students_name,
+    STUDENTS.students_email,
+    STUDENTS.students_phone_number,
+    CLASS.class_name,
+    COUNTRY.country_name,
+    CITY.city_name,
+    SCHOOL.school_name,
+    EDUCATION_PROGRAM.program_name,
+    STATUS.status_name,
+    ACCESSIBILITY.accessibility_name,
+    STUDENTS.students_created_date,
+    STUDENTS.students_last_updated
+FROM STUDENTS
+LEFT JOIN CLASS ON STUDENTS.students_class_id = CLASS.class_id
+LEFT JOIN COUNTRY ON STUDENTS.students_country_id = COUNTRY.country_id
+LEFT JOIN CITY ON STUDENTS.students_city_id = CITY.city_id
+LEFT JOIN SCHOOL ON STUDENTS.students_school_id = SCHOOL.school_id
+LEFT JOIN EDUCATION_PROGRAM ON STUDENTS.students_education_program_id = EDUCATION_PROGRAM.program_id
+LEFT JOIN STATUS ON STUDENTS.students_status_id = STATUS.status_id
+LEFT JOIN ACCESSIBILITY ON STUDENTS.students_accessibility_id = ACCESSIBILITY.accessibility_id;
