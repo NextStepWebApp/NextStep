@@ -66,8 +66,8 @@ for line in file_contents["data_import"][1:]:  # skip the first line (header)
 # import data is a valid entry - So it is verification
 # ######################################################
 
-# time ,  email1, email2, name, phone, class, country, city, school, education_program, status, accessibility
-# 0        1        2      3      4      5      6        7     8            9             10          11
+# time ,  email, name, phone, class, country, city, school, education_program, status, accessibility
+# 0        1       2     3      4      5      6        7             8            9         10
 # This is the csv standart used (from googled docs, with google email requierd)
 
 
@@ -89,13 +89,13 @@ def compare_data(data_number, config_name):
 result_verification = True
 for person in data_list:
     if (
-        compare_data(5, "config_class") == False
-        or compare_data(6, "config_country") == False
-        or compare_data(7, "config_city") == False
-        or compare_data(8, "config_school") == False
-        or compare_data(9, "config_education") == False
-        or compare_data(10, "config_status") == False
-        or compare_data(11, "config_accessibility") == False
+        compare_data(4, "config_class") == False
+        or compare_data(5, "config_country") == False
+        or compare_data(6, "config_city") == False
+        or compare_data(7, "config_school") == False
+        or compare_data(8, "config_education") == False
+        or compare_data(9, "config_status") == False
+        or compare_data(10, "config_accessibility") == False
     ):
         result_verification = False
 
@@ -137,48 +137,61 @@ def INSERT_OR_IGNORE(TABLE_NAME, data_value_person):
         column_name = "program_name"
     else:
         column_name = TABLE_NAME.lower() + "_name"
-    cursor.execute(f"INSERT OR IGNORE INTO {TABLE_NAME} ({column_name}) VALUES (?)", (data_value_person,))
-#TABLE_NAMES = ["ACCESSIBILITY", "CITY", "CLASS", "COUNTRY", "EDUCATION_PROGRAM", "SCHOOL", "STATUS"]
-# time ,  email1, email2, name, phone, class, country, city, school, education_program, status, accessibility
-# 0        1        2      3      4      5      6        7     8            9             10          11
+    cursor.execute(
+        f"INSERT OR IGNORE INTO {TABLE_NAME} ({column_name}) VALUES (?)",
+        (data_value_person,),
+    )
+
+
+# TABLE_NAMES = ["ACCESSIBILITY", "CITY", "CLASS", "COUNTRY", "EDUCATION_PROGRAM", "SCHOOL", "STATUS"]
+# time ,  email, name, phone, class, country, city, school, education_program, status, accessibility
+# 0        1       2     3      4      5      6        7             8            9         10
 # This is the csv standart used (from googled docs, with google email requierd)
+
 for person in data_list:
-    INSERT_OR_IGNORE("ACCESSIBILITY", person[11])
-    INSERT_OR_IGNORE("CITY", person[7])
-    INSERT_OR_IGNORE("CLASS", person[5])
-    INSERT_OR_IGNORE("COUNTRY", person[6])
-    INSERT_OR_IGNORE("EDUCATION_PROGRAM", person[9])
-    INSERT_OR_IGNORE("SCHOOL", person[8])
-    INSERT_OR_IGNORE("STATUS", person[10])
+    INSERT_OR_IGNORE("ACCESSIBILITY", person[10])
+    INSERT_OR_IGNORE("CITY", person[6])
+    INSERT_OR_IGNORE("CLASS", person[4])
+    INSERT_OR_IGNORE("COUNTRY", person[5])
+    INSERT_OR_IGNORE("EDUCATION_PROGRAM", person[8])
+    INSERT_OR_IGNORE("SCHOOL", person[7])
+    INSERT_OR_IGNORE("STATUS", person[9])
 
 
 # This code block gets the id's of the different tables from specific person
 for person in data_list:
-    cursor.execute("SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = ?", (person[11],))
+    cursor.execute(
+        "SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = ?",
+        (person[10],),
+    )
     result = cursor.fetchone()
     accessibility_id = result[0] if result else None
 
-    cursor.execute("SELECT city_id FROM CITY WHERE city_name = ?", (person[7],))
+    cursor.execute("SELECT city_id FROM CITY WHERE city_name = ?", (person[6],))
     result = cursor.fetchone()
     city_id = result[0] if result else None
 
-    cursor.execute("SELECT class_id FROM CLASS WHERE class_name = ?", (person[5],))
+    cursor.execute("SELECT class_id FROM CLASS WHERE class_name = ?", (person[4],))
     result = cursor.fetchone()
     class_id = result[0] if result else None
 
-    cursor.execute("SELECT country_id FROM COUNTRY WHERE country_name = ?", (person[6],))
+    cursor.execute(
+        "SELECT country_id FROM COUNTRY WHERE country_name = ?", (person[5],)
+    )
     result = cursor.fetchone()
     country_id = result[0] if result else None
 
-    cursor.execute("SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = ?", (person[9],))
+    cursor.execute(
+        "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = ?", (person[8],)
+    )
     result = cursor.fetchone()
     program_id = result[0] if result else None
 
-    cursor.execute("SELECT school_id FROM SCHOOL WHERE school_name = ?", (person[8],))
+    cursor.execute("SELECT school_id FROM SCHOOL WHERE school_name = ?", (person[7],))
     result = cursor.fetchone()
     school_id = result[0] if result else None
 
-    cursor.execute("SELECT status_id FROM STATUS WHERE status_name = ?", (person[10],))
+    cursor.execute("SELECT status_id FROM STATUS WHERE status_name = ?", (person[9],))
     result = cursor.fetchone()
     status_id = result[0] if result else None
 
@@ -188,7 +201,19 @@ for person in data_list:
         students_country_id, students_city_id, students_school_id, students_education_program_id, students_status_id,
         students_accessibility_id, students_created_date, students_last_updated)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y', 'now'), date('now'))""",
-        (person[3], person[2], person[4], class_id, country_id, city_id, school_id, program_id, status_id, accessibility_id))
+        (
+            person[2],
+            person[1],
+            person[3],
+            class_id,
+            country_id,
+            city_id,
+            school_id,
+            program_id,
+            status_id,
+            accessibility_id,
+        ),
+    )
 
 conn.commit()
 cursor.close()
