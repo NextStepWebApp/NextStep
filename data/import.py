@@ -216,7 +216,6 @@ for person in data_list:
     )
 
 conn.commit()
-cursor.close()
 conn.close()
 
 close_all_files()
