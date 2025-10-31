@@ -76,7 +76,7 @@ if (!$result) {
 $query = <<<EOF
       CREATE TABLE CLASS (
       class_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      class_name TEXT NOT NULL
+      class_name TEXT NOT NULL UNIQUE
       );
 EOF;
 
@@ -88,7 +88,7 @@ tableCreate($query, $db, "CLASS");
 $query = <<<EOF
       CREATE TABLE COUNTRY (
       country_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      country_name TEXT NOT NULL
+      country_name TEXT NOT NULL UNIQUE
       );
 EOF;
 
@@ -96,7 +96,7 @@ tableCreate($query, $db, "COUNTRY");
 $query = <<<EOF
       CREATE TABLE CITY (
       city_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      city_name TEXT NOT NULL
+      city_name TEXT NOT NULL UNIQUE
       );
 EOF;
 
@@ -106,7 +106,7 @@ tableCreate($query, $db, "CITY");
 $query = <<<EOF
       CREATE TABLE SCHOOL (
       school_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      school_name TEXT NOT NULL
+      school_name TEXT NOT NULL UNIQUE
       );
 EOF;
 
@@ -116,7 +116,7 @@ tableCreate($query, $db, "SCHOOL");
 $query = <<<EOF
       CREATE TABLE EDUCATION_PROGRAM (
       program_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      program_name TEXT NOT NULL
+      program_name TEXT NOT NULL UNIQUE
       );
 EOF;
 
@@ -126,7 +126,7 @@ tableCreate($query, $db, "EDUCATION_PROGRAM");
 $query = <<<EOF
       CREATE TABLE STATUS (
       status_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      status_name TEXT NOT NULL
+      status_name TEXT NOT NULL UNIQUE
       );
 EOF;
 
@@ -136,7 +136,7 @@ tableCreate($query, $db, "STATUS");
 $query = <<<EOF
       CREATE TABLE ACCESSIBILITY (
       accessibility_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      accessibility_name TEXT NOT NULL
+      accessibility_name TEXT NOT NULL UNIQUE
       );
 EOF;
 
