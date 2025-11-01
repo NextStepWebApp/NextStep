@@ -9,11 +9,8 @@ if ($_SESSION["teacher_username"] != "ADMIN") {
 check_id();
 
 
-if (isset($_POST["student_name"]) && isset($_POST["student_email"]) && isset($_POST["student_phone"]) &&
-    isset($_POST["class_name"]) && isset($_POST["country_name"]) && isset($_POST["city_name"]) &&
-    isset($_POST["school_name"]) && isset($_POST["program_name"]) && isset($_POST["status"]) &&
-    isset($_POST["accessibility"]) && isset($_POST["created_date"]) && isset($_POST["last_update"]) &&
-    isset($_POST["submit"])) {
+// Handle form submission
+if (isset($_POST["submit"])) {
 
     // Check if all fields are filled
     if (strlen($_POST["student_name"]) < 1 || strlen($_POST["student_email"]) < 1 ||
@@ -21,35 +18,38 @@ if (isset($_POST["student_name"]) && isset($_POST["student_email"]) && isset($_P
         strlen($_POST["class_name"]) < 1 || strlen($_POST["country_name"]) < 1 ||
         strlen($_POST["city_name"]) < 1 || strlen($_POST["school_name"]) < 1 ||
         strlen($_POST["program_name"]) < 1 || strlen($_POST["status"]) < 1 ||
-        strlen($_POST["accessibility"]) < 1 || strlen($_POST["created_date"]) < 1 ||
-        strlen($_POST["last_update"]) < 1) {
+        strlen($_POST["accessibility"]) < 1) {
 
         $_SESSION['error'] = "All fields are required";
-        #$_SESSION['form_data'] = $_POST;
         header("Location: edit.php?student_id=" . $_POST['student_id']);
         exit();
     }
-
+    $db = new SQLite3($db_file);
+    // Update student information
     $query = "UPDATE STUDENTS SET
         students_name = :name,
         students_email = :email,
         students_phone_number = :phone,
         students_last_updated = NOW()
         WHERE students_id = :id";
+
     $stmt = $db->prepare($query);
     if (!$stmt) {
         errorMessages("Error preparing query", $db->lastErrorMsg());
     }
 
-    $stmt->bindValue(":name", $_POST("student_name"), SQLITE3_TEXT);
-    $stmt->bindValue(":email", $_POST("student_email"), SQLITE3_TEXT);
-    $stmt->bindValue(":phone", $_POST("student_phone"), SQLITE3_TEXT);
+    $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
+    $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
+    $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
+    $stmt->bindValue(":id", $_POST["student_id"], SQLITE3_INTEGER);
 
     $results = $stmt->execute();
     if (!$results) {
         errorMessages("Error executing query", $db->lastErrorMsg());
     }
-
+    $_SESSION['success'] = 'Student information updated successfully';
+        header("Location: edit.php?student_id=" . $_POST['student_id']);
+        exit();
 }
 
 # Get data from the db
@@ -94,33 +94,36 @@ $last_update           = htmlspecialchars($row['students_last_updated']);
 <?php include 'navbar.php'; ?>
 <div class="page-box">
 <h2>Student information</h2>
+<?php flashMessages(); ?>
+
+<form method="POST" action="edit.php">
 <input type="hidden" name="student_id" value="<?=$student_id?>" />
 <label for="student_name">Name:</label>
-<input type="text" id="student_name" name="student_name" value="<?=$student_name?>" />
+<input type="text" id="student_name" name="student_name" value="<?=$student_name?>"/>
 <label for="student_email">Email:</label>
-<input type="email" id="student_email" name="student_email" value="<?=$student_email?>" />
+<input type="email" id="student_email" name="student_email" value="<?=$student_email?>"/>
 <label for="student_phone">Phone number:</label>
-<input type="tel" id="student_phone" name="student_phone" value="<?=$student_phone_number?>" />
+<input type="tel" id="student_phone" name="student_phone" value="<?=$student_phone_number?>"/>
 <label for="class_name">Class name:</label>
-<input type="text" id="class_name" name="class_name" value="<?=$class_name?>" />
+<input type="text" id="class_name" name="class_name" value="<?=$class_name?>"/>
 <label for="country_name">Country:</label>
-<input type="text" id="country_name" name="country_name" value="<?=$country_name?>" />
+<input type="text" id="country_name" name="country_name" value="<?=$country_name?>"/>
 <label for="city_name">City:</label>
-<input type="text" id="city_name" name="city_name" value="<?=$city_name?>" />
+<input type="text" id="city_name" name="city_name" value="<?=$city_name?>"/>
 <label for="school_name">School:</label>
-<input type="text" id="school_name" name="school_name" value="<?=$school_name?>" />
+<input type="text" id="school_name" name="school_name" value="<?=$school_name?>"/>
 <label for="program_name">Program:</label>
-<input type="text" id="program_name" name="program_name" value="<?=$program_name?>" />
+<input type="text" id="program_name" name="program_name" value="<?=$program_name?>"/>
 <label for="status">Status:</label>
-<input type="text" id="status" name="status" value="<?=$status?>" />
+<input type="text" id="status" name="status" value="<?=$status?>"/>
 <label for="accessibility">Accessibility:</label>
-<input type="text" id="accessibility" name="accessibility" value="<?=$accessibility?>" />
+<input type="text" id="accessibility" name="accessibility" value="<?=$accessibility?>"/>
 <label for="created_date">Date created:</label>
-<input type="text" id="created_date" name="created_date" value="<?=$created_date?>" />
+<input type="text" id="created_date" name="created_date" value="<?=$created_date?>" readonly />
 <label for="last_update">Date last update:</label>
-<input type="text" id="last_update" name="last_update" value="<?=$last_update?>" />
+<input type="text" id="last_update" name="last_update" value="<?=$last_update?>" readonly />
 <input type="submit" class="nav-btn" name="submit" value="Save">
+</form>
 </div>
-
 </body>
 </html>
