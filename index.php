@@ -37,7 +37,6 @@ if (!$resultcount) {
 }
 $row = $resultcount->fetchArray();
 $totalCount = $row['COUNT'];
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -103,6 +102,7 @@ while ($row = $results->fetchArray()) {
 }
 if ($hasresults == 0)
     echo('<tr><td colspan="5" class="no-records">No records found</td></tr>');
+$db->close();
 ?>
 </tbody>
 </table>
