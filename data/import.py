@@ -2,23 +2,13 @@
 
 # temporary !!!!
 fname_data_import = "data.csv"
-fname_config_accessibility = (
-    "/home/william/Documents/programming/PWS/NextStep/config/accessibility.csv"
-)
+fname_config_accessibility = "/home/william/Documents/programming/PWS/NextStep/config/accessibility.csv"
 fname_config_city = "/home/william/Documents/programming/PWS/NextStep/config/city.csv"
 fname_config_class = "/home/william/Documents/programming/PWS/NextStep/config/class.csv"
-fname_config_country = (
-    "/home/william/Documents/programming/PWS/NextStep/config/country.csv"
-)
-fname_config_education = (
-    "/home/william/Documents/programming/PWS/NextStep/config/education.csv"
-)
-fname_config_school = (
-    "/home/william/Documents/programming/PWS/NextStep/config/school.csv"
-)
-fname_config_status = (
-    "/home/william/Documents/programming/PWS/NextStep/config/status.csv"
-)
+fname_config_country = "/home/william/Documents/programming/PWS/NextStep/config/country.csv"
+fname_config_education = "/home/william/Documents/programming/PWS/NextStep/config/education.csv"
+fname_config_school = "/home/william/Documents/programming/PWS/NextStep/config/school.csv"
+fname_config_status = "/home/william/Documents/programming/PWS/NextStep/config/status.csv"
 
 
 file_list = [
@@ -202,8 +192,8 @@ for person in data_list:
         students_accessibility_id, students_created_date, students_last_updated)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y', 'now'), date('now'))""",
         (
-            person[2],
             person[1],
+            person[2],
             person[3],
             class_id,
             country_id,
