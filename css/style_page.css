@@ -2,6 +2,7 @@
     background: #fff;
     border-radius: 20px;
     margin-top: 150px;
+    margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
     min-width: 1000px;
@@ -18,9 +19,29 @@
     margin-right: 15px;
 }
 
-@media (max-width: 800px) {
+input {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+@media (max-width: 1000px) {
 .page-box {
     min-width: 10px;
     margin-top: 170px;
 }
+
 }
