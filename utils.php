@@ -1,5 +1,9 @@
 <?php
 
+# This is temporary location
+$db_file = "setup/nextstep_data.db";
+
+
 function loginSecurity()
 {
     if (!isset($_SESSION["teacher_username"])) {

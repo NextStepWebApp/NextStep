@@ -3,15 +3,13 @@ require_once "utils.php";
 session_start();
 loginSecurity();
 
-# This location is temporary!!!!!!!!!!
-$db_file = "setup/nextstep_data.db";
-
 try {
     $db = new SQLite3($db_file);
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
 }
 $query = "SELECT
+    STUDENTS.students_id,
     STUDENTS.students_name,
     STUDENTS.students_email,
     STATUS.status_name,
@@ -27,6 +25,19 @@ $results = $stmt->execute();
 if (!$results) {
     errorMessages("Error executing query", $db->lastErrorMsg());
 }
+
+$query = "SELECT count(*) AS COUNT FROM STUDENTS";
+$stmt = $db->prepare($query);
+if (!$stmt) {
+    errorMessages("Error preparing query", $db->lastErrorMsg());
+}
+$resultcount = $stmt->execute();
+if (!$resultcount) {
+    errorMessages("Error executing query", $db->lastErrorMsg());
+}
+$row = $resultcount->fetchArray();
+$totalCount = $row['COUNT'];
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -42,27 +53,25 @@ if (!$results) {
 <?php include 'navbar.php'; ?>
 <main>
 <section class="action-buttons">
-<button type="button" class="action-btn" id="searchBtn" aria-label="Search and filter records">
-🔍 Search & Filter
-</button>
-<span class="workflow-indicator" aria-hidden="true">→</span>
-<button type="button" class="action-btn" id="composeBtn" disabled aria-label="Compose email to selected recipients">
-✉️ Compose Email (<span id="selectedCount">0</span> selected)
-</button>
+<button type="button" class="action-btn" id="searchBtn">🔍 Search & Filter</button>
+<span class="workflow-indicator">→</span>
+<button type="button" class="action-btn" id="composeBtn" disabled>
+✉️ Compose Email (<span id="selectedCount">0</span> selected)</button>
 </section>
 
 <section class="table-section">
 <header class="table-header">
-<div class="selected-info">
-<span id="totalCount">10</span> records |
-<span id="selectedCountText">0</span> selected
-</div>
+
+<?php
+echo '<div class="selected-info">'.$totalCount.' records | 0 selected</div>';
+?>
+
 <div class="select-all-container">
 <input type="checkbox" id="selectAll"/>
 <label for="selectAll">Select All</label>
 </div>
 </header>
-
+<?php flashMessages();?>
 <div class="table-container">
 <table>
 <thead>
@@ -79,20 +88,21 @@ if (!$results) {
 $hasresults = 0;
 while ($row = $results->fetchArray()) {
     $hasresults = 1;
+    $student_id = htmlspecialchars($row["students_id"]);
     $date = htmlspecialchars($row["students_created_date"]);
     $name = htmlspecialchars($row["students_name"]);
     $email = htmlspecialchars($row["students_email"]);
     $status = htmlspecialchars($row["status_name"]);
     echo '<tr>
-<td data-label="Select"><input type="checkbox" class="row-checkbox"/></td>
-<td data-label="Name">'.$name .'</td>
-<td data-label="Email">'.$email.'</td>
-<td data-label="Status">'.$status.'</td>
-<td data-label="Date">'.$date.'</td>
-</tr>'."\n";
+        <td><input type="checkbox" class="row-checkbox"/></td>
+        <td><a href=view.php?student_id='.$student_id.'>'.$name.'</a></td>
+        <td>'.$email.'</td>
+        <td>'.$status.'</td>
+        <td>'.$date.'</td>
+        </tr>'."\n";
 }
 if ($hasresults == 0)
-    echo('<tr><td colspan="5" class="no-summaries">No summaries found</td></tr>');
+    echo('<tr><td colspan="5" class="no-records">No records found</td></tr>');
 ?>
 </tbody>
 </table>

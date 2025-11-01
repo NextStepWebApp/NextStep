@@ -164,7 +164,7 @@ tr.selected td {
     background-color: rgba(11, 29, 89, 0.05);
 }
 
-.no-summaries {
+.no-records {
     text-align: center;
     padding: 40px;
     color: #6b7280;
