@@ -34,19 +34,12 @@ if (!$results) {
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_index1.css"/>
+<link rel="stylesheet" href="css/style_index.css"/>
+<link rel="stylesheet" href="css/style_navbar.css"/>
 <title>NextStep</title>
 </head>
 <body>
-<nav class="navbar">
-<h1 class="brand-name">NextStep</h1>
-<div class="nav-buttons">
-<a href="settings.php" class="nav-btn">Settings</a>
-<a href="map.php" class="nav-btn">Map</a>
-<a href="logout.php" class="nav-btn">Log out</a>
-</div>
-</nav>
-
+<?php include 'navbar.php'; ?>
 <main>
 <section class="action-buttons">
 <button type="button" class="action-btn" id="searchBtn" aria-label="Search and filter records">
