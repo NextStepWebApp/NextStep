@@ -1,0 +1,48 @@
+{
+  "accessibility": [
+    "Ja",
+    "Nee"
+  ],
+  "city": [
+    "Amsterdam",
+    "Den Haag",
+    "Delft",
+    "Twente",
+    "Eindhoven",
+    "andere"
+  ],
+  "class": [
+    "V6A",
+    "V6B",
+    "V6C"
+  ],
+  "country": [
+    "Nederland",
+    "Verenigde Staten",
+    "Duitsland",
+    "Engeland",
+    "Frankrijk",
+    "andere"
+  ],
+  "education": [
+    "Economie & Business",
+    "Rechten",
+    "Gezondheidszorg & Geneeskunde",
+    "Talen & Cultuur",
+    "Bèta & Techniek",
+    "andere"
+  ],
+  "school": [
+    "Delft University of Technology",
+    "Erasmus University Rotterdam",
+    "Leiden University",
+    "Eindhoven University of Technology",
+    "Vrije University Amsterdam",
+    "andere"
+  ],
+  "status": [
+    "Afgestudeert vwo/havo",
+    "bezig met bachelors",
+    "bezig met masters"
+  ]
+}
