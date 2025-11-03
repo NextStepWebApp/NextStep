@@ -1,0 +1,189 @@
+<?php
+require_once "utils.php";
+session_start();
+loginSecurity();
+if ($_SESSION["teacher_username"] != "ADMIN") {
+    header("Location: index.php");
+    exit();
+}
+
+$db = new SQLite3($db_file);
+
+// This loads the config json file
+$config = json_decode(file_get_contents('config/config.json'), true);
+
+$accessibility = $config['accessibility'];
+$city = $config['city'];
+$class = $config['class'];
+$country = $config['country'];
+$education = $config['education'];
+$schools = $config['school'];
+$status = $config['status'];
+
+
+if (isset($_POST["submit"])) {
+
+    // Check if all fields are filled
+    if (empty($_POST["student_name"]) || empty($_POST["student_email"]) ||
+          empty($_POST["student_phone"]) || empty($_POST["class_name"]) ||
+          empty($_POST["country_name"]) || empty($_POST["city_name"]) ||
+          empty($_POST["school_name"]) || empty($_POST["program_name"]) ||
+          empty($_POST["status"]) || empty($_POST["accessibility"])) {
+
+        $_SESSION['error'] = "All fields are required";
+        header("Location: students.php");
+        exit();
+    }
+
+    // Validate all dropdown values against config
+    if (!in_array($_POST["class_name"], $class) ||
+        !in_array($_POST["country_name"], $country) ||
+        !in_array($_POST["city_name"], $city) ||
+        !in_array($_POST["school_name"], $schools) ||
+        !in_array($_POST["program_name"], $education) ||
+        !in_array($_POST["status"], $status) ||
+        !in_array($_POST["accessibility"], $accessibility)) {
+        $_SESSION['error'] = "Invalid selection detected";
+        error_log("Config validation error - invalid dropdown value submitted");
+        header("Location: students.php");
+        exit();
+    }
+
+    $query = "
+        INSERT INTO STUDENTS (
+            students_name,
+            students_email,
+            students_phone_number,
+            students_class_id,
+            students_country_id,
+            students_city_id,
+            students_school_id,
+            students_education_program_id,
+            students_status_id,
+            students_accessibility_id,
+            students_created_date,
+            students_last_updated
+        ) VALUES (
+            :name,
+            :email,
+            :phone,
+            :class_id,
+            :country_id,
+            :city_id,
+            :school_id,
+            :program_id,
+            :status_id,
+            :accessibility_id,
+            strftime('%Y', 'now'),
+            datetime('now')
+        )
+    ";
+
+
+    $stmt = $db
+
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" type="image/x-icon" href="images/logo.webp"/>
+<link rel="stylesheet" href="css/style_navbar.css"/>
+<link rel="stylesheet" href="css/style_page.css"/>
+<title>NextStep - Create Student</title>
+</head>
+<body>
+<?php include 'navbar.php'; ?>
+<div class="page-box-wide">
+<h2>Create Student</h2>
+<?php flashMessages(); ?>
+
+<form method="POST" action="create_student.php">
+    <input type="hidden" name="student_id"/>
+
+    <label for="student_name">Name:</label>
+    <input type="text" id="student_name" name="student_name"/>
+
+    <label for="student_email">Email:</label>
+    <input type="email" id="student_email" name="student_email"/>
+
+    <label for="student_phone">Phone number:</label>
+    <input type="tel" id="student_phone" name="student_phone"/>
+
+    <label for="class_name">Class name:</label>
+    <select id="class_name" name="class_name">
+        <option value="">Select Class</option>
+        <?php foreach ($class as $c): ?>
+            <option value="<?= htmlspecialchars($c) ?>">
+                <?= htmlspecialchars($c) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="country_name">Country:</label>
+    <select id="country_name" name="country_name">
+        <option value="">Select Country</option>
+        <?php foreach ($country as $cnt): ?>
+            <option value="<?= htmlspecialchars($cnt) ?>">
+                <?= htmlspecialchars($cnt) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="city_name">City:</label>
+    <select id="city_name" name="city_name">
+        <option value="">Select City</option>
+        <?php foreach ($city as $cty): ?>
+            <option value="<?= htmlspecialchars($cty) ?>">
+                <?= htmlspecialchars($cty) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="school_name">School:</label>
+    <select id="school_name" name="school_name">
+        <option value="">Select School</option>
+        <?php foreach ($schools as $school): ?>
+            <option value="<?= htmlspecialchars($school) ?>">
+                <?= htmlspecialchars($school) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="program_name">Program:</label>
+    <select id="program_name" name="program_name">
+        <option value="">Select Program</option>
+        <?php foreach ($education as $edu): ?>
+            <option value="<?= htmlspecialchars($edu) ?>">
+                <?= htmlspecialchars($edu) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="status">Status:</label>
+    <select id="status" name="status">
+        <option value="">Select Status</option>
+        <?php foreach ($status as $stat): ?>
+            <option value="<?= htmlspecialchars($stat) ?>">
+                <?= htmlspecialchars($stat) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="accessibility">Accessibility:</label>
+    <select id="accessibility" name="accessibility">
+        <option value="">Select</option>
+        <?php foreach ($accessibility as $acc): ?>
+            <option value="<?= htmlspecialchars($acc) ?>">
+                <?= htmlspecialchars($acc) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <input type="submit" class="nav-btn" name="submit" value="Save">
+</form></div>
+</body>
+</html>
