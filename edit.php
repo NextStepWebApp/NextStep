@@ -92,7 +92,7 @@ $last_update           = htmlspecialchars($row['students_last_updated']);
 </head>
 <body>
 <?php include 'navbar.php'; ?>
-<div class="page-box">
+<div class="page-box-wide">
 <h2>Student information</h2>
 <?php flashMessages(); ?>
 
