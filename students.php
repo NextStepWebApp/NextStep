@@ -1,3 +1,10 @@
+<?php
+require_once "utils.php";
+session_start();
+loginSecurity();
+super_user_privilages($_SESSION["teacher_username"]);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +20,7 @@
 <?php include 'navbar.php'; ?>
 
 <div class="page-box">
-
+<?php flashMessages(); ?>
 <a href="create_student.php" class="nav-btn">Create Student</a>
 <a href="import.php" class="nav-btn">Import Data</a>
 <a href="import.php" class="nav-btn">Export Data</a>

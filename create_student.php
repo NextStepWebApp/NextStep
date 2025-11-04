@@ -2,10 +2,7 @@
 require_once "utils.php";
 session_start();
 loginSecurity();
-if ($_SESSION["teacher_username"] != "ADMIN") {
-    header("Location: index.php");
-    exit();
-}
+super_user_privilages($_SESSION["teacher_username"]);
 
 $db = new SQLite3($db_file);
 
@@ -49,6 +46,20 @@ if (isset($_POST["submit"])) {
         exit();
     }
 
+    # Here are the queries to get the foriegn keys
+
+    # This is a function from utils.php
+    # This funtion is to get foriegn key from the tables
+    # Make sure to us :table_name in the select query!!!!!!!!!!
+    $result_class_id = get_foreign_key($db, "SELECT class_id FROM CLASS WHERE class_name = :table_name", $_POST["class_name"]);
+    $result_country_id = get_foreign_key($db, "SELECT country_id FROM COUNTRY WHERE country_name = :table_name", $_POST["country_name"]);
+    $result_city_id = get_foreign_key($db, "SELECT city_id FROM CITY WHERE city_name = :table_name", $_POST["city_name"]);
+    $result_school_id = get_foreign_key($db, "SELECT school_id FROM SCHOOL WHERE school_name = :table_name", $_POST["school_name"]);
+    $result_program_id = get_foreign_key($db, "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = :table_name", $_POST["program_name"]);
+    $result_status_id = get_foreign_key($db, "SELECT status_id FROM STATUS WHERE status_name = :table_name", $_POST["status"]);
+    $result_accessibility_id = get_foreign_key($db, "SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = :table_name", $_POST["accessibility"]);
+
+
     $query = "
         INSERT INTO STUDENTS (
             students_name,
@@ -79,9 +90,30 @@ if (isset($_POST["submit"])) {
         )
     ";
 
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
+        errorMessages("Error preparing query", $db->lastErrorMsg());
+    }
 
-    $stmt = $db
+    $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
+    $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
+    $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
+    $stmt->bindValue(":class_id", $result_class_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":country_id", $result_country_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":city_id", $result_city_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":school_id", $result_school_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":program_id", $result_program_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":status_id", $result_status_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":accessibility_id",  $result_accessibility_id, SQLITE3_INTEGER);
 
+    $result = $stmt->execute();
+    if (!$result) {
+        errorMessages("Error executing query", $db->lastErrorMsg());
+    }
+    $success = "Student created successfully";
+       $_SESSION['success'] = $success;
+       header("Location: students.php");
+       exit();
 }
 ?>
 <!DOCTYPE html>

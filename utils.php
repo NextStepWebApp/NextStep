@@ -99,3 +99,28 @@ function full_students_database_query($db_file) {
 
     return $row;
 }
+
+function get_foreign_key(SQLite3 $db, string $provided_query, string $table_name) {
+    $query = $provided_query;
+    $query = "SELECT class_id FROM CLASS WHERE class_name = :class_name";
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
+        errorMessages("Error preparing query", $db->lastErrorMsg());
+    }
+    $stmt->bindValue(":table_name", $table_name, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    if (!$result) {
+        errorMessages("Error executing query", $db->lastErrorMsg());
+    }
+    $row = $result->fetchArray();
+    $foreign_key = $row[0];
+    return $foreign_key;
+}
+
+
+function super_user_privilages(string $super_teacher) {
+    if ($super_teacher != "ADMIN") {
+        header("Location: index.php");
+        exit();
+    }
+}
