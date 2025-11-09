@@ -32,6 +32,56 @@ if (isset($_POST["submit"])) {
         exit();
     }
     
+    # This section will be validations of name, email and phone
+    
+    # Validate student name
+    $student_name = trim($_POST["student_name"]);
+    if (strlen($student_name) < 2) {
+        $_SESSION['error'] = "Name must be at least 2 characters long";
+        header("Location: create_student.php");
+        exit();
+    }
+    
+    if (strlen($student_name) > 50) {
+        $_SESSION['error'] = "Name must not exceed 50 characters";
+        header("Location: create_student.php");
+        exit();
+    }
+    
+    if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $student_name)) {
+        $_SESSION['error'] = "Name contains invalid characters";
+        header("Location: create_student.php");
+        exit();
+    }
+    
+    # Validate email
+    $student_email = trim($_POST["student_email"]);
+    if (!filter_var($student_email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error'] = "Invalid email format";
+        header("Location: create_student.php");
+        exit();
+    }
+    
+    if (strlen($student_email) > 50) {
+        $_SESSION['error'] = "Email must not exceed 50 characters";
+        header("Location: create_student.php");
+        exit();
+    }
+    
+    # Validate phone number
+    $student_phone = trim($_POST["student_phone"]);
+    # Remove common formatting characters
+    $clean_phone = preg_replace('/[\s\-\(\)\+]/', '', $student_phone);
+    
+    if (!preg_match("/^[0-9]{10,15}$/", $clean_phone)) {
+        $_SESSION['error'] = "Phone number must be between 10-15 digits";
+        header("Location: create_student.php");
+        exit();
+    }
+    
+    # Store cleaned phone number for database insertion
+    $_POST["student_phone"] = $clean_phone;
+    
     # Check to see if the student already exists
       $query = "SELECT students_id FROM STUDENTS WHERE 
           students_email = :email OR 

@@ -190,7 +190,8 @@ for person in data_list:
         """INSERT OR REPLACE INTO STUDENTS (students_name, students_email, students_phone_number, students_class_id,
         students_country_id, students_city_id, students_school_id, students_education_program_id, students_status_id,
         students_accessibility_id, students_created_date, students_last_updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y', 'now'), date('now'))""",
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  CAST(strftime('%Y', 'now') AS INTEGER), CAST(strftime('%s', 'now') AS INTEGER))""",
+                       
         (
             person[1],
             person[2],
