@@ -1,11 +1,13 @@
 <?php
-# This peace of code is licenced by the MIT license
-# name: Melchizedek Shah
 # This piece the code is responsible to create the database for the nextstep application
 
 require_once "utils.php";
 
-$db_file = "nextstep_data.db"; # name of db
+# get acces to the config file 
+$config = json_decode(file_get_contents($nextstep_config), true);
+
+$db_file = $config["database_file_path"]; 
+
 # Temporary!!
 if (file_exists($db_file)) {
     unlink($db_file);
@@ -39,7 +41,8 @@ EOF;
 tableCreate($query, $db, "TEACHERS");
 
 # genPassword is a funtion in utils.php
-$password = genPassword(8);
+$unsafe_password = genPassword(8);
+$password = password_hash($unsafe_password, PASSWORD_DEFAULT);
 
 # query to insert the admin theacher to the db and a generated password
 $query =
@@ -61,11 +64,11 @@ if (!$result) {
 } else {
     echo "ADMIN created and inserted successfully\n";
 
-    # Location where to save the generated password (need to change)
-    $location = "/home/william/Downloads";
+    # Get the location for where to save the generated password
+    $location = $config["password_save_path"];
 
     # savefile is a funtion in utils.php
-    savefile($location, "ADMIN-password.txt", $password);
+    savefile($location, "ADMIN-password.txt", $unsafe_password);
 }
 
 #########################################
