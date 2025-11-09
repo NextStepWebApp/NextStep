@@ -1,7 +1,14 @@
 <?php
+# This is the utils page for all the normal super_user_privilages
+# The setup seciton does not include in this utils
 
-# This is temporary location
-$db_file = "setup/nextstep_data.db";
+# This is the only place that is allowed to have a specific path besides the config
+$nextstep_config = "config/nextstep_config.json";
+
+# This is location to the database
+$config = json_decode(file_get_contents($nextstep_config), true);
+
+$db_file = $config["database_file_path"]; 
 
 function loginSecurity()
 {
