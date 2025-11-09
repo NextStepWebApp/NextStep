@@ -30,8 +30,8 @@ function flashMessages()
 
 function errorMessages(string $message, string $details)
 {
-    error_log($message . ": " . $details);
-    $_SESSION["error"] = "$message";
+    error_log("$message: $details");
+    $_SESSION["error"] = $message;
     header("Location: failure.php");
     exit();
 }
@@ -100,21 +100,48 @@ function full_students_database_query($db_file) {
     return $row;
 }
 
-function get_foreign_key(SQLite3 $db, string $provided_query, string $table_name) {
-    $query = $provided_query;
-    $query = "SELECT class_id FROM CLASS WHERE class_name = :class_name";
-    $stmt = $db->prepare($query);
+function get_or_create_foreign_key($db, $table, $id_column, $name_column, $value) {
+    // First, try to get existing foreign key
+    $select_query = "SELECT $id_column FROM $table WHERE $name_column = :value";
+    $stmt = $db->prepare($select_query);
+    
     if (!$stmt) {
-        errorMessages("Error preparing query", $db->lastErrorMsg());
+        errorMessages("Error preparing select query in utils", $db->lastErrorMsg());
     }
-    $stmt->bindValue(":table_name", $table_name, SQLITE3_TEXT);
+    
+    $stmt->bindValue(":value", $value, SQLITE3_TEXT);
+   
+    error_log("Attempting to insert into $table: '$value'"); 
+    
     $result = $stmt->execute();
+    
     if (!$result) {
-        errorMessages("Error executing query", $db->lastErrorMsg());
+        errorMessages("Error executing select query in utils", $db->lastErrorMsg());
     }
+    
     $row = $result->fetchArray();
-    $foreign_key = $row[0];
-    return $foreign_key;
+    
+    // If found, return the ID
+    if ($row !== false) {
+        return $row[0];
+    }
+    
+    // If not found, create it
+    $insert_query = "INSERT INTO $table ($name_column) VALUES (:value)";
+    $stmt = $db->prepare($insert_query);
+    
+    if (!$stmt) {
+        errorMessages("Error preparing insert query in utils", $db->lastErrorMsg());
+    }
+    
+    $stmt->bindValue(":value", $value, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    
+    if (!$result) {
+        errorMessages("Error creating new record in utils", $db->lastErrorMsg());
+    }
+    
+    return $db->lastInsertRowID();
 }
 
 

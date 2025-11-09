@@ -1,19 +1,19 @@
 {
   "accessibility": [
-    "Ja",
+    "Ja", 
     "Nee"
   ],
   "city": [
-    "Amsterdam",
-    "Den Haag",
-    "Delft",
-    "Twente",
-    "Eindhoven",
+    "Amsterdam", 
+    "Den Haag", 
+    "Delft", 
+    "Twente", 
+    "Eindhoven", 
     "andere"
   ],
   "class": [
-    "V6A",
-    "V6B",
+    "V6A", 
+    "V6B", 
     "V6C"
   ],
   "country": [
@@ -22,7 +22,7 @@
     "Duitsland",
     "Engeland",
     "Frankrijk",
-    "andere"
+    "andere0f6m2t7g"
   ],
   "education": [
     "Economie & Business",

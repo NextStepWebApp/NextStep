@@ -24,6 +24,7 @@ $status                = htmlspecialchars($row['status_name']);
 $accessibility         = htmlspecialchars($row['accessibility_name']);
 $created_date          = htmlspecialchars($row['students_created_date']);
 $last_update           = htmlspecialchars($row['students_last_updated']);
+$readable_date = date('Y-m-d H:i:s', $last_update);
 
 ?>
 <!DOCTYPE html>
@@ -53,10 +54,10 @@ $last_update           = htmlspecialchars($row['students_last_updated']);
 <p>Status: <strong><?=$status?></strong></p>
 <p>Accessibility: <strong><?=$accessibility?></strong></p>
 <p>Date created: <strong><?=$created_date?></strong></p>
-<p>Date last update: <strong><?=$last_update?></strong></p>
+<p>Date last update: <strong><?=$readable_date?></strong></p>
 <?php
 if ($_SESSION["teacher_username"] == "ADMIN") {
-    echo '<a href=edit.php?student_id='.$student_id.' class="nav-btn">Edit</a>
+    echo '<a href="edit.php?student_id=' . $student_id . '" class="nav-btn">Edit</a>
         <a href="delete.php" class="nav-btn">Delete</a>';
 }
 ?>

@@ -28,9 +28,37 @@ if (isset($_POST["submit"])) {
           empty($_POST["status"]) || empty($_POST["accessibility"])) {
 
         $_SESSION['error'] = "All fields are required";
-        header("Location: students.php");
+        header("Location: create_student.php");
         exit();
     }
+    
+    # Check to see if the student already exists
+      $query = "SELECT students_id FROM STUDENTS WHERE 
+          students_email = :email OR 
+          students_name = :name OR 
+          students_phone_number = :phone";
+      $stmt = $db->prepare($query);
+      
+      if (!$stmt) {
+          errorMessages("Error preparing insert query check", $db->lastErrorMsg());
+      }
+      
+      $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
+      $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
+      $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
+      $result = $stmt->execute();
+      
+      if (!$result) {
+             errorMessages("Error creating new record in check", $db->lastErrorMsg());
+      }
+         
+      $existing = $result->fetchArray();
+      
+      if ($existing) {
+          $_SESSION['error'] = "A student with this name, email, or phone number already exists";
+          header("Location: create_student.php");
+          exit();
+      }
 
     // Validate all dropdown values against config
     if (!in_array($_POST["class_name"], $class) ||
@@ -45,20 +73,17 @@ if (isset($_POST["submit"])) {
         header("Location: students.php");
         exit();
     }
-
-    # Here are the queries to get the foriegn keys
+     # Here are the queries to get the foriegn keys
 
     # This is a function from utils.php
     # This funtion is to get foriegn key from the tables
-    # Make sure to us :table_name in the select query!!!!!!!!!!
-    $result_class_id = get_foreign_key($db, "SELECT class_id FROM CLASS WHERE class_name = :table_name", $_POST["class_name"]);
-    $result_country_id = get_foreign_key($db, "SELECT country_id FROM COUNTRY WHERE country_name = :table_name", $_POST["country_name"]);
-    $result_city_id = get_foreign_key($db, "SELECT city_id FROM CITY WHERE city_name = :table_name", $_POST["city_name"]);
-    $result_school_id = get_foreign_key($db, "SELECT school_id FROM SCHOOL WHERE school_name = :table_name", $_POST["school_name"]);
-    $result_program_id = get_foreign_key($db, "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = :table_name", $_POST["program_name"]);
-    $result_status_id = get_foreign_key($db, "SELECT status_id FROM STATUS WHERE status_name = :table_name", $_POST["status"]);
-    $result_accessibility_id = get_foreign_key($db, "SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = :table_name", $_POST["accessibility"]);
-
+    $result_class_id = get_or_create_foreign_key($db, "CLASS", "class_id", "class_name", $_POST["class_name"]);
+    $result_country_id = get_or_create_foreign_key($db, "COUNTRY", "country_id", "country_name", $_POST["country_name"]);
+    $result_city_id = get_or_create_foreign_key($db, "CITY", "city_id", "city_name", $_POST["city_name"]);
+    $result_school_id = get_or_create_foreign_key($db, "SCHOOL", "school_id", "school_name", $_POST["school_name"]);
+    $result_program_id = get_or_create_foreign_key($db, "EDUCATION_PROGRAM", "program_id", "program_name", $_POST["program_name"]);
+    $result_status_id = get_or_create_foreign_key($db, "STATUS", "status_id", "status_name", $_POST["status"]);
+    $result_accessibility_id = get_or_create_foreign_key($db, "ACCESSIBILITY", "accessibility_id", "accessibility_name", $_POST["accessibility"]);
 
     $query = "
         INSERT INTO STUDENTS (
@@ -85,14 +110,14 @@ if (isset($_POST["submit"])) {
             :program_id,
             :status_id,
             :accessibility_id,
-            strftime('%Y', 'now'),
-            datetime('now')
+            CAST(strftime('%Y', 'now') AS INTEGER),
+            CAST(strftime('%s', 'now') AS INTEGER)
         )
     ";
 
     $stmt = $db->prepare($query);
     if (!$stmt) {
-        errorMessages("Error preparing query", $db->lastErrorMsg());
+        errorMessages("Error preparing query in main", $db->lastErrorMsg());
     }
 
     $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
@@ -108,7 +133,7 @@ if (isset($_POST["submit"])) {
 
     $result = $stmt->execute();
     if (!$result) {
-        errorMessages("Error executing query", $db->lastErrorMsg());
+        errorMessages("Error executing query in main", $db->lastErrorMsg());
     }
     $success = "Student created successfully";
        $_SESSION['success'] = $success;
@@ -134,8 +159,6 @@ if (isset($_POST["submit"])) {
 <?php flashMessages(); ?>
 
 <form method="POST" action="create_student.php">
-    <input type="hidden" name="student_id"/>
-
     <label for="student_name">Name:</label>
     <input type="text" id="student_name" name="student_name"/>
 
