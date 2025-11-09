@@ -6,62 +6,68 @@ try {
     $db = new SQLite3($db_file);
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
+    header("Location: login.php");
+    exit();
 }
 
 if (isset($_POST["username"]) && isset($_POST["password"])) {
-    session_unset();
-    if (strlen($_POST["username"]) < 1 || strlen($_POST["password"]) < 1) {
-        $_SESSION["error"] = "Username and password are required"; 
+    $username = trim($_POST["username"] ?? "");
+    $password = trim($_POST["password"] ?? "");
+
+    if ($username === "" || $password === "") {
+        $_SESSION["error"] = "Username and password are required";
         header("Location: login.php");
         exit();
-    } else {
-        $query =
-            "SELECT teacher_password FROM TEACHERS WHERE teacher_username = :username";
-        $stmt = $db->prepare($query);
-        $stmt->bindValue(":username", $_POST["username"], SQLITE3_TEXT);
-        $result = $stmt->execute();
-        $row = $result->fetchArray();
+    }
 
-        if ($row) {
-            $password = $_POST["password"];
-            $hash = $row["teacher_password"];
-            if (password_verify($password, $hash)) {
-                # Check if either the algorithm or the options have changed
-                if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
-                    # If so, create a new hash, and replace the old one
-                    $newHash = password_hash($password, PASSWORD_DEFAULT);
-                    # update the passord in database
-                    $query = "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_email = :email";
-                    $stmt = $db->prepare($query);
-                    if (!$stmt) {
-                        errorMessages("Error preparing query in login", $db->lastErrorMsg());
-                    }
-                    $stmt->bindValue(":password", $newHash, SQLITE3_TEXT);
-                    $stmt->bindValue(":email", $row["teacher_email"], SQLITE3_TEXT);
-                    
-                    $results = $stmt->execute();
-                    if (!$results) {
-                        errorMessages("Error executing query in login", $db->lastErrorMsg());
-                    }
-                }    
-                #session_regenerate_id(true); // Prevent session fixation
-                $_SESSION["teacher_username"] = $row["teacher_username"];
-                $db->close();
-                header("Location: index.php");
-                exit();
-            } else {
-                $_SESSION["error"] = "Invalid password";
-                $_SESSION["old_username"] = $_POST["username"];
-                $db->close();
-                header("Location: login.php");
-                exit();
+    # Get all the info you need from the user
+    $query = "SELECT teacher_email, teacher_name, teacher_username, teacher_password 
+              FROM TEACHERS 
+              WHERE teacher_username = :username";
+
+    $stmt = $db->prepare($query);
+    $stmt->bindValue(":username", $username, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+
+    if ($row) {
+        $hash = $row["teacher_password"];
+
+        if (password_verify($password, $hash)) {
+            # Rehash if needed
+            if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+                $newHash = password_hash($password, PASSWORD_DEFAULT);
+                $update = $db->prepare(
+                    "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_email = :email"
+                );
+                $update->bindValue(":password", $newHash, SQLITE3_TEXT);
+                $update->bindValue(":email", $row["teacher_email"], SQLITE3_TEXT);
+                $update->execute();
             }
-        } else {
-            errorMessages("No user found with that username", $db->lastErrorMsg());
-            header("Location: login.php");
+
+            session_regenerate_id(true);
+            $_SESSION["teacher_email"] = $row["teacher_email"];
+            $_SESSION["teacher_name"] = $row["teacher_name"];
+            $_SESSION["teacher_username"] = $row["teacher_username"];
+
             $db->close();
+            header("Location: index.php");
+            exit();
+        } else {
+            # Wrong password
+            $_SESSION["error"] = "Invalid password";
+            $_SESSION["old_username"] = $username;
+            $db->close();
+            header("Location: login.php");
             exit();
         }
+    } else {
+        # No user found
+        $_SESSION["error"] = "No user found with that username";
+        $_SESSION["old_username"] = $username;
+        $db->close();
+        header("Location: login.php");
+        exit();
     }
 }
 
@@ -84,18 +90,19 @@ $db->close();
 
             <?php
             flashMessages();
-            $old_username = "";
-            if (isset($_SESSION["old_username"])) {
-                $old_username = $_SESSION["old_username"];
-                unset($_SESSION["old_username"]);
-            }
+
+            $old_username = $_SESSION["old_username"] ?? "";
+            unset($_SESSION["old_username"]);
             ?>
 
             <form method="POST">
                 <div class="input-group">
-                    <input type="text" name="username" placeholder="Username" value="<?php echo htmlentities(
-                        $old_username,
-                    ); ?>" />
+                    <input 
+                        type="text" 
+                        name="username" 
+                        placeholder="Username" 
+                        value="<?php echo htmlentities($old_username); ?>" 
+                    />
                 </div>
 
                 <div class="input-group">
@@ -105,9 +112,7 @@ $db->close();
                         placeholder="Password"
                         id="password"
                     />
-                    <span class="toggle-password" onclick="togglePassword()"
-                        >Show</span
-                    >
+                    <span class="toggle-password" onclick="togglePassword()">Show</span>
                 </div>
 
                 <button type="submit" class="login-btn">Login</button>
