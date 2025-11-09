@@ -76,7 +76,7 @@ if (isset($_POST["submit"])) {
     # Check to see if the teacher already exists
     $query = "SELECT teacher_id FROM TEACHERS WHERE 
           teacher_email = :email OR 
-          teacher_username = :username";
+          teacher_username = :username OR teacher_name = :name";
     $stmt = $db->prepare($query);
     
     if (!$stmt) {
@@ -85,6 +85,7 @@ if (isset($_POST["submit"])) {
     
     $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
+    $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
     $result = $stmt->execute();
     
     if (!$result) {
