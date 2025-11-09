@@ -1,6 +1,9 @@
 <?php
 # This is the utils file for the setup part
 
+# This is the only place that is allowed to have a specific path besides the config
+$nextstep_config = "/home/william/Documents/programming/PWS/NextStep/config/nextstep_config.json";
+
 # function that generates a password with alternating characters and numbers
 function genPassword(int $length)
 {
