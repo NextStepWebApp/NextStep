@@ -38,5 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
     If it doesn’t, <a href="download.php">click here to download manually</a>.</p>
     <a href="teachers.php" class="nav-btn">View Teachers</a>
     </div>
+    <script src="js/script.js"></script>
 </body>
 </html>

@@ -9,6 +9,7 @@
 <title>NextStep - Failure</title>
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
+<?php include 'navbar.php'; ?>
+<script src="js/script.js"></script>
 </body>
 </html>

@@ -290,5 +290,6 @@ if (isset($_POST["submit"])) {
 
     <input type="submit" class="nav-btn" name="submit" value="Save">
 </form></div>
+<script src="js/script.js"></script>
 </body>
 </html>

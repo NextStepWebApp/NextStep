@@ -45,13 +45,13 @@ function errorMessages(string $message, string $details)
 
 
 # Funtion that checks if the student_id is valid ( used in view, edit and delete)
-function check_id() {
-    if (!isset($_GET['student_id'])) {
+function check_id(string $id) {
+    if (!isset($id)) {
         $_SESSION['error'] = "Missing student_id";
         header("Location: index.php");
         exit();
     }
-    if (!is_numeric($_GET['student_id'])) {
+    if (!is_numeric($id)) {
         $_SESSION['error'] = "Invalid value for student_id";
         header("Location: index.php");
         exit();

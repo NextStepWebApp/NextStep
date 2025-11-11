@@ -125,5 +125,6 @@ $last_update           = htmlspecialchars($row['students_last_updated']);
 <input type="submit" class="nav-btn" name="submit" value="Save">
 </form>
 </div>
+<script src="js/script.js"></script>
 </body>
 </html>

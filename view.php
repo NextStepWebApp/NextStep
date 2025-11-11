@@ -2,7 +2,7 @@
 require_once "utils.php";
 session_start();
 loginSecurity();
-check_id();
+check_id($_GET["student_id"]);
 
 $row = full_students_database_query($db_file);
 
@@ -62,5 +62,6 @@ if ($_SESSION["teacher_username"] == "ADMIN") {
 }
 ?>
 </div>
+<script src="js/script.js"></script>
 </body>
 </html>

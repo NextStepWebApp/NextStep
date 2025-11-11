@@ -76,7 +76,7 @@ if (isset($_POST["submit"])) {
     # Check to see if the teacher already exists
     $query = "SELECT teacher_id FROM TEACHERS WHERE 
           teacher_email = :email OR 
-          teacher_username = :username OR teacher_name = :name";
+          teacher_username = :username";
     $stmt = $db->prepare($query);
     
     if (!$stmt) {
@@ -85,7 +85,6 @@ if (isset($_POST["submit"])) {
     
     $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
-    $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
     $result = $stmt->execute();
     
     if (!$result) {
@@ -174,8 +173,14 @@ if (isset($_POST["submit"])) {
     <input type="email" id="teacher_email" name="teacher_email"/>
     <label for="teacher_username">Username:</label>
     <input type="text" id="teacher_username" name="teacher_username"/>
-    <input type="submit" class="nav-btn" name="submit" value="Create Teacher">
+    <div style="display: flex; gap: 10px;">
+        <input type="submit" class="nav-btn" name="submit" value="Create Teacher">
+        <a href="teachers.php" class="nav-btn" 
+           style="display: inline-block; text-align: center; text-decoration: none; 
+                  padding: 10px 20px;">Cancel</a>
+    </div>
 </form>
 </div>
+<script src="js/script.js"></script>
 </body>
 </html>

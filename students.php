@@ -27,5 +27,6 @@ super_user_privilages($_SESSION["teacher_username"]);
 
 
 </div>
+<script src="js/script.js"></script>
 </body>
 </html>

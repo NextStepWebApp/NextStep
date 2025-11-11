@@ -77,37 +77,6 @@ if (!$results) {
 </table>
 </div>
 </section>
-
-<script>
-// Select all open and close buttons
-document.querySelectorAll("[data-open-modal]").forEach(button => {
-  button.addEventListener("click", () => {
-    const dialog = button.nextElementSibling; 
-    dialog.showModal();
-  });
-});
-
-document.querySelectorAll("[data-close-modal]").forEach(button => {
-  button.addEventListener("click", () => {
-    const dialog = button.closest("dialog");
-    dialog.close();
-  });
-});
-
-// close when clicking outside dialog
-document.querySelectorAll("[data-modal]").forEach(dialog => {
-  dialog.addEventListener("click", e => {
-    const rect = dialog.getBoundingClientRect();
-    if (
-      e.clientX < rect.left ||
-      e.clientX > rect.right ||
-      e.clientY < rect.top ||
-      e.clientY > rect.bottom
-    ) {
-      dialog.close();
-    }
-  });
-});
-</script>
+<script src="js/script.js"></script>
 </body>
 </html>
