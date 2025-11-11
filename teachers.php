@@ -33,7 +33,7 @@ if (!$results) {
 <section class="table-section"> 
 <?php flashMessages();?>
 <div class="teacher-button">
-<a href="create_teacher.php" class="nav-btn">Create teacher</a>
+<a href="create_teacher.php" class="simple-btn">Create teacher</a>
 </div>
 <div class="table-container">
 <table>
@@ -46,35 +46,68 @@ if (!$results) {
 </tr>
 </thead>
 <tbody id="tableBody">
-<?php
-while ($row = $results->fetchArray()) {
-    $name = htmlspecialchars($row["teacher_name"]);
-    $username = htmlspecialchars($row["teacher_username"]);
-    $email = htmlspecialchars($row["teacher_email"]);
-    $id = $row["teacher_id"];
-    
-    echo '<tr>
-            <td>' . $name . '</td>
-            <td>' . $username . '</td>
-            <td>' . $email . '</td>
+    <?php
+    while ($row = $results->fetchArray()) {
+        $name = htmlspecialchars($row["teacher_name"]);
+        $username = htmlspecialchars($row["teacher_username"]);
+        $email = htmlspecialchars($row["teacher_email"]);
+        $id = $row["teacher_id"];
+    ?>
+        <tr>
+            <td><?= $name ?></td>
+            <td><?= $username ?></td>
+            <td><?= $email ?></td>
             <td>
-                <a href="edit_teacher.php?teacher_id=' . $id . '" class="nav-btn">Edit</a>';
-                
-    if ($username != "ADMIN") {
-        echo '<a href="delete.php?teacher_id=' . $id . '" class="nav-btn">Delete</a>';
-    }
-    if(isset($_SESSION["new_teacher_credentials"])) {
-        echo '<a href="teacher_download.php" class="nav-btn">Download</a>';
-    }
-    
-    echo '    </td>
-        </tr>';
-}
-$db->close();
-?>
+              <button class="simple-btn" data-open-modal>Actions</button>
+              <dialog data-modal>
+                  <h2>Teacher Actions</h2>
+                    <a href="edit_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Edit</a>
+                    <?php if ($username != "ADMIN"): ?>
+                      <a href="delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Delete</a>
+                    <?php endif; ?>
+                    <button class="simple-btn" data-close-modal>Close</button>
+              </dialog>
+            </td>
+        </tr>
+    <?php
+    } 
+    $db->close();
+    ?>
 </tbody>
 </table>
 </div>
 </section>
+
+<script>
+// Select all open and close buttons
+document.querySelectorAll("[data-open-modal]").forEach(button => {
+  button.addEventListener("click", () => {
+    const dialog = button.nextElementSibling; 
+    dialog.showModal();
+  });
+});
+
+document.querySelectorAll("[data-close-modal]").forEach(button => {
+  button.addEventListener("click", () => {
+    const dialog = button.closest("dialog");
+    dialog.close();
+  });
+});
+
+// close when clicking outside dialog
+document.querySelectorAll("[data-modal]").forEach(dialog => {
+  dialog.addEventListener("click", e => {
+    const rect = dialog.getBoundingClientRect();
+    if (
+      e.clientX < rect.left ||
+      e.clientX > rect.right ||
+      e.clientY < rect.top ||
+      e.clientY > rect.bottom
+    ) {
+      dialog.close();
+    }
+  });
+});
+</script>
 </body>
 </html>
