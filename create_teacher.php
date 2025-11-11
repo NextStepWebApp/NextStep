@@ -134,8 +134,6 @@ if (isset($_POST["submit"])) {
         errorMessages("Error executing insert query", $db->lastErrorMsg());
     }
     
-    # This section dowloads the information in a text file
-  
     # Create credentials file content
     $credentials_content = "NextStep Teacher Account Credentials\n";
     $credentials_content .= "=====================================\n\n";
@@ -145,15 +143,11 @@ if (isset($_POST["submit"])) {
     $credentials_content .= "Password: " . $unsafe_password . "\n\n";
     $credentials_content .= "Created: " . date('Y-m-d H:i:s') . "\n\n";
     
-    # Set filename
-    $filename = $teacher_username . "_credentials.txt";
-    $_SESSION['new_teacher_credentials'] = $credentials_content;
-    $_SESSION['new_teacher_filename']    = $teacher_username . "_credentials.txt";
+    $_SESSION["new_teacher_credentials"] = $credentials_content;
+    $_SESSION["new_teacher_filename"]    = $teacher_username . "_credentials.txt";
     
-    $success = "Teacher created successfully";
-    $_SESSION['success'] = $success;
-    header("Location: teachers.php");
     $db->close();
+    header("Location: download_success.php");
     exit();
 }
 ?>
