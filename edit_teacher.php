@@ -244,12 +244,9 @@ $db->close();
             Check this box to generate a new password for this teacher
         </p>
     </div>
-    
-    <div style="display: flex; gap: 10px;">
+    <div class="button-container">
         <input type="submit" class="nav-btn" name="submit" value="Update Teacher">
-        <a href="teachers.php" class="nav-btn" 
-           style="display: inline-block; text-align: center; text-decoration: none; 
-                  padding: 10px 20px;">Cancel</a>
+        <a href="teachers.php" class="nav-btn cancel-btn">Cancel</a>
     </div>
 </form>
 </div>

@@ -173,11 +173,9 @@ if (isset($_POST["submit"])) {
     <input type="email" id="teacher_email" name="teacher_email"/>
     <label for="teacher_username">Username:</label>
     <input type="text" id="teacher_username" name="teacher_username"/>
-    <div style="display: flex; gap: 10px;">
-        <input type="submit" class="nav-btn" name="submit" value="Create Teacher">
-        <a href="teachers.php" class="nav-btn" 
-           style="display: inline-block; text-align: center; text-decoration: none; 
-                  padding: 10px 20px;">Cancel</a>
+    <div class="button-container">
+        <input type="submit" class="nav-btn" name="submit" value="Update Teacher">
+        <a href="teachers.php" class="nav-btn cancel-btn">Cancel</a>
     </div>
 </form>
 </div>
