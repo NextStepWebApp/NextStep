@@ -287,9 +287,12 @@ if (isset($_POST["submit"])) {
             </option>
         <?php endforeach; ?>
     </select>
-
-    <input type="submit" class="nav-btn" name="submit" value="Save">
-</form></div>
+    <div class="button-container">
+        <input type="submit" class="nav-btn" name="submit" value="Create Student">
+        <a href="students.php" class="nav-btn cancel-btn">Cancel</a>
+    </div>
+</form>
+</div>
 <script src="js/script.js"></script>
 </body>
 </html>

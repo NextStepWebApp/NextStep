@@ -49,6 +49,7 @@ $totalCount = $row['COUNT'];
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
 <link rel="stylesheet" href="css/style_index.css"/>
 <link rel="stylesheet" href="css/style_navbar.css"/>
+<link rel="stylesheet" href="css/style_page.css"/>
 <title>NextStep</title>
 </head>
 <body>

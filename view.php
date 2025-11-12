@@ -55,12 +55,11 @@ $readable_date = date('Y-m-d H:i:s', $last_update);
 <p>Accessibility: <strong><?=$accessibility?></strong></p>
 <p>Date created: <strong><?=$created_date?></strong></p>
 <p>Date last update: <strong><?=$readable_date?></strong></p>
-<?php
-if ($_SESSION["teacher_username"] == "ADMIN") {
-    echo '<a href="edit.php?student_id=' . $student_id . '" class="nav-btn">Edit</a>
-        <a href="delete.php" class="nav-btn">Delete</a>';
-}
-?>
+<?php if ($_SESSION["teacher_username"] == "ADMIN") { ?>
+    <a href="edit.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
+    <a href="delete.php" class="simple-btn">Delete</a>
+<?php } ?>
+<a href="index.php" class="simple-btn">Back</a>
 </div>
 <script src="js/script.js"></script>
 </body>
