@@ -21,9 +21,9 @@ super_user_privilages($_SESSION["teacher_username"]);
 
 <div class="page-box">
 <?php flashMessages(); ?>
-<a href="create_student.php" class="nav-btn">Create Student</a>
-<a href="import.php" class="nav-btn">Import Data</a>
-<a href="import.php" class="nav-btn">Export Data</a>
+<a href="create_student.php" class="simple-btn">Create Student</a>
+<a href="import.php" class="simple-btn">Import Data</a>
+<a href="import.php" class="simple-btn">Export Data</a>
 
 
 </div>
