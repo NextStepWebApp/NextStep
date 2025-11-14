@@ -29,7 +29,7 @@ if (!$db) {
 $query = <<<EOF
       CREATE TABLE TEACHERS (
       teacher_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      teacher_email TEXT NOT NULL UNIQUE,
+      teacher_email TEXT NOT NULL,
       teacher_name TEXT NOT NULL,
       teacher_username TEXT NOT NULL UNIQUE,
       teacher_password TEXT NOT NULL
