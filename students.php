@@ -23,7 +23,7 @@ super_user_privilages($_SESSION["teacher_username"]);
 <?php flashMessages(); ?>
 <a href="create_student.php" class="simple-btn">Create Student</a>
 <a href="import_students.php" class="simple-btn">Import Data</a>
-<a href="import.php" class="simple-btn">Export Data</a>
+<a href="export_students.php" class="simple-btn">Export Data</a>
 
 
 </div>

@@ -4,8 +4,11 @@ session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
 
-$db = new SQLite3($db_file);
-
+try {
+    $db = new SQLite3($db_file);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
 # Fetch all teachers
 $query = "SELECT teacher_id, teacher_name, teacher_username, teacher_email FROM TEACHERS";
 $stmt = $db->prepare($query);
