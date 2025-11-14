@@ -174,3 +174,20 @@ function genPassword(int $length)
     }
     return $password;
 }
+
+
+# function that is used for the download pages to see what for type of download is asked
+function download_page_settings() {
+    $page_settings = ["teacher", "student"];
+    
+    if (isset($_SESSION["new_teacher_credentials"]) || isset($_SESSION["new_teacher_filename"])) {
+        $settings = $page_settings[0];
+        
+    } else if (isset($_SESSION["export_csv_content"]) || isset($_SESSION["export_csv_filename"])) {
+        $settings = $page_settings[1];
+    } else {
+        header("Location: index.php");
+        exit();
+    }
+    return $settings;
+}

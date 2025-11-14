@@ -3,13 +3,8 @@ require_once "utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
-
-if (!isset($_SESSION["new_teacher_credentials"]) || !isset($_SESSION["new_teacher_filename"])) {
-    header("Location: create_teacher.php");
-    exit();
-}
+$settings = download_page_settings();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,10 +17,9 @@ if (!isset($_SESSION["new_teacher_credentials"]) || !isset($_SESSION["new_teache
 <title>NextStep - Download</title>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // Trigger automatic download after short delay
     setTimeout(() => {
         window.location.href = "download.php";
-    }, 1000); // 1 second delay
+    }, 1000); 
 });
 </script>
 </head>
@@ -33,10 +27,21 @@ document.addEventListener("DOMContentLoaded", () => {
     <?php include 'navbar.php'; ?>
     <div class="page-box">
     <?php flashMessages(); ?>
-    <h2>Teacher Created Successfully</h2>
-    <p>The credentials file will download automatically. 
-    If it doesn’t, <a href="download.php">click here to download manually</a>.</p>
-    <a href="teachers.php" class="nav-btn">View Teachers</a>
+    
+    <?php
+     if ($settings == "teacher") {
+         echo '<h2>Teacher Created Successfully</h2>';
+         echo '<p>The credentials file will download automatically.';
+         echo '<p>If it doesn’t, <a href="download.php">click here to download manually</a>.</p>';
+         echo '<a href="teachers.php" class="simple-btn">View Teachers</a>';
+     }
+     if ($settings == "student") {
+        echo '<h2>Downloading export csv file</h2>';
+        echo '<p>The csv export file will download automatically.';
+        echo '<p>If it doesn’t, <a href="download.php">click here to download manually</a>.</p>';
+        echo '<a href="students.php" class="simple-btn">Back to Students</a>';
+     }
+     ?>
     </div>
     <script src="js/script.js"></script>
 </body>
