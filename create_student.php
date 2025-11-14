@@ -288,8 +288,8 @@ if (isset($_POST["submit"])) {
         <?php endforeach; ?>
     </select>
     <div class="button-container">
-        <input type="submit" class="nav-btn" name="submit" value="Create Student">
-        <a href="students.php" class="nav-btn cancel-btn">Cancel</a>
+        <input type="submit" class="simple-btn" name="submit" value="Create Student">
+        <a href="students.php" class="simple-btn cancel-btn">Cancel</a>
     </div>
 </form>
 </div>

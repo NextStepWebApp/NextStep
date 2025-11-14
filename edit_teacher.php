@@ -227,7 +227,7 @@ $db->close();
     <input type="text" name="teacher_name" 
            value="<?= htmlspecialchars($teacher['teacher_name']) ?>"/>
     <label for="teacher_email">Email:</label>
-    <input type="email" name="teacher_email" 
+    <input type="text" name="teacher_email" 
            value="<?= htmlspecialchars($teacher['teacher_email']) ?>"/>
     <label for="teacher_username">Username:</label>
     <input type="text" id="teacher_username" name="teacher_username" 

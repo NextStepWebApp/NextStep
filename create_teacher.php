@@ -8,7 +8,7 @@ super_user_privilages($_SESSION["teacher_username"]);
 if (isset($_POST["submit"])) {
 
     # Check if all fields are filled
-    if (empty($_POST["teacher_name"]) || empty($_POST["teacher_email"]) || 
+    if (empty($_POST["teacher_name"])|| 
        empty($_POST["teacher_username"])) {
 
         $_SESSION['error'] = "All fields are required";
@@ -37,21 +37,6 @@ if (isset($_POST["submit"])) {
         header("Location: create_teacher.php");
         exit();
     }
-    
-    # Validate email
-    $teacher_email = trim($_POST["teacher_email"]);
-    if (!filter_var($teacher_email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error'] = "Invalid email format";
-        header("Location: create_teacher.php");
-        exit();
-    }
-    
-    if (strlen($teacher_email) > 50) {
-        $_SESSION['error'] = "Email must not exceed 50 characters";
-        header("Location: create_teacher.php");
-        exit();
-    }
-    
     # Validate username
     $teacher_username = trim($_POST["teacher_username"]);
     if (strlen($teacher_username) < 3) {
@@ -75,7 +60,6 @@ if (isset($_POST["submit"])) {
     $db = new SQLite3($db_file);
     # Check to see if the teacher already exists
     $query = "SELECT teacher_id FROM TEACHERS WHERE 
-          teacher_email = :email OR 
           teacher_username = :username";
     $stmt = $db->prepare($query);
     
@@ -83,7 +67,6 @@ if (isset($_POST["submit"])) {
         errorMessages("Error preparing check query", $db->lastErrorMsg());
     }
     
-    $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
     $result = $stmt->execute();
     
@@ -94,7 +77,7 @@ if (isset($_POST["submit"])) {
     $existing = $result->fetchArray();
     
     if ($existing) {
-        $_SESSION['error'] = "A teacher with this email or username already exists";
+        $_SESSION['error'] = "A teacher with this username already exists";
         header("Location: create_teacher.php");
         $db->close();
         exit();
@@ -124,7 +107,7 @@ if (isset($_POST["submit"])) {
     }
 
     $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
-    $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
+    $stmt->bindValue(":email", "example@example.com", SQLITE3_TEXT);
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
     $stmt->bindValue(":password", $password, SQLITE3_TEXT);
 
@@ -137,7 +120,6 @@ if (isset($_POST["submit"])) {
     $credentials_content = "NextStep Teacher Account Credentials\n";
     $credentials_content .= "=====================================\n\n";
     $credentials_content .= "Name: " . $teacher_name . "\n";
-    $credentials_content .= "Email: " . $teacher_email . "\n";
     $credentials_content .= "Username: " . $teacher_username . "\n";
     $credentials_content .= "Password: " . $unsafe_password . "\n\n";
     $credentials_content .= "Created: " . date('Y-m-d H:i:s') . "\n\n";
@@ -169,13 +151,11 @@ if (isset($_POST["submit"])) {
 <form method="POST" action="create_teacher.php">
     <label for="teacher_name">Name:</label>
     <input type="text" id="teacher_name" name="teacher_name"/>
-    <label for="teacher_email">Email:</label>
-    <input type="email" id="teacher_email" name="teacher_email"/>
     <label for="teacher_username">Username:</label>
     <input type="text" id="teacher_username" name="teacher_username"/>
     <div class="button-container">
-        <input type="submit" class="nav-btn" name="submit" value="Update Teacher">
-        <a href="teachers.php" class="nav-btn cancel-btn">Cancel</a>
+        <input type="submit" class="simple-btn" name="submit" value="Create Teacher">
+        <a href="teachers.php" class="simple-btn cancel-btn">Cancel</a>
     </div>
 </form>
 </div>

@@ -96,9 +96,9 @@ while ($row = $results->fetchArray()) {
     $name = htmlspecialchars($row["students_name"]);
     $email = htmlspecialchars($row["students_email"]);
     $status = htmlspecialchars($row["status_name"]);
-    echo '<tr>
+    echo '<tr id="student-'.$student_id.'">
         <td><input type="checkbox" class="row-checkbox"/></td>
-        <td><a href=view.php?student_id='.$student_id.'>'.$name.'</a></td>
+        <td><a href="view.php?student_id='.$student_id.'">'.$name.'</a></td>
         <td>'.$email.'</td>
         <td>'.$status.'</td>
         <td>'.$date.'</td>
@@ -114,5 +114,6 @@ $db->close();
 </section>
 </main>
 <script src="js/script.js"></script>
+
 </body>
 </html>
