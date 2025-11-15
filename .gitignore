@@ -6,3 +6,4 @@ data/export_data.csv
 search.html
 test/
 data/errors.json
+data/delete.py
