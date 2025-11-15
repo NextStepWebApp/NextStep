@@ -42,7 +42,7 @@ try:
     fhand_errors = open(errors_path, 'w')
     json.dump(errors, fhand_errors, indent=4)
     fhand_errors.close()
-    print("Created fresh errors.json file")
+    print("Created new errors.json file")
 except Exception as e:
     print("Could not create the errors.json")
     print(f"Reason: {e}")

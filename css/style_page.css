@@ -159,7 +159,7 @@ dialog[data-modal], .wide-modal {
 }
 
 dialog[data-modal].wide-modal {
-    width: 900px;   
+    width: 1100px;   
 }
 
 dialog[data-modal] {
