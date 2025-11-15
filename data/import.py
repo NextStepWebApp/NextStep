@@ -9,10 +9,12 @@ import re
 start_time = time.time()
 
 # This is the file path to the configs and the csv file name
-path_config = "/home/william/Documents/programming/PWS/NextStep/config/config.json"
-csv_file_name = "data.csv"
-path_database = "/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db"
-
+#path_config = "/home/william/Documents/programming/PWS/NextStep/config/config.json"
+path_config = "/var/www/html/NextStep/config/config.json"
+csv_file_name = "/var/www/html/NextStep/data/data.csv"
+#path_database = "/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db"
+path_database = "/var/www/html/NextStep/setup/nextstep_data.db"
+errors_path = "/var/www/html/NextStep/data/errors.json"
 
 # This is the json template
 errors = {
@@ -22,13 +24,13 @@ errors = {
 }
 
 # Remove old errors.json and create new one from start
-if os.path.exists("errors.json"):
-    os.remove("errors.json")
+if os.path.exists(errors_path):
+    os.remove(errors_path)
     print("Removed old errors.json file")
 
 # Create new errors.json file
 try: 
-    fhand_errors = open("errors.json", 'w')
+    fhand_errors = open(errors_path, 'w')
     json.dump(errors, fhand_errors, indent=4)
     fhand_errors.close()
     print("Created fresh errors.json file")
@@ -91,7 +93,6 @@ def compare_data(data_value, config_name):
     return data_exists
 
 def validate_email(email):
-    """Validate email format"""
     if not email or len(email.strip()) == 0:
         return False
     
@@ -103,7 +104,6 @@ def validate_email(email):
     return True
 
 def validate_phone(phone):
-    """Validate phone number format"""
     if not phone or len(phone.strip()) == 0:
         return False
     
@@ -117,7 +117,6 @@ def validate_phone(phone):
     return True
 
 def validate_name(name):
-    """Validate name format"""
     if not name or len(name.strip()) == 0:
         return False
     
@@ -326,7 +325,7 @@ conn.close()
 
 # Final error handling, always write to errors.json
 try: 
-    fhand_errors = open("errors.json", 'w')
+    fhand_errors = open(errors_path, 'w')
     json.dump(errors, fhand_errors, indent=4)
     fhand_errors.close()
 except Exception as e:
