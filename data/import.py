@@ -35,14 +35,12 @@ errors = {
 # Remove old errors.json and create new one from start
 if os.path.exists(errors_path):
     os.remove(errors_path)
-    print("Removed old errors.json file")
 
 # Create new errors.json file
 try: 
     fhand_errors = open(errors_path, 'w')
     json.dump(errors, fhand_errors, indent=4)
     fhand_errors.close()
-    print("Created new errors.json file")
 except Exception as e:
     print("Could not create the errors.json")
     print(f"Reason: {e}")
@@ -191,7 +189,6 @@ for person in csv_data:
 try:
     conn = sqlite3.connect(path_database)
     cursor = conn.cursor()
-    print("connection success")
 except Exception as e:
     print("error opening database")
     print(f"Reason: {e}")
