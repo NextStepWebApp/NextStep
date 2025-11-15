@@ -144,13 +144,12 @@ td:last-child {
 
 /* this part is the dialog styling part
 this is used for the js pop ups */
-dialog[data-modal] {
+dialog[data-modal], .wide-modal {
   border: none;
   border-radius: 16px;
   padding: 25px 35px;
   background: #ffffff;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-  width: 320px;
   text-align: center;
   color: #0b1d59;
   position: fixed;
@@ -158,6 +157,16 @@ dialog[data-modal] {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+dialog[data-modal].wide-modal {
+    width: 900px;   
+}
+
+dialog[data-modal] {
+    width: 320px;   
+}
+
+
 
 /*
 dialog[data-modal]::backdrop {
