@@ -5,13 +5,22 @@ import csv
 import sqlite3
 import os
 import re
+import sys
 
 start_time = time.time()
+
+# Get the command line argument
+try:
+    csv_file_name = sys.argv[1]
+except Exception: 
+    print("Missing command line argument (file path to csv)")
+    exit()
+
+# Example csv_file_name = "/var/www/html/NextStep/data/data.csv"
 
 # This is the file path to the configs and the csv file name
 #path_config = "/home/william/Documents/programming/PWS/NextStep/config/config.json"
 path_config = "/var/www/html/NextStep/config/config.json"
-csv_file_name = "/var/www/html/NextStep/data/data.csv"
 #path_database = "/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db"
 path_database = "/var/www/html/NextStep/setup/nextstep_data.db"
 errors_path = "/var/www/html/NextStep/data/errors.json"
