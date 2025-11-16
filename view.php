@@ -57,7 +57,7 @@ $readable_date = date('Y-m-d H:i:s', $last_update);
 <p>Date last update: <strong><?=$readable_date?></strong></p>
 <?php if ($_SESSION["teacher_username"] == "ADMIN") { ?>
     <a href="edit.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
-    <a href="delete.php" class="simple-btn">Delete</a>
+    <a href="delete_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Delete</a>
 <?php } ?>
 <a href="index.php#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
 </div>
