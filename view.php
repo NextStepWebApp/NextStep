@@ -57,7 +57,14 @@ $readable_date = date('Y-m-d H:i:s', $last_update);
 <p>Date last update: <strong><?=$readable_date?></strong></p>
 <?php if ($_SESSION["teacher_username"] == "ADMIN") { ?>
     <a href="edit.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
-    <a href="delete_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Delete</a>
+    <button class="simple-btn" data-open-modal>Delete</button>
+    <dialog data-modal>
+        <h2>Are you sure?</h2>
+        <p>This action cannot be undone.</p>
+        <a href="delete_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Confirm Delete</a>
+        <button class="simple-btn" data-close-modal>Cancel</button>
+    </dialog>
+
 <?php } ?>
 <a href="index.php#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
 </div>
