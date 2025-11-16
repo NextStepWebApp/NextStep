@@ -41,4 +41,3 @@ $db->close();
 $_SESSION["success"] = "Teacher deleted successfully";
 header("Location: teachers.php");
 exit();
-?>
