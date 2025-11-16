@@ -2,7 +2,7 @@
 require_once "utils.php";
 session_start();
 loginSecurity();
-check_id($_GET["student_id"]);
+check_id($_GET["student_id"], "Students");
 
 $row = full_students_database_query($db_file);
 

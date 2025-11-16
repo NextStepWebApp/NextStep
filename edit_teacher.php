@@ -3,7 +3,7 @@ require_once "utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
-check_id($_GET["teacher_id"]);
+check_id($_GET["teacher_id"], "Teacher");
 
 $teacher_id = $_GET['teacher_id'];
 

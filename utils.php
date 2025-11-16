@@ -45,17 +45,42 @@ function errorMessages(string $message, string $details)
 
 
 # Funtion that checks if the student_id is valid ( used in view, edit and delete)
-function check_id(string $id) {
-    if (!isset($id)) {
-        $_SESSION['error'] = "Missing student_id";
-        header("Location: index.php");
-        exit();
-    }
-    if (!is_numeric($id)) {
-        $_SESSION['error'] = "Invalid value for student_id";
-        header("Location: index.php");
-        exit();
-    }
+function check_id(?string $id, string $group) {
+        if (!isset($id)) {
+            switch ($group) {
+                case "Students":
+                    $_SESSION["error"] = "Missing student_id";
+                    header("Location: index.php");
+                    exit();
+                       
+                case "Teacher":
+                    $_SESSION["error"] = "Missing teacher_id";
+                    header("Location: teachers.php");
+                    exit();
+                       
+                default:
+                    errorMessages("Invalid group passed in check_id function", "Group: $group");
+                    exit();
+            }
+        }
+           
+        if (!is_numeric($id)) {
+            switch ($group) {
+                case "Students":
+                    $_SESSION['error'] = "Invalid value for student_id";
+                    header("Location: index.php");
+                    exit();
+                       
+                case "Teacher":
+                    $_SESSION['error'] = "Invalid value for teacher_id";
+                    header("Location: teachers.php");
+                    exit();
+                       
+                default:
+                    errorMessages("Invalid group passed in check_id function", "Group: $group");
+                    exit();
+               }
+        }
 }
 
 

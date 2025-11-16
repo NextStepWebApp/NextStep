@@ -3,6 +3,7 @@ require_once "utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
+check_id($_GET["teacher_id"], "Teacher");
 
 try {
     $db = new SQLite3($db_file);
@@ -18,7 +19,15 @@ if (!$stmt) {
 }
 $stmt->bindValue(":id", $_GET["teacher_id"], SQLITE3_INTEGER);
 $result = $stmt->execute();
+
 $teacher = $result->fetchArray();
+
+# This is a quick check to see if the value of the teacher_id exists in the db
+if (!$teacher) {
+    $_SESSION["error"] = "Invalid value for teacher_id";
+    header("Location: teachers.php");
+    exit();
+}
 
 if ($teacher["teacher_username"] == "ADMIN") {
     $_SESSION["error"] = "Cannot delete the ADMIN account";

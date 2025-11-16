@@ -4,8 +4,8 @@ session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
 
+check_id($_GET["student_id"], "Students");
 $id = $_GET["student_id"];
-check_id($id);
 
 try {
     $db = new SQLite3($db_file);
