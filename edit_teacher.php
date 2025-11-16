@@ -112,16 +112,24 @@ if (isset($_POST["submit"])) {
     }
    
     # Check if email or username already exists not looking at the current teacher 
-    $query = "SELECT teacher_id FROM TEACHERS WHERE 
-              (teacher_email = :email OR teacher_username = :username) 
-              AND teacher_id != :id";
+   
+   if ($teacher_email == "example@example.com") {
+       $query = "SELECT teacher_id FROM TEACHERS WHERE teacher_username = :username
+            AND teacher_id != :id";
+   } else {
+        $query = "SELECT teacher_id FROM TEACHERS WHERE 
+            (teacher_email = :email OR teacher_username = :username) 
+            AND teacher_id != :id";
+   }
     $stmt = $db->prepare($query);
     
     if (!$stmt) {
         errorMessages("Error preparing check query", $db->lastErrorMsg());
     }
-    
-    $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
+   
+    if ($teacher_email != "example@example.com") {
+        $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
+    }
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
     $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
     $result = $stmt->execute();
@@ -163,7 +171,11 @@ if (isset($_POST["submit"])) {
     
     # Handle password reset if requested
     if (isset($_POST["reset_password"]) && $_POST["reset_password"] == "1") {
-        $unsafe_password = genPassword(6); 
+        if ($teacher["teacher_username"] == "ADMIN") {
+            $unsafe_password = genPassword(8); 
+        } else {
+            $unsafe_password = genPassword(6); 
+        }
         $password = password_hash($unsafe_password, PASSWORD_DEFAULT);
         
         $query = "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_id = :id";
@@ -234,19 +246,17 @@ $db->close();
            value="<?= htmlspecialchars($teacher['teacher_username']) ?>"
            <?= $is_admin ? 'readonly' : '' ?>/>
     
-    <div style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 5px;">
-        <label style="display: flex; align-items: center; cursor: pointer;">
-            <input type="checkbox" name="reset_password" value="1" 
-                   style="margin-right: 10px; width: auto;"/>
-            <span>Reset password and download new credentials</span>
-        </label>
-        <p style="color: #666; font-size: 0.9em; margin: 5px 0 0 0;">
+    <div class="password-reset-container">
+        <input type="checkbox" name="reset_password" value="1" class="checkbox-input"/>
+        <label class="checkbox-label">Reset password and download new credentials</label>
+        <p class="help-text">
             Check this box to generate a new password for this teacher
         </p>
     </div>
+    
     <div class="button-container">
-        <input type="submit" class="nav-btn" name="submit" value="Update Teacher">
-        <a href="teachers.php" class="nav-btn cancel-btn">Cancel</a>
+        <input type="submit" class="simple-btn" name="submit" value="Update Teacher">
+        <a href="teachers.php" class="simple-btn cancel-btn">Cancel</a>
     </div>
 </form>
 </div>

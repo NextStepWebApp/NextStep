@@ -12,7 +12,7 @@ try {
 }
 
 # This part checks who is getting deleted
-$query = "SELECT teacher_username FROM TEACHERS WHERE teacher_id = :id";
+$query = "SELECT teacher_username, teacher_name FROM TEACHERS WHERE teacher_id = :id";
 $stmt = $db->prepare($query);
 if (!$stmt) {
     errorMessages("Error preparing query", $db->lastErrorMsg());
@@ -34,6 +34,7 @@ if ($teacher["teacher_username"] == "ADMIN") {
     header("Location: teachers.php");
     exit();
 }
+$teacher_name = $teacher["teacher_name"];
 
 # Main part of deletion
 $query = "DELETE FROM TEACHERS WHERE teacher_id = :id";
@@ -47,6 +48,6 @@ if (!$results) {
     errorMessages("Error executing query", $db->lastErrorMsg());
 }
 $db->close();
-$_SESSION["success"] = "Teacher deleted successfully";
+$_SESSION["success"] = "Teacher $teacher_name deleted successfully";
 header("Location: teachers.php");
 exit();
