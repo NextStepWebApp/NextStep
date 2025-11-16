@@ -47,34 +47,28 @@ $totalCount = $row['COUNT'];
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_index.css"/>
 <link rel="stylesheet" href="css/style_navbar.css"/>
 <link rel="stylesheet" href="css/style_page.css"/>
 <title>NextStep</title>
 </head>
 <body>
 <?php include 'navbar.php'; ?>
-<main>
-<section class="action-buttons">
-<button type="button" class="action-btn" id="searchBtn">🔍 Search & Filter</button>
-<span class="workflow-indicator">→</span>
-<button type="button" class="action-btn" id="composeBtn" disabled>
-✉️ Compose Email (<span id="selectedCount">0</span> selected)</button>
-</section>
-
 <section class="table-section">
-<header class="table-header">
-
-<?php
-echo '<div class="selected-info">'.$totalCount.' records | 0 selected</div>';
-?>
-
-<div class="select-all-container">
-<input type="checkbox" id="selectAll"/>
-<label for="selectAll">Select All</label>
-</div>
-</header>
 <?php flashMessages();?>
+<div class="action-buttons">
+    <?php
+        echo '<div class="selected-info">'.$totalCount.' records | 0 selected</div>';
+    ?>
+    <button type="button" class="action-btn" id="searchBtn">Search & Filter</button>
+    <span class="workflow-indicator">→</span>
+    <button type="button" class="action-btn" id="composeBtn" disabled>
+        Compose Email (<span id="selectedCount">0</span> selected)
+    </button>
+    <div class="select-all-container">
+        <input type="checkbox" id="selectAll"/>
+        <label for="selectAll">Select All</label>
+    </div>
+</div>
 <div class="table-container">
 <table>
 <thead>
@@ -96,24 +90,24 @@ while ($row = $results->fetchArray()) {
     $name = htmlspecialchars($row["students_name"]);
     $email = htmlspecialchars($row["students_email"]);
     $status = htmlspecialchars($row["status_name"]);
-    echo '<tr id="student-'.$student_id.'">
-        <td><input type="checkbox" class="row-checkbox"/></td>
-        <td><a href="view.php?student_id='.$student_id.'">'.$name.'</a></td>
-        <td>'.$email.'</td>
-        <td>'.$status.'</td>
-        <td>'.$date.'</td>
-        </tr>'."\n";
+?>
+    <tr id="student_<?= $student_id ?>">
+        <td><input type="checkbox" class="check-box"/></td>
+        <td><a href="view.php?student_id=<?= $student_id ?>"><?= $name ?></a></td>
+        <td><?= $email ?></td>
+        <td><?= $status ?></td>
+        <td><?= $date ?></td>
+    </tr>
+<?php
 }
 if ($hasresults == 0)
-    echo('<tr><td colspan="5" class="no-records">No records found</td></tr>');
+    echo('<tr><td colspan="5" class="no-students">No students found. <a href="students.php">Add Students</a></td></tr>');$db->close();
 $db->close();
 ?>
 </tbody>
 </table>
 </div>
 </section>
-</main>
 <script src="js/script.js"></script>
-
 </body>
 </html>

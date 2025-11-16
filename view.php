@@ -59,7 +59,7 @@ $readable_date = date('Y-m-d H:i:s', $last_update);
     <a href="edit.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
     <a href="delete.php" class="simple-btn">Delete</a>
 <?php } ?>
-<a href="index.php#student-<?php echo $student_id; ?>" class="simple-btn">Back</a>
+<a href="index.php#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
 </div>
 <script src="js/script.js"></script>
 </body>

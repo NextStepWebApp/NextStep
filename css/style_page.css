@@ -235,7 +235,113 @@ pages are create_teacer/student for example */
 }
 /* end special button grouping style */
 
+/* These are the styles for some of the index page stuff */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    position: relative;
+}
 
+.selected-info {
+    color: #0b1d59;
+    font-weight: 600;
+    font-size: 16px;
+    flex: 1;
+}
+
+.action-btn {
+    padding: 12px 24px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.95);
+    color: #0b1d59;
+    cursor: pointer;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-color: #0b1d59;
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.action-btn:disabled:hover {
+    transform: none;
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.workflow-indicator {
+    padding: 0 15px;
+    color: #0b1d59;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.select-all-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.select-all-container input[type="checkbox"], .check-box {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #0b1d59;
+}
+
+.select-all-container label {
+    color: #0b1d59;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 0;
+    font-size: 15px;
+}
+
+.no-students {
+    padding: 40px;
+    color: #6b7280;
+    font-size: 16px;
+    text-align: center !important;
+}
+
+.no-students a {
+    color: #0b1d59;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.no-students a:hover {
+    color: #1e3a8a;
+}
+
+/* Prevent hover effect on the no-students row */
+.no-students:hover {
+    background-color: transparent !important;
+}
+
+/* End of index page styling */
 
 /* Tablet screens */
 @media (max-width: 1200px) {
