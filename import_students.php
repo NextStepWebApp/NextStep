@@ -5,8 +5,7 @@ loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
 
 # Get the python import program file path from the NextStep config
-$config = json_decode(file_get_contents($nextstep_config), true);
-$python_script = $config["python_import_path"];
+$python_script = $nextstep_config["python_import_path"];
 
 if (isset($_POST["submit"])) {
     # Handle csv file upload

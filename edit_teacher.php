@@ -7,7 +7,11 @@ check_id($_GET["teacher_id"], "Teacher");
 
 $teacher_id = $_GET['teacher_id'];
 
-$db = new SQLite3($db_file);
+try {
+    $db = new SQLite3($db_file);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
 
 # Fetch teacher data
 $query = "SELECT teacher_id, teacher_name, teacher_username, teacher_email 

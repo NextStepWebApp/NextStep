@@ -57,7 +57,12 @@ if (isset($_POST["submit"])) {
         exit();
     }
    
-    $db = new SQLite3($db_file);
+    try {
+        $db = new SQLite3($db_file);
+    } catch (Exception $e) {
+        errorMessages("Database connection failed", $e->getMessage());
+    }    
+    
     # Check to see if the teacher already exists
     $query = "SELECT teacher_id FROM TEACHERS WHERE 
           teacher_username = :username";

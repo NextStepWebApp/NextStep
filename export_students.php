@@ -6,10 +6,6 @@ session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
 
-# Get access to the config file
-$config = json_decode(file_get_contents($nextstep_config), true);
-$db_file = $config["database_file_path"];
-
 # Opening the database
 try {
     $db = new SQLite3($db_file);

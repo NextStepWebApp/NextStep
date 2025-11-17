@@ -4,11 +4,6 @@ session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
 
-$db = new SQLite3($db_file);
-
-// This loads the config json file
-$config = json_decode(file_get_contents('config/config.json'), true);
-
 $accessibility = $config['accessibility'];
 $city = $config['city'];
 $class = $config['class'];
@@ -16,6 +11,12 @@ $country = $config['country'];
 $education = $config['education'];
 $schools = $config['school'];
 $status = $config['status'];
+
+try {
+    $db = new SQLite3($db_file);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
 
 
 if (isset($_POST["submit"])) {

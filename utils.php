@@ -2,13 +2,17 @@
 # This is the utils page for all the normal super_user_privilages
 # The setup seciton does not include in this utils
 
+# These are the file path config
 # This is the only place that is allowed to have a specific path besides the config
-$nextstep_config = "config/nextstep_config.json";
-
+$nextstep_config_path = "config/nextstep_config.json";
+$nextstep_config = json_decode(file_get_contents($nextstep_config_path), true);
 # This is location to the database
-$config = json_decode(file_get_contents($nextstep_config), true);
+$db_file = $nextstep_config["database_file_path"];
 
-$db_file = $config["database_file_path"]; 
+# These are the configs for validations
+$config_path = "config/config.json";
+$config = json_decode(file_get_contents($config_path), true);
+ 
 
 function loginSecurity()
 {
