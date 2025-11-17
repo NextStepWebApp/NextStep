@@ -43,6 +43,7 @@ $readable_date = date('Y-m-d H:i:s', $last_update);
 
 <div class="page-box">
 <h2>Student information</h2>
+<?php flashMessages(); ?>
 <p>Name: <strong><?=$student_name?></strong></p>
 <p>Email: <strong><?=$student_email?></strong></p>
 <p>Phone number: <strong><?=$student_phone_number?></strong></p>
@@ -56,7 +57,7 @@ $readable_date = date('Y-m-d H:i:s', $last_update);
 <p>Date created: <strong><?=$created_date?></strong></p>
 <p>Date last update: <strong><?=$readable_date?></strong></p>
 <?php if ($_SESSION["teacher_username"] == "ADMIN") { ?>
-    <a href="edit.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
+    <a href="edit_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
     <button class="simple-btn" data-open-modal>Delete</button>
     <dialog data-modal>
         <h2>Are you sure?</h2>
