@@ -65,7 +65,7 @@ if (isset($_POST["submit"])) {
     
     # Check to see if the teacher already exists
     $query = "SELECT teacher_id FROM TEACHERS WHERE 
-          teacher_username = :username";
+          teacher_username = :username OR teacher_username = :name";
     $stmt = $db->prepare($query);
     
     if (!$stmt) {
@@ -73,6 +73,7 @@ if (isset($_POST["submit"])) {
     }
     
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
+    $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
     $result = $stmt->execute();
     
     if (!$result) {
@@ -82,7 +83,7 @@ if (isset($_POST["submit"])) {
     $existing = $result->fetchArray();
     
     if ($existing) {
-        $_SESSION['error'] = "A teacher with this username already exists";
+        $_SESSION['error'] = "A teacher with this username or name already exists";
         header("Location: create_teacher.php");
         $db->close();
         exit();

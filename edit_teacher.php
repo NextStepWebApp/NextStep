@@ -118,11 +118,11 @@ if (isset($_POST["submit"])) {
     # Check if email or username already exists not looking at the current teacher 
    
    if ($teacher_email == "example@example.com") {
-       $query = "SELECT teacher_id FROM TEACHERS WHERE teacher_username = :username
-            AND teacher_id != :id";
+       $query = "SELECT teacher_id FROM TEACHERS WHERE (teacher_username = :username 
+        OR teacher_name = :name) AND teacher_id != :id";
    } else {
         $query = "SELECT teacher_id FROM TEACHERS WHERE 
-            (teacher_email = :email OR teacher_username = :username) 
+            (teacher_email = :email OR teacher_username = :username OR teacher_name = :name) 
             AND teacher_id != :id";
    }
     $stmt = $db->prepare($query);
@@ -136,6 +136,7 @@ if (isset($_POST["submit"])) {
     }
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
     $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
     $result = $stmt->execute();
     
     if (!$result) {
@@ -145,7 +146,11 @@ if (isset($_POST["submit"])) {
     $existing = $result->fetchArray();
     
     if ($existing) {
-        $_SESSION['error'] = "A teacher with this email or username already exists";
+        if ($teacher_email == "example@example.com") {
+            $_SESSION['error'] = "A teacher with this username or name already exists";
+        } else {
+            $_SESSION['error'] = "A teacher with this email, username or name already exists";
+        }
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         $db->close();
         exit();
