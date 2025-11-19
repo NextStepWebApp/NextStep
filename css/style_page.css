@@ -384,6 +384,102 @@ pages are create_teacer/student for example */
 
 /* End of index page styling */
 
+/* Settings page styling*/
+
+.settings-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 150px auto 50px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    background: #f9fafb;
+    border-bottom: 2px solid #e5e7eb;
+    overflow-x: auto;
+}
+
+.tab {
+    padding: 18px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #6b7280;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    position: relative;
+}
+
+.tab:hover {
+    color: #0b1d59;
+    background: rgba(11, 29, 89, 0.05);
+}
+
+.tab.active {
+    color: #0b1d59;
+    background: #fff;
+    border-bottom-color: #0b1d59;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    padding: 40px;
+    color: #0b1d59;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tab-content h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.tab-content p {
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .settings-container {
+        margin-top: 170px;
+        width: 95%;
+    }
+
+    .tab {
+        padding: 14px 20px;
+        font-size: 13px;
+    }
+
+    .tab-content {
+        padding: 25px;
+    }
+}
+
 /* Tablet screens */
 @media (max-width: 1200px) {
     .table-section {

@@ -40,3 +40,24 @@ document.querySelectorAll("[data-modal]").forEach(dialog => {
     }
   });
 });
+
+
+
+// Tab switching functionality
+const tabs = document.querySelectorAll('.tab');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(tc => tc.classList.remove('active'));
+
+        // Add active class to clicked tab
+        tab.classList.add('active');
+
+        // Show corresponding content
+        const tabName = tab.getAttribute('data-tab');
+        document.getElementById(tabName).classList.add('active');
+    });
+});
