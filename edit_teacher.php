@@ -53,39 +53,16 @@ if (isset($_POST["submit"])) {
         exit();
     }
     
+    # These are functions in utils.php that are used for user input validations
+    
     # Validate teacher name
     $teacher_name = trim($_POST["teacher_name"]);
-    if (strlen($teacher_name) < 2) {
-        $_SESSION['error'] = "Name must be at least 2 characters long";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
-        exit();
-    }
-    
-    if (strlen($teacher_name) > 50) {
-        $_SESSION['error'] = "Name must not exceed 50 characters";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
-        exit();
-    }
-    
-    if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $teacher_name)) {
-        $_SESSION['error'] = "Name contains invalid characters";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
-        exit();
-    }
+    validate_teacher_name($teacher_name, "edit_teacher", $teacher_id);
     
     # Validate email
     $teacher_email = trim($_POST["teacher_email"]);
-    if (!filter_var($teacher_email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error'] = "Invalid email format";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
-        exit();
-    }
+    validate_teacher_email($teacher_email, "edit_teacher", $teacher_id);
     
-    if (strlen($teacher_email) > 50) {
-        $_SESSION['error'] = "Email must not exceed 50 characters";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
-        exit();
-    }
     
     # Validate username
     $teacher_username = trim($_POST["teacher_username"]);

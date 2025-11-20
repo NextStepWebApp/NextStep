@@ -220,3 +220,125 @@ function download_page_settings() {
     }
     return $settings;
 }
+
+
+# This is made to a function to avoid a lot of code repetition
+# Input validation functions used in settings and edit page
+
+function validate_teacher_name(string $teacher_name, string $page, string $teacher_id = "") {
+    if (strlen($teacher_name) < 2) {
+        $_SESSION['error'] = "Name must be at least 2 characters long";
+        
+        switch ($page) {
+            case "edit_teacher":
+                header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                exit();
+                
+            case "settings":
+                header("Location: settings.php");
+                exit();
+                
+            case "add_teacher":
+                header("Location: add_teacher.php");
+                exit();
+                
+            default:
+                header("Location: index.php");
+                exit();
+        }
+    }
+    
+    // Check maximum length
+    if (strlen($teacher_name) > 50) {
+        $_SESSION['error'] = "Name must not exceed 50 characters";
+        
+        switch ($page) {
+            case "edit_teacher":
+                header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                exit();
+                
+            case "settings":
+                header("Location: settings.php");
+                exit();
+                
+            case "add_teacher":
+                header("Location: add_teacher.php");
+                exit();
+                
+            default:
+                header("Location: index.php");
+                exit();
+        }
+    }
+    
+    // Check valid characters
+    if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $teacher_name)) {
+        $_SESSION['error'] = "Name contains invalid characters";
+        
+        switch ($page) {
+            case "edit_teacher":
+                header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                exit();
+                
+            case "settings":
+                header("Location: settings.php");
+                exit();
+                
+            case "add_teacher":
+                header("Location: add_teacher.php");
+                exit();
+                
+            default:
+                header("Location: index.php");
+                exit();
+        }
+    }
+}
+
+function validate_teacher_email(string $teacher_email, string $page, string $teacher_id = "") {
+    // Check email format
+    if (!filter_var($teacher_email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error'] = "Invalid email format";
+        
+        switch ($page) {
+            case "edit_teacher":
+                header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                exit();
+                
+            case "settings":
+                header("Location: settings.php");
+                exit();
+                
+            case "add_teacher":
+                header("Location: add_teacher.php");
+                exit();
+                
+            default:
+                header("Location: index.php");
+                exit();
+        }
+    }
+    
+    // Check maximum length
+    if (strlen($teacher_email) > 50) {
+        $_SESSION['error'] = "Email must not exceed 50 characters";
+        
+        switch ($page) {
+            case "edit_teacher":
+                header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                exit();
+                
+            case "settings":
+                header("Location: settings.php");
+                exit();
+                
+            case "add_teacher":
+                header("Location: add_teacher.php");
+                exit();
+                
+            default:
+                header("Location: index.php");
+                exit();
+        }
+    }
+}

@@ -21,14 +21,14 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     }
 
     # Get all the info you need from the user
-    $query = "SELECT teacher_email, teacher_name, teacher_username, teacher_password 
+    $query = "SELECT teacher_id, teacher_username, teacher_password 
               FROM TEACHERS 
               WHERE teacher_username = :username";
 
     $stmt = $db->prepare($query);
     $stmt->bindValue(":username", $username, SQLITE3_TEXT);
     $result = $stmt->execute();
-    $row = $result->fetchArray(SQLITE3_ASSOC);
+    $row = $result->fetchArray();
 
     if ($row) {
         $hash = $row["teacher_password"];
@@ -38,16 +38,15 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
             if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
                 $newHash = password_hash($password, PASSWORD_DEFAULT);
                 $update = $db->prepare(
-                    "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_email = :email"
+                    "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_username = :username"
                 );
                 $update->bindValue(":password", $newHash, SQLITE3_TEXT);
-                $update->bindValue(":email", $row["teacher_email"], SQLITE3_TEXT);
+                $update->bindValue(":username", $username, SQLITE3_TEXT);
                 $update->execute();
             }
 
             session_regenerate_id(true);
-            $_SESSION["teacher_email"] = $row["teacher_email"];
-            $_SESSION["teacher_name"] = $row["teacher_name"];
+            $_SESSION["teacher_id"] = $row["teacher_id"]; 
             $_SESSION["teacher_username"] = $row["teacher_username"];
 
             $db->close();

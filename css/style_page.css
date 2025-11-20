@@ -225,6 +225,7 @@ pages are create_teacer/student for example */
 .button-container {
     display: flex;
     gap: 10px;
+    margin-top: 20px;
 }
 
 .cancel-btn {
