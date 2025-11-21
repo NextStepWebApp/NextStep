@@ -35,6 +35,6 @@ super_user_privilages($_SESSION["teacher_username"]);
     endif;
     ?>
 </div>
-<script src="js/script.js"></script>
+<script src="../js/script.js"></script>
 </body>
 </html>

@@ -302,6 +302,6 @@ $accessibility_name    = $row['accessibility_name'];
 </div>
 </form>
 </div>
-<script src="js/script.js"></script>
+<script src="../js/script.js"></script>
 </body>
 </html>
