@@ -1,5 +1,5 @@
 {
    "password_save_path": "/home/william/Downloads",
-   "database_file_path": "setup/nextstep_data.db",
-   "python_import_path": "data/import.py"
+   "database_file_path": "/var/www/html/NextStep/setup/nextstep_data.db",
+   "python_import_path": "/var/www/html/NextStep/data/import.py"
 }

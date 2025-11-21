@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -210,12 +210,12 @@ $db->close();
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_navbar.css"/>
-<link rel="stylesheet" href="css/style_page.css"/>
+<link rel="stylesheet" href="../css/style_navbar.css"/>
+<link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Edit Teacher</title>
 </head>
 <body>
-<?php include 'navbar.php'; ?>
+<?php include "../navbar.php"; ?>
 <div class="page-box-wide">
 <h2>Edit Teacher</h2>
 <?php flashMessages(); ?>
@@ -242,7 +242,7 @@ $db->close();
     
     <div class="button-container">
         <input type="submit" class="simple-btn" name="submit" value="Update Teacher">
-        <a href="teachers.php" class="simple-btn cancel-btn">Cancel</a>
+        <a href="/NextStep/teachers/" class="simple-btn cancel-btn">Cancel</a>
     </div>
 </form>
 </div>

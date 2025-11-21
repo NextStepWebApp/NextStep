@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);

@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -10,12 +10,12 @@ super_user_privilages($_SESSION["teacher_username"]);
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_navbar.css"/>
-<link rel="stylesheet" href="css/style_page.css"/>
+<link rel="stylesheet" href="../css/style_navbar.css"/>
+<link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Student</title>
 </head>
 <body>
-<?php include 'navbar.php'; ?>
+<?php include "../navbar.php"; ?>
 <div class="page-box">
     <?php flashMessages(); ?>
     <a href="create_student.php" class="simple-btn">Create Student</a>

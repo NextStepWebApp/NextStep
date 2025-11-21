@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -34,12 +34,12 @@ if (isset($_POST["submit"])) {
             if ($return_code === 0) {  
                 $_SESSION['success'] = "Import completed successfully!";
                 $_SESSION['import_results_python'] = $output;
-                header("Location: students.php");
+                header("Location: /NextStep/students");
                 exit();
             } else {
                 $_SESSION['error'] = "Import failed. Check output below.";
                 $_SESSION['import_results_python'] = $output;
-                header("Location: students.php");
+                header("Location: /NextStep/students");
                 exit();
             }
             
@@ -61,12 +61,12 @@ if (isset($_POST["submit"])) {
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-    <link rel="stylesheet" href="css/style_navbar.css"/>
-    <link rel="stylesheet" href="css/style_page.css"/>
+    <link rel="stylesheet" href="../css/style_navbar.css"/>
+    <link rel="stylesheet" href="../css/style_page.css"/>
     <title>NextStep - Import Students</title>
 </head>
 <body>
-<?php include 'navbar.php'; ?>
+<?php include "../navbar.php"; ?>
 <div class="page-box-wide">
     <h2>Import Students from CSV</h2>
     <?php flashMessages(); ?>
@@ -86,10 +86,10 @@ if (isset($_POST["submit"])) {
         
         <div class="button-container">
             <input type="submit" class="simple-btn" name="submit" value="Import Students">
-            <a href="students.php" class="simple-btn cancel-btn">Cancel</a>
+            <a href="/NextStep/students" class="simple-btn cancel-btn">Cancel</a>
         </div>
     </form>
 </div>
-<script src="js/script.js"></script>
+<script src="../js/script.js"></script>
 </body>
 </html>

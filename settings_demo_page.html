@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextStep - Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0b243f, #1e3a8a 50%, #2563eb);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 30;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: #fff;
+        }
+
+        .brand-name {
+            font-size: 30px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0b1d59, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #0b1d59, #1e3a8a);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(11, 29, 89, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(11, 29, 89, 0.3);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            box-shadow: 0 6px 16px rgba(11, 29, 89, 0.3);
+        }
+
+        /* Settings Container */
+        .settings-container {
+            max-width: 1200px;
+            width: 90%;
+            margin: 150px auto 50px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 18px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #6b7280;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: #0b1d59;
+            background: rgba(11, 29, 89, 0.05);
+        }
+
+        .tab.active {
+            color: #0b1d59;
+            background: #fff;
+            border-bottom-color: #0b1d59;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 40px;
+            color: #0b1d59;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-content h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .tab-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #4b5563;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #0b1d59;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* List styling for dropdown options */
+        .option-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .option-item input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .option-item button {
+            padding: 6px 12px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-item button:hover {
+            background: #fecaca;
+        }
+
+        /* Buttons */
+        .simple-btn {
+            background-color: #f9fafb;
+            color: #0b1d59;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .simple-btn:hover {
+            background-color: #f3f4f6;
+            border-color: #cbd5e1;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .simple-btn.primary {
+            background: linear-gradient(135deg, #0b1d59 0%, #1e3a8a 100%);
+            color: white;
+            border: none;
+        }
+
+        .simple-btn.primary:hover {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Permission Card */
+        .permission-card {
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 15px;
+        }
+
+        .permission-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #0b1d59;
+        }
+
+        .permission-card p {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #0b1d59;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .settings-container {
+                margin-top: 170px;
+                width: 95%;
+            }
+
+            .tab {
+                padding: 14px 20px;
+                font-size: 13px;
+            }
+
+            .tab-content {
+                padding: 25px;
+            }
+
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .brand-name {
+                text-align: center;
+            }
+
+            .nav-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h1><a href="#" class="brand-name">NextStep</a></h1>
+        <div class="nav-buttons">
+            <a href="#" class="nav-btn active">Settings</a>
+            <a href="#" class="nav-btn">Teachers</a>
+            <a href="#" class="nav-btn">Students</a>
+            <a href="#" class="nav-btn">Map</a>
+            <button class="nav-btn">Log out</button>
+        </div>
+    </nav>
+
+    <!-- Settings Container -->
+    <div class="settings-container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="dropdown">Dropdown Options</button>
+            <button class="tab" data-tab="permissions">User Permissions</button>
+            <button class="tab" data-tab="labels">Labels & Language</button>
+            <button class="tab" data-tab="system">System</button>
+        </div>
+
+        <!-- Tab Content: Dropdown Options -->
+        <div class="tab-content active" id="dropdown">
+            <h2>Dropdown Options</h2>
+            <p>Manage the dropdown options that appear in student forms. These options will be available when creating or editing students.</p>
+
+            <div class="form-group">
+                <label>Class Options</label>
+                <div class="option-list">
+                    <div class="option-item">
+                        <input type="text" value="V6A" />
+                        <button>Remove</button>
+                    </div>
+                    <div class="option-item">
+                        <input type="text" value="V6B" />
+                        <button>Remove</button>
+                    </div>
+                    <div class="option-item">
+                        <input type="text" value="V6C" />
+                        <button>Remove</button>
+                    </div>
+                </div>
+                <button class="simple-btn">+ Add New Class</button>
+            </div>
+
+            <div class="form-group">
+                <label>City Options</label>
+                <div class="option-list">
+                    <div class="option-item">
+                        <input type="text" value="Amsterdam" />
+                        <button>Remove</button>
+                    </div>
+                    <div class="option-item">
+                        <input type="text" value="Den Haag" />
+                        <button>Remove</button>
+                    </div>
+                    <div class="option-item">
+                        <input type="text" value="Delft" />
+                        <button>Remove</button>
+                    </div>
+                </div>
+                <button class="simple-btn">+ Add New City</button>
+            </div>
+
+            <div class="button-group">
+                <button class="simple-btn primary">Save Changes</button>
+                <button class="simple-btn">Reset to Default</button>
+            </div>
+        </div>
+
+        <!-- Tab Content: Permissions -->
+        <div class="tab-content" id="permissions">
+            <h2>User Permissions</h2>
+            <p>Grant or revoke administrator privileges for teachers. Administrators can manage students, teachers, and system settings.</p>
+
+            <div class="permission-card">
+                <h3>John Doe (johndoe)</h3>
+                <p>Email: john.doe@school.edu</p>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="admin1" checked />
+                    <label for="admin1">Administrator privileges</label>
+                </div>
+            </div>
+
+            <div class="permission-card">
+                <h3>Jane Smith (janesmith)</h3>
+                <p>Email: jane.smith@school.edu</p>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="admin2" />
+                    <label for="admin2">Administrator privileges</label>
+                </div>
+            </div>
+
+            <div class="permission-card">
+                <h3>Bob Wilson (bobwilson)</h3>
+                <p>Email: bob.wilson@school.edu</p>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="admin3" />
+                    <label for="admin3">Administrator privileges</label>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="simple-btn primary">Save Changes</button>
+            </div>
+        </div>
+
+        <!-- Tab Content: Labels -->
+        <div class="tab-content" id="labels">
+            <h2>Labels & Language</h2>
+            <p>Customize the application interface text. Change labels to match your preferred language or terminology.</p>
+
+            <div class="form-group">
+                <label>Application Name</label>
+                <input type="text" value="NextStep" />
+            </div>
+
+            <div class="form-group">
+                <label>Students Label</label>
+                <input type="text" value="Students" placeholder="e.g., Alumni, Graduates, Leerlingen" />
+            </div>
+
+            <div class="form-group">
+                <label>Teachers Label</label>
+                <input type="text" value="Teachers" placeholder="e.g., Docenten, Staff" />
+            </div>
+
+            <div class="form-group">
+                <label>Settings Label</label>
+                <input type="text" value="Settings" placeholder="e.g., Instellingen, Configuration" />
+            </div>
+
+            <div class="form-group">
+                <label>Map Label</label>
+                <input type="text" value="Map" placeholder="e.g., Kaart, Visualization" />
+            </div>
+
+            <div class="form-group">
+                <label>Login Label</label>
+                <input type="text" value="Login" placeholder="e.g., Inloggen, Sign In" />
+            </div>
+
+            <div class="form-group">
+                <label>Logout Label</label>
+                <input type="text" value="Log out" placeholder="e.g., Uitloggen, Sign Out" />
+            </div>
+
+            <div class="button-group">
+                <button class="simple-btn primary">Save Changes</button>
+                <button class="simple-btn">Reset to English</button>
+            </div>
+        </div>
+
+        <!-- Tab Content: System -->
+        <div class="tab-content" id="system">
+            <h2>System Settings</h2>
+            <p>Advanced system configuration. <strong>Caution:</strong> Changing these settings incorrectly may cause the application to malfunction.</p>
+
+            <div class="form-group">
+                <label>Database File Path</label>
+                <input type="text" value="setup/nextstep_data.db" readonly />
+                <p style="margin-top: 5px; font-size: 13px; color: #6b7280;">This setting cannot be changed from the interface.</p>
+            </div>
+
+            <div class="form-group">
+                <label>Python Import Script Path</label>
+                <input type="text" value="data/import.py" />
+            </div>
+
+            <div class="form-group">
+                <label>Password Download Location</label>
+                <input type="text" value="/home/william/Downloads" />
+            </div>
+
+            <div class="button-group">
+                <button class="simple-btn primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+
+                // Add active class to clicked tab
+                tab.classList.add('active');
+
+                // Show corresponding content
+                const tabName = tab.getAttribute('data-tab');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Demo: Add new option functionality (you'd implement the actual logic)
+        document.querySelectorAll('.simple-btn').forEach(btn => {
+            if (btn.textContent.includes('Add New')) {
+                btn.addEventListener('click', (e) => {
+                    alert('This would add a new option. Implement the actual functionality in your PHP version!');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -12,8 +12,8 @@ $settings = download_page_settings();
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_navbar.css"/>
-<link rel="stylesheet" href="css/style_page.css"/>
+<link rel="stylesheet" href="../css/style_navbar.css"/>
+<link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Download</title>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
+    <?php include "../navbar.php"; ?>
     <div class="page-box">
     <?php flashMessages(); ?>
     
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
          echo '<h2>Teacher Created Successfully</h2>';
          echo '<p>The credentials file will download automatically.';
          echo '<p>If it doesn’t, <a href="download.php">click here to download manually</a>.</p>';
-         echo '<a href="teachers.php" class="simple-btn">View Teachers</a>';
+         echo '<a href="/NextStep/teachers" class="simple-btn">View Teachers</a>';
      }
      if ($settings == "student") {
         echo '<h2>Downloading export csv file</h2>';

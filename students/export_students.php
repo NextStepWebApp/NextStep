@@ -1,7 +1,7 @@
 <?php
 # Program to export the database to csv file
 
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -90,5 +90,5 @@ $db->close();
 $_SESSION["export_csv_content"] = $csv_content;
 $_SESSION["export_csv_filename"] = "nextstep_export_" . date('Y-m-d_His') . ".csv";
 
-header("Location: download_success.php");
+header("Location: /NextStep/download/download_success.php");
 exit();

@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -27,12 +27,12 @@ if (!$results) {
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_page.css"/>
-<link rel="stylesheet" href="css/style_navbar.css"/>
+<link rel="stylesheet" href="../css/style_page.css"/>
+<link rel="stylesheet" href="../css/style_navbar.css"/>
 <title>NextStep - Teachers</title>
 </head>
 <body>
-<?php include 'navbar.php'; ?>
+<?php include "../navbar.php"; ?>
 <section class="table-section"> 
 <?php flashMessages();?>
 <div class="teacher-button">
@@ -80,6 +80,6 @@ if (!$results) {
 </table>
 </div>
 </section>
-<script src="js/script.js"></script>
+<script src="../js/script.js"></script>
 </body>
 </html>

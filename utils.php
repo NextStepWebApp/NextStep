@@ -4,13 +4,15 @@
 
 # These are the file path config
 # This is the only place that is allowed to have a specific path besides the config
-$nextstep_config_path = "config/nextstep_config.json";
+$nextstep_config_path = "/var/www/html/NextStep/config/nextstep_config.json";
+
 $nextstep_config = json_decode(file_get_contents($nextstep_config_path), true);
+ 
 # This is location to the database
 $db_file = $nextstep_config["database_file_path"];
 
 # These are the configs for validations
-$config_path = "config/config.json";
+$config_path = "/var/www/html/NextStep/config/config.json";
 $config = json_decode(file_get_contents($config_path), true);
  
 
@@ -215,7 +217,7 @@ function download_page_settings() {
     } else if (isset($_SESSION["export_csv_content"]) || isset($_SESSION["export_csv_filename"])) {
         $settings = $page_settings[1];
     } else {
-        header("Location: index.php");
+        header("Location: /NextStep/");
         exit();
     }
     return $settings;

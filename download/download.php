@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginsecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -36,5 +36,5 @@ if ($settings == "student") {
     exit();
 }
 
-header("Location: index.php");
+header("Location: /NextStep/");
 exit();
