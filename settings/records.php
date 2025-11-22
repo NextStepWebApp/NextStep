@@ -12,7 +12,7 @@ if (isset($_POST["config_action"]) && isset($_POST["config_section"])) {
     // Validate section exists in config
     if (!isset($config[$section])) {
         $_SESSION['error'] = "Invalid section";
-        header("Location: index.php?tab=data");
+        header("Location: index.php?tab=records");
         exit();
     }
     
@@ -56,7 +56,7 @@ if (isset($_POST["config_action"]) && isset($_POST["config_section"])) {
                 }
             }
         }
-        header("Location: index.php?tab=data");
+        header("Location: index.php?tab=records");
         exit();
         
     } elseif ($action === "remove") {
@@ -76,7 +76,7 @@ if (isset($_POST["config_action"]) && isset($_POST["config_section"])) {
                 }
             }
         }
-        header("Location: index.php?tab=data");
+        header("Location: index.php?tab=records");
         exit();
     }
 }
@@ -154,7 +154,7 @@ $config = json_decode(file_get_contents($config_path), true);
                 <tr class="<?= ($index >= $items_per_page) ? "hidden-rows hidden-rows-$section" : '' ?>">
                     <td><?= htmlspecialchars($value) ?></td>
                     <td style="text-align:right;">
-                        <form method="POST" action="index.php?tab=data">
+                        <form method="POST" action="index.php?tab=records">
                             <input type="hidden" name="config_action" value="remove">
                             <input type="hidden" name="config_section" value="<?= htmlspecialchars($section) ?>">
                             <input type="hidden" name="config_index" value="<?= $index ?>">
@@ -173,7 +173,7 @@ $config = json_decode(file_get_contents($config_path), true);
         </button>
     <?php endif; ?>
     
-    <form method="POST" action="index.php?tab=data" style="margin-top:15px;display:flex;gap:10px;">
+    <form method="POST" action="index.php?tab=records" style="margin-top:15px;display:flex;gap:10px;">
         <input type="hidden" name="config_action" value="add">
         <input type="hidden" name="config_section" value="<?= htmlspecialchars($section) ?>">
         <input type="text" name="config_value" placeholder="Add <?= strtolower(htmlspecialchars($label)) ?> (comma-separated for multiple)..." required>
