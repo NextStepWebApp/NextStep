@@ -20,7 +20,7 @@ function loginSecurity()
 {
     if (!isset($_SESSION["teacher_username"])) {
         $_SESSION["error"] = "You are not logged in, please log in";
-        header("Location: login.php");
+        header("Location: /NextStep/login.php");
         exit();
     }
 }

@@ -1,6 +1,6 @@
 <?php
-require_once "../utils.php";
 session_start();
+require_once "../utils.php";
 loginSecurity();
 
 $teacher_id = $_SESSION["teacher_id"];

@@ -24,7 +24,7 @@ if ($_SESSION["teacher_username"] == "ADMIN") {
 <button class="nav-btn" data-open-modal>Log out</button>
 <dialog data-modal id="logout-dialog">
     <h2>Confirm Logout</h2>
-        <a href="logout.php" class="simple-btn">Yes, Log out</a>
+        <a href="/NextStep/logout.php" class="simple-btn">Yes, Log out</a>
         <button class="simple-btn" data-close-modal>Cancel</button>
 </dialog>
 </div>

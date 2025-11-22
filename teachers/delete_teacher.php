@@ -49,5 +49,5 @@ if (!$results) {
 }
 $db->close();
 $_SESSION["success"] = "Teacher $teacher_name deleted successfully";
-header("Location: teachers.php");
+header("Location: /NextStep/teachers/");
 exit();

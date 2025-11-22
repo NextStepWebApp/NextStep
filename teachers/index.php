@@ -64,9 +64,9 @@ if (!$results) {
               <button class="simple-btn" data-open-modal>Actions</button>
               <dialog data-modal>
                   <h2>Teacher Actions</h2>
-                    <a href="edit_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Edit</a>
+                    <a href="/NextStep/teachers/edit_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Edit</a>
                     <?php if ($username != "ADMIN"): ?>
-                      <a href="delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Delete</a>
+                      <a href="/NextStep/teachers/delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Delete</a>
                     <?php endif; ?>
                     <button class="simple-btn" data-close-modal>Close</button>
               </dialog>

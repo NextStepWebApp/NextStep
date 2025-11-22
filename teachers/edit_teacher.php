@@ -192,13 +192,13 @@ if (isset($_POST["submit"])) {
         $_SESSION["new_teacher_filename"]    = $teacher_username . "_password_reset.txt";
         
         $db->close();
-        header("Location: download_success.php");
+        header("Location: /NextStep/download/download_success.php");
         exit();
     }
     
     $_SESSION['success'] = "Teacher updated successfully";
     $db->close();
-    header("Location: teachers.php");
+    header("Location: /NextStep/teachers/");
     exit();
 }
 
