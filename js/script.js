@@ -61,3 +61,24 @@ tabs.forEach(tab => {
         document.getElementById(tabName).classList.add('active');
     });
 });
+
+
+
+// This is a function that is used in the settings, records page
+function toggleRows(section, btn) {
+    const rows = document.querySelectorAll('.hidden-rows-' + section);
+    if (rows.length === 0) return;
+    
+    const isCurrentlyHidden = rows[0].classList.contains('hidden-rows');
+    const count = btn.getAttribute('data-count');
+    
+    rows.forEach(row => {
+        if (isCurrentlyHidden) {
+            row.classList.remove('hidden-rows');
+        } else {
+            row.classList.add('hidden-rows');
+        }
+    });
+    
+    btn.textContent = isCurrentlyHidden ? 'Show Less' : `Show More (${count} more)`;
+}

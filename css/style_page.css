@@ -144,7 +144,7 @@ td:last-child {
 
 /* this part is the dialog styling part
 this is used for the js pop ups */
-dialog[data-modal], .wide-modal {
+dialog[data-modal], .wide-modal, .wide-textbox {
   border: none;
   border-radius: 16px;
   padding: 25px 35px;
@@ -160,6 +160,13 @@ dialog[data-modal], .wide-modal {
 
 dialog[data-modal].wide-modal {
     width: 1100px;   
+}
+
+dialog[data-modal].wide-textbox {
+   width: 600px;
+   max-height: 80vh;     
+   overflow-y: auto;     
+    
 }
 
 dialog[data-modal] {
@@ -454,6 +461,103 @@ pages are create_teacer/student for example */
     line-height: 1.6;
     color: #4b5563;
 }
+
+
+
+/* Data page styling */
+.no-items {
+    text-align: center;
+    color: #9ca3af;
+    font-weight: 600px;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.config-table-wrapper {
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+    border-bottom: 3px solid #ddd;
+}
+.config-table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.config-table-wrapper th {
+    background: #f9fafb;
+    color: #0b1d59;
+    padding: 12px 24px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 2px solid #e5e7eb;
+}
+.config-table-wrapper td {
+    padding: 12px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #0b1d59;
+    font-size: 14px;
+}
+.config-table-wrapper tr:last-child td {
+    border-bottom: none;
+}
+.config-table-wrapper tr:hover td {
+    background-color: rgba(11, 29, 89, 0.05);
+}
+.show-more-btn {
+    width: 100%;
+    padding: 10px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #0b1d59;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+.show-more-btn:hover {
+    background: #f3f4f6;
+}
+.hidden-rows {
+    display: none;
+}
+
+/* this is to give the h3 labels some extra spacing*/
+.extra-spacing {
+    margin-bottom: 20px;
+}
+
+
+.big-plus {
+    margin-top: 20px;
+    font-weight: 1000px;
+    font-size: 20px;
+}
+
+
+dialog[data-modal] textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px 16px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin-bottom: 20px;
+}
+
+
+
+/* End of settings page styling */
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
