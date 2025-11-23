@@ -529,6 +529,7 @@ pages are create_teacer/student for example */
 /* this is to give the h3 labels some extra spacing*/
 .extra-spacing {
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 

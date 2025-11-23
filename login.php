@@ -80,11 +80,11 @@ $db->close();
         <link rel="icon" type="image/x-icon" href="images/logo.webp" />
         <link rel="stylesheet" href="css/style_login.css" />
         <script src="js/script.js"></script>
-        <title>NextStep</title>
+        <title>NextStep - Login</title>
     </head>
     <body>
         <div class="login-container">
-            <div class="brand-name">NextStep</div>
+            <div class="brand-name"><?= $branding['app_name'] ?></div>
             <div class="welcome">Welcome back</div>
 
             <?php

@@ -7,7 +7,7 @@ require_once "utils.php";
 loginSecurity();
 ?>
 <nav class="navbar">
-<h1><a href="/NextStep/" class="brand-name">NextStep</a></h1>
+<h1><a href="/NextStep/" class="brand-name"><?= $branding['app_name'] ?></a></h1>
 <div class="nav-buttons">
 <a href="/NextStep/settings" class="nav-btn">Settings</a>
 <?php
