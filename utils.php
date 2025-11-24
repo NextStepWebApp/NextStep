@@ -13,6 +13,7 @@ $db_file = $nextstep_config["database_file_path"];
 
 # These are the configs for validations
 $config_path = "/var/www/html/NextStep/config/config.json";
+$config = json_decode(file_get_contents($config_path), true);
 
 # This is the location to the branding json
 $branding_path = "/var/www/html/NextStep/config/branding.json";

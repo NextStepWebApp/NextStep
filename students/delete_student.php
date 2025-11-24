@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -30,7 +30,7 @@ $result_name = $results->fetchArray();
 # Check to see if it is a valid value
 if (!$result_name) {
     $_SESSION["error"] = "Invalid value for student_id";
-    header("Location: index.php");
+    header("Location: /NextStep/");
     exit();
 }
 
@@ -49,5 +49,5 @@ if (!$results) {
 }
 $db->close();
 $_SESSION["success"] = "Student $student_name deleted successfully";
-header("Location: index.php");
+header("Location: /NextStep/");
 exit();

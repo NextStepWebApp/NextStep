@@ -57,17 +57,17 @@ $readable_date = date('Y-m-d H:i:s', $last_update);
 <p>Date created: <strong><?=$created_date?></strong></p>
 <p>Date last update: <strong><?=$readable_date?></strong></p>
 <?php if ($_SESSION["teacher_username"] == "ADMIN") { ?>
-    <a href="edit_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
+    <a href="/NextStep/students/edit_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
     <button class="simple-btn" data-open-modal>Delete</button>
     <dialog data-modal>
         <h2>Are you sure?</h2>
         <p>This action cannot be undone.</p>
-        <a href="delete_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Confirm Delete</a>
+        <a href="/NextStep/students/delete_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Confirm Delete</a>
         <button class="simple-btn" data-close-modal>Cancel</button>
     </dialog>
 
 <?php } ?>
-<a href="index.php#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
+<a href="/NextStep/#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
 </div>
 <script src="js/script.js"></script>
 </body>

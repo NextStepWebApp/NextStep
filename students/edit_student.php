@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
@@ -106,7 +106,7 @@ if (isset($_POST["submit"])) {
     
     if ($existing) {
         $_SESSION['error'] = "Another student with this name, email, or phone number already exists";
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
+        header("Location: /NextStep/students/edit_student.php?student_id=" . $_POST['student_id']);
         exit();
     }
 
@@ -120,7 +120,7 @@ if (isset($_POST["submit"])) {
         !in_array($_POST["accessibility"], $accessibility)) {
         $_SESSION['error'] = "Invalid selection detected";
         error_log("Config validation error - invalid dropdown value submitted");
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
+        header("Location: /NextStep/students/edit_student.php?student_id=" . $_POST['student_id']);
         exit();
     }
 
@@ -170,7 +170,7 @@ if (isset($_POST["submit"])) {
         errorMessages("Error executing query", $db->lastErrorMsg());
     }
     $_SESSION['success'] = 'Student information updated successfully';
-    header("Location: view.php?student_id=" . $_POST['student_id']);
+    header("Location: /NextStep/view.php?student_id=" . $_POST['student_id']);
     exit();
 }
 
@@ -202,13 +202,13 @@ $accessibility_name    = $row['accessibility_name'];
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_navbar.css"/>
-<link rel="stylesheet" href="css/style_page.css"/>
+<link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
+<link rel="stylesheet" href="../css/style_navbar.css"/>
+<link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Edit Student</title>
 </head>
 <body>
-<?php include 'navbar.php'; ?>
+<?php include "../navbar.php"; ?>
 <div class="page-box-wide">
 <h2>Edit Student Information</h2>
 <?php flashMessages(); ?>
