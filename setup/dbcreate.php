@@ -25,6 +25,36 @@ if (!$db) {
 #          TEACHER SETUP
 #########################################
 
+# Create teacher role table
+# This table will have the roles
+$query = <<<EOF
+      CREATE TABLE ROLES (
+      role_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      role_name TEXT NOT NULL UNIQUE
+      );
+EOF;  
+tableCreate($query, $db, "ROLES");
+
+
+# This part creates the roles that are going to be used
+$roles_list = ["ADMIN", "USER", "SUPERUSER", "SYSADMIN"];
+
+foreach ($roles_list as $role_list) {
+    $query =
+        "INSERT INTO ROLES (role_name) VALUES (:role)";
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
+        echo "Error preparing query for role qreation: " . $db->lastErrorMsg() . "\n";
+    }
+    $stmt->bindValue(":role", $role_list, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    if (!$result) {
+        echo " - Error inserting $role_list role: " . $db->lastErrorMsg() . "\n";
+    } else {
+        echo " - Role $role_list  created and inserted successfully\n";
+    }
+}
+
 # Create teachers table
 $query = <<<EOF
       CREATE TABLE TEACHERS (
@@ -32,10 +62,12 @@ $query = <<<EOF
       teacher_email TEXT NOT NULL,
       teacher_name TEXT NOT NULL,
       teacher_username TEXT NOT NULL UNIQUE,
-      teacher_password TEXT NOT NULL
+      teacher_password TEXT NOT NULL,
+      teacher_role_id INTEGER NOT NULL,
+      FOREIGN KEY (teacher_role_id) REFERENCES ROLES(role_id)
       );
-
 EOF;
+# The teacher role is table for permission roles
 
 # tablecreate is a function in utils.php
 tableCreate($query, $db, "TEACHERS");
@@ -44,9 +76,28 @@ tableCreate($query, $db, "TEACHERS");
 $unsafe_password = genPassword(8);
 $password = password_hash($unsafe_password, PASSWORD_DEFAULT);
 
+# Get foreign key for admin role
+$query = "SELECT role_id FROM ROLES WHERE role_name = :role";
+$stmt = $db->prepare($query);
+if (!$stmt) {
+    echo "Error preparing query for getting foreign key for admin: " . $db->lastErrorMsg() . "\n";
+}
+$stmt->bindValue(":role", "ADMIN", SQLITE3_TEXT);
+$result = $stmt->execute();
+if (!$result) {
+    echo " - Error selecting admin foreign key: " . $db->lastErrorMsg() . "\n";
+} else {
+    echo " - Succes selecting foreign key\n";
+}
+$row = $result->fetchArray(SQLITE3_ASSOC);
+$role_admin_key = $row['role_id'];
+
 # query to insert the admin theacher to the db and a generated password
-$query =
-    "INSERT INTO TEACHERS (teacher_email, teacher_name, teacher_username, teacher_password) VALUES (:email, :name, :username, :password)";
+$query = <<<EOF
+INSERT INTO TEACHERS (teacher_email, teacher_name, teacher_username, teacher_password, teacher_role_id) 
+VALUES (:email, :name, :username, :password, :role);
+EOF;
+    
 $stmt = $db->prepare($query);
 if (!$stmt) {
     echo "Error preparing query: " . $db->lastErrorMsg() . "\n";
@@ -56,6 +107,7 @@ $stmt->bindValue(":email", "admin@admin.com", SQLITE3_TEXT);
 $stmt->bindValue(":name", "ADMIN", SQLITE3_TEXT);
 $stmt->bindValue(":username", "ADMIN", SQLITE3_TEXT);
 $stmt->bindValue(":password", $password, SQLITE3_TEXT);
+$stmt->bindValue(":role", $role_admin_key, SQLITE3_INTEGER);
 
 $result = $stmt->execute();
 
