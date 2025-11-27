@@ -72,13 +72,39 @@ if (!$results) {
             <td>
               <button class="simple-btn" data-open-modal>Actions</button>
               <dialog data-modal>
-                  <h2>Teacher Actions</h2>
-                    <a href="/NextStep/teachers/edit_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Edit</a>
-                    <?php if ($username != "ADMIN"): ?>
-                      <a href="/NextStep/teachers/delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Delete</a>
-                    <?php endif; ?>
+                <h2>Teacher Actions</h2>
+                <a href="/NextStep/teachers/edit_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Edit</a>
+                <?php if ($username != "ADMIN"): ?>
+                <a href="/NextStep/teachers/delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Delete</a>
+                <?php endif; ?>
+                          
+                <button class="simple-btn" data-open-modal>Role</button>
+                    <dialog data-modal>
+                    <h3>Change Role</h3>
+                    <p>Change role for <strong><?= $username ?></strong><br>
+                        Current role: <strong><?= $role ?></strong></p>
+                      
+                    <label for="roleSelect-<?= $id ?>">Select New Role:</label>
+                    <select id="roleSelect-<?= $id ?>">
+                        <option value="admin">ADMIN - Full system access and user management</option>
+                        <option value="user">USER - View-only access to student records</option>
+                        <option value="superuser">SUPERUSER - Advanced access with data management</option>
+                        <option value="sysadmin">SYSADMIN - System administration and configuration</option>
+                    </select>
+                      
+                    <div class="warning-box">
+                        <p><strong>⚠️ Warning:</strong> Changing roles will affect this user's permissions immediately.</p>
+                    </div>
+                      
+                    <div class="button-container">
+                        <button class="btn btn-primary" onclick="saveRole(<?= $id ?>)">Update Role</button>
+                        <button class="btn" data-close-modal>Cancel</button>
+                    </div>
+                    </dialog>
                     <button class="simple-btn" data-close-modal>Close</button>
-              </dialog>
+                    </dialog>
+                    
+              
             </td>
         </tr>
     <?php

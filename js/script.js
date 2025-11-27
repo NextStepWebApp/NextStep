@@ -27,15 +27,25 @@ document.querySelectorAll("[data-close-modal]").forEach(button => {
 });
 
 // Close modal when clicking outside the dialog (on the backdrop)
+//document.querySelectorAll("[data-modal]").forEach(dialog => {
+  //dialog.addEventListener("click", e => {
+   // const rect = dialog.getBoundingClientRect();
+    //if (
+      //e.clientX < rect.left ||
+     // e.clientX > rect.right ||
+    //  e.clientY < rect.top ||
+     // e.clientY > rect.bottom
+        // ) {
+      //dialog.close();
+      //}
+    //  });
+//});
+
+// Close modal when clicking outside the dialog (on the backdrop)
 document.querySelectorAll("[data-modal]").forEach(dialog => {
   dialog.addEventListener("click", e => {
-    const rect = dialog.getBoundingClientRect();
-    if (
-      e.clientX < rect.left ||
-      e.clientX > rect.right ||
-      e.clientY < rect.top ||
-      e.clientY > rect.bottom
-    ) {
+    // Only close if clicking directly on the dialog (backdrop), not on child elements
+    if (e.target === dialog) {
       dialog.close();
     }
   });
