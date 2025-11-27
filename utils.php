@@ -229,7 +229,7 @@ function download_page_settings() {
 
 
 # This is made to a function to avoid a lot of code repetition
-# Input validation functions used in settings and edit page
+# Input validation functions used in settings, edit and create page
 
 function validate_teacher_name(string $teacher_name, string $page, string $teacher_id = "") {
     if (strlen($teacher_name) < 2) {
@@ -244,8 +244,8 @@ function validate_teacher_name(string $teacher_name, string $page, string $teach
                 header("Location: settings.php");
                 exit();
                 
-            case "add_teacher":
-                header("Location: add_teacher.php");
+            case "create_teacher":
+                header("Location: create_teacher.php");
                 exit();
                 
             default:
@@ -267,8 +267,8 @@ function validate_teacher_name(string $teacher_name, string $page, string $teach
                 header("Location: settings.php");
                 exit();
                 
-            case "add_teacher":
-                header("Location: add_teacher.php");
+            case "create_teacher":
+                header("Location: create_teacher.php");
                 exit();
                 
             default:
@@ -279,7 +279,7 @@ function validate_teacher_name(string $teacher_name, string $page, string $teach
     
     // Check valid characters
     if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $teacher_name)) {
-        $_SESSION['error'] = "Name contains invalid characters";
+        $_SESSION['error'] = "Name or Username contains invalid characters";
         
         switch ($page) {
             case "edit_teacher":
@@ -290,8 +290,8 @@ function validate_teacher_name(string $teacher_name, string $page, string $teach
                 header("Location: settings.php");
                 exit();
                 
-            case "add_teacher":
-                header("Location: add_teacher.php");
+            case "create_teacher":
+                header("Location: create_teacher.php");
                 exit();
                 
             default:
@@ -315,8 +315,8 @@ function validate_teacher_email(string $teacher_email, string $page, string $tea
                 header("Location: settings.php");
                 exit();
                 
-            case "add_teacher":
-                header("Location: add_teacher.php");
+            case "create_teacher":
+                header("Location: create_teacher.php");
                 exit();
                 
             default:
@@ -338,8 +338,8 @@ function validate_teacher_email(string $teacher_email, string $page, string $tea
                 header("Location: settings.php");
                 exit();
                 
-            case "add_teacher":
-                header("Location: add_teacher.php");
+            case "create_teacher":
+                header("Location: create_teacher.php");
                 exit();
                 
             default:
@@ -347,4 +347,23 @@ function validate_teacher_email(string $teacher_email, string $page, string $tea
                 exit();
         }
     }
+}
+
+
+# This is a function that gets the foreign key from the roles db for the teacher db
+
+function get_foreign_key_roles (SQLite3 $db, string $role) {
+    $query = "SELECT role_id FROM ROLES WHERE role_name = :role";
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
+        echo "Error preparing query for role qreation: " . $db->lastErrorMsg() . "\n";
+    }
+    $stmt->bindValue(":role", $role, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    if (!$result) {
+        errorMessages("Error selecting $role role", $db->lastErrorMsg());
+    }     
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+    $role_key = $row['role_id'];
+    return $role_key;
 }

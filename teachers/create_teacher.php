@@ -17,46 +17,15 @@ if (isset($_POST["submit"])) {
     }
     
     # This section will be validations of name, email, username and password
-    
+    # These are functions in utils.php that are used for user input validations
     # Validate teacher name
     $teacher_name = trim($_POST["teacher_name"]);
-    if (strlen($teacher_name) < 2) {
-        $_SESSION['error'] = "Name must be at least 2 characters long";
-        header("Location: create_teacher.php");
-        exit();
-    }
+    validate_teacher_name($teacher_name, "create_teacher", $teacher_name);
     
-    if (strlen($teacher_name) > 50) {
-        $_SESSION['error'] = "Name must not exceed 50 characters";
-        header("Location: create_teacher.php");
-        exit();
-    }
-    
-    if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $teacher_name)) {
-        $_SESSION['error'] = "Name contains invalid characters";
-        header("Location: create_teacher.php");
-        exit();
-    }
-    # Validate username
+    # Validate user name (same function)
     $teacher_username = trim($_POST["teacher_username"]);
-    if (strlen($teacher_username) < 3) {
-        $_SESSION['error'] = "Username must be at least 3 characters long";
-        header("Location: create_teacher.php");
-        exit();
-    }
-    
-    if (strlen($teacher_username) > 30) {
-        $_SESSION['error'] = "Username must not exceed 30 characters";
-        header("Location: create_teacher.php");
-        exit();
-    }
-    
-    if (!preg_match("/^[a-zA-Z0-9_\-]+$/", $teacher_username)) {
-        $_SESSION['error'] = "Username can only contain letters, numbers, hyphens and underscores";
-        header("Location: create_teacher.php");
-        exit();
-    }
-   
+    validate_teacher_name($teacher_username, "create_teacher", $teacher_username);
+       
     try {
         $db = new SQLite3($db_file);
     } catch (Exception $e) {
@@ -91,6 +60,10 @@ if (isset($_POST["submit"])) {
     $unsafe_password = genPassword(6); 
     # Hash the password
     $password = password_hash($unsafe_password, PASSWORD_DEFAULT);
+
+    # This is a function in utils.php
+    # This gets the role foreign key for teachers insert
+    $role_key = get_foreign_key_roles($db, "USER");
     
     # Insert new teacher
     $query = "
@@ -98,12 +71,14 @@ if (isset($_POST["submit"])) {
             teacher_name,
             teacher_email,
             teacher_username,
-            teacher_password
+            teacher_password,
+            teacher_role_id
         ) VALUES (
             :name,
             :email,
             :username,
-            :password
+            :password,
+            :role
         )
     ";
 
@@ -116,6 +91,7 @@ if (isset($_POST["submit"])) {
     $stmt->bindValue(":email", "example@example.com", SQLITE3_TEXT);
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
     $stmt->bindValue(":password", $password, SQLITE3_TEXT);
+    $stmt->bindValue(":role", $role_key, SQLITE3_INTEGER);
 
     $result = $stmt->execute();
     if (!$result) {

@@ -10,7 +10,13 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 # Fetch all teachers
-$query = "SELECT teacher_id, teacher_name, teacher_username, teacher_email FROM TEACHERS";
+$query = <<<EOF
+SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username, 
+TEACHERS.teacher_email, ROLES.role_name
+FROM TEACHERS 
+JOIN ROLES ON TEACHERS.teacher_role_id = ROLES.role_id;
+EOF;  
+
 $stmt = $db->prepare($query);
 if (!$stmt) {
     errorMessages("Error preparing query", $db->lastErrorMsg());
@@ -45,6 +51,7 @@ if (!$results) {
 <th>Name</th>
 <th>Username</th>
 <th>Email</th>
+<th>Role</th>
 <th>Actions</th>
 </tr>
 </thead>
@@ -54,12 +61,14 @@ if (!$results) {
         $name = htmlspecialchars($row["teacher_name"]);
         $username = htmlspecialchars($row["teacher_username"]);
         $email = htmlspecialchars($row["teacher_email"]);
+        $role = htmlspecialchars($row["role_name"]);
         $id = $row["teacher_id"];
     ?>
         <tr>
             <td><?= $name ?></td>
             <td><?= $username ?></td>
             <td><?= $email ?></td>
+            <td><?= $role ?></td>
             <td>
               <button class="simple-btn" data-open-modal>Actions</button>
               <dialog data-modal>
