@@ -555,10 +555,12 @@ dialog[data-modal] textarea {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     margin-bottom: 20px;
 }
-
-
-
 /* End of settings page styling */
+
+/* This is for the dialog buttons in the teachers page (role)*/
+.dialog-buttons {
+    margin-top: 20px;
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

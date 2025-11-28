@@ -21,9 +21,26 @@ $stmt = $db->prepare($query);
 if (!$stmt) {
     errorMessages("Error preparing query", $db->lastErrorMsg());
 }
-$results = $stmt->execute();
-if (!$results) {
+$results_teachers = $stmt->execute();
+if (!$results_teachers) {
     errorMessages("Error executing query", $db->lastErrorMsg());
+}
+
+# Get the roles from the db
+$query = "SELECT ROLES.role_id, ROLES.role_name FROM ROLES";  
+$stmt = $db->prepare($query);
+if (!$stmt) {
+    errorMessages("Error preparing query", $db->lastErrorMsg());
+}
+$results_roles = $stmt->execute();
+if (!$results_roles) {
+    errorMessages("Error executing query", $db->lastErrorMsg());
+}
+
+# Fetch ALL roles into an array
+$row_roles = [];
+while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
+    $row_roles[] = $role;
 }
 
 ?>
@@ -57,7 +74,7 @@ if (!$results) {
 </thead>
 <tbody id="tableBody">
     <?php
-    while ($row = $results->fetchArray()) {
+    while ($row = $results_teachers->fetchArray()) {
         $name = htmlspecialchars($row["teacher_name"]);
         $username = htmlspecialchars($row["teacher_username"]);
         $email = htmlspecialchars($row["teacher_email"]);
@@ -70,8 +87,8 @@ if (!$results) {
             <td><?= $email ?></td>
             <td><?= $role ?></td>
             <td>
-              <button class="simple-btn" data-open-modal>Actions</button>
-              <dialog data-modal>
+            <button class="simple-btn" data-open-modal>Actions</button>
+            <dialog data-modal>
                 <h2>Teacher Actions</h2>
                 <a href="/NextStep/teachers/edit_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Edit</a>
                 <?php if ($username != "ADMIN"): ?>
@@ -80,31 +97,21 @@ if (!$results) {
                           
                 <button class="simple-btn" data-open-modal>Role</button>
                     <dialog data-modal>
-                    <h3>Change Role</h3>
-                    <p>Change role for <strong><?= $username ?></strong><br>
-                        Current role: <strong><?= $role ?></strong></p>
-                      
-                    <label for="roleSelect-<?= $id ?>">Select New Role:</label>
-                    <select id="roleSelect-<?= $id ?>">
-                        <option value="admin">ADMIN - Full system access and user management</option>
-                        <option value="user">USER - View-only access to student records</option>
-                        <option value="superuser">SUPERUSER - Advanced access with data management</option>
-                        <option value="sysadmin">SYSADMIN - System administration and configuration</option>
+                    <h2>Change Role</h2>
+                    <select name="role">
+                        <?php
+                            foreach ($row_roles as $role) {
+                                echo "<option value='{$role['role_id']}'>{$role['role_name']}</option>";
+                            }
+                        ?>
                     </select>
-                      
-                    <div class="warning-box">
-                        <p><strong>⚠️ Warning:</strong> Changing roles will affect this user's permissions immediately.</p>
-                    </div>
-                      
-                    <div class="button-container">
-                        <button class="btn btn-primary" onclick="saveRole(<?= $id ?>)">Update Role</button>
-                        <button class="btn" data-close-modal>Cancel</button>
+                    <div class="dialog-buttons">
+                        <button class="simple-btn">Update Role</button>
+                        <button class="simple-btn" data-close-modal>Cancel</button>
                     </div>
                     </dialog>
                     <button class="simple-btn" data-close-modal>Close</button>
-                    </dialog>
-                    
-              
+            </dialog>
             </td>
         </tr>
     <?php
