@@ -101,7 +101,7 @@ while ($row = $results->fetchArray()) {
 <?php
 }
 if ($hasresults == 0)
-    echo('<tr><td colspan="5" class="no-students">No students found. <a href="students.php">Add Students</a></td></tr>');$db->close();
+    echo('<tr><td colspan="5" class="no-students">No students found. <a href="/NextStep/students">Add Students</a></td></tr>');$db->close();
 $db->close();
 ?>
 </tbody>

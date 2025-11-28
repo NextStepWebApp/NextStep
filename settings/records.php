@@ -130,7 +130,7 @@ $config = json_decode(file_get_contents($config_path), true);
                 <input type="hidden" name="config_action" value="add">
                 <input type="hidden" name="config_section" value="<?= htmlspecialchars($section) ?>">
                 <textarea name="config_value" placeholder="Add <?= strtolower(htmlspecialchars($label)) ?> (comma-separated for multiple)..." required></textarea>
-                <div class="dialog-buttons">
+                <div>
                     <button type="submit" class="simple-btn">Add</button>
                     <button type="button" class="simple-btn" data-close-modal>Cancel</button>
                 </div>
