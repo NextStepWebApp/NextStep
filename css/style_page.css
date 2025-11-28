@@ -557,10 +557,6 @@ dialog[data-modal] textarea {
 }
 /* End of settings page styling */
 
-/* This is for the dialog buttons in the teachers page (role)*/
-.dialog-buttons {
-    margin-top: 20px;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

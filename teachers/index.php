@@ -9,6 +9,61 @@ try {
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
 }
+
+
+# handle post from roles
+if (isset($_POST["submit_role"])) {
+    if (isset($_POST["role"]) && isset($_POST["teacher_id"]) && isset($_POST["teacher_username"])) {
+        $new_role_id = intval($_POST["role"]);
+        $teacher_id = intval($_POST["teacher_id"]);
+        $teacher_username = $_POST["teacher_username"];
+        
+        # Validate that the role exists
+        $query = "SELECT role_id FROM ROLES WHERE role_id = :role_id";
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            errorMessages("Error preparing query", $db->lastErrorMsg());
+        }
+        $stmt->bindValue(':role_id', $new_role_id, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        if (!$result) {
+            errorMessages("Error executing query", $db->lastErrorMsg());
+        }
+        $existing = $result->fetchArray();
+        if (!$existing) {
+            $_SESSION["error"] = "Invalid role selected";
+            $db->close();
+            header("Location: /NextStep/teachers");
+            exit();
+        } else {
+            # Check to see if username is "ADMIN" (safty rail)
+            if ($teacher_username == "ADMIN") {
+                $_SESSION["error"] = "The original ADMIN can not change roles";
+                $db->close();
+                header("Location: /NextStep/teachers");
+                exit();   
+            }
+            
+            #Update the teacher's role
+            $query = "UPDATE TEACHERS SET teacher_role_id = :role_id WHERE teacher_id = :teacher_id";
+            $stmt = $db->prepare($query);
+            if (!$stmt) {
+                errorMessages("Error preparing query", $db->lastErrorMsg());
+            }
+            $stmt->bindValue(':role_id', $new_role_id, SQLITE3_INTEGER);
+            $stmt->bindValue(':teacher_id', $teacher_id, SQLITE3_INTEGER);
+            $update = $stmt->execute();
+            if (!$update) {
+                errorMessages("Error updating role", $db->lastErrorMsg());
+            }
+            $_SESSION["success"] = "Teacher role updated successfully";
+            header("Location: /NextStep/teachers");
+            $db->close();
+            exit();
+        }
+    }
+}
+
 # Fetch all teachers
 $query = <<<EOF
 SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username, 
@@ -42,14 +97,13 @@ $row_roles = [];
 while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
     $row_roles[] = $role;
 }
-
 ?>
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="icon" type="image/x-icon" href="images/logo.webp"/>
+<link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <title>NextStep - Teachers</title>
@@ -92,25 +146,29 @@ while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
                 <h2>Teacher Actions</h2>
                 <a href="/NextStep/teachers/edit_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Edit</a>
                 <?php if ($username != "ADMIN"): ?>
-                <a href="/NextStep/teachers/delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Delete</a>
+                      <a href="/NextStep/teachers/delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Delete</a>
+                      <button class="simple-btn" data-open-modal>Role</button>
+                          <dialog data-modal>
+                          <h2>Change Role</h2>
+                          <form method="POST">
+                              <input type="hidden" name="teacher_id" value="<?= $id ?>">
+                              <input type="hidden" name="teacher_username" value="<?= $username ?>">
+                              <select name="role">
+                                  <?php
+                                      foreach ($row_roles as $role_option) {
+                                          $selected = ($role_option['role_name'] == $role) ? 'selected' : '';
+                                          echo "<option value='{$role_option['role_id']}' $selected>{$role_option['role_name']}</option>";
+                                      }
+                                  ?>
+                              </select>
+                              <div class="button-container">
+                                  <input type="submit" class="simple-btn" name="submit_role" value="Update Role">
+                                  <button class="simple-btn" data-close-modal>Cancel</button>
+                              </div>
+                          </form>                    
+                          </dialog>
                 <?php endif; ?>
-                          
-                <button class="simple-btn" data-open-modal>Role</button>
-                    <dialog data-modal>
-                    <h2>Change Role</h2>
-                    <select name="role">
-                        <?php
-                            foreach ($row_roles as $role) {
-                                echo "<option value='{$role['role_id']}'>{$role['role_name']}</option>";
-                            }
-                        ?>
-                    </select>
-                    <div class="dialog-buttons">
-                        <button class="simple-btn">Update Role</button>
-                        <button class="simple-btn" data-close-modal>Cancel</button>
-                    </div>
-                    </dialog>
-                    <button class="simple-btn" data-close-modal>Close</button>
+            <button class="simple-btn" data-close-modal>Close</button>
             </dialog>
             </td>
         </tr>
