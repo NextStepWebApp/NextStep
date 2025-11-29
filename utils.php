@@ -4,7 +4,7 @@
 
 # These are the file path config
 # This is the only place that is allowed to have a specific path besides the config
-$nextstep_config_path = "/var/www/html/NextStep/config/nextstep_config.json";
+$nextstep_config_path = "/srv/http/NextStep/config/nextstep_config.json";
 
 $nextstep_config = json_decode(file_get_contents($nextstep_config_path), true);
  
@@ -12,11 +12,11 @@ $nextstep_config = json_decode(file_get_contents($nextstep_config_path), true);
 $db_file = $nextstep_config["database_file_path"];
 
 # These are the configs for validations
-$config_path = "/var/www/html/NextStep/config/config.json";
+$config_path = "/srv/http/NextStep/config/config.json";
 $config = json_decode(file_get_contents($config_path), true);
 
 # This is the location to the branding json
-$branding_path = "/var/www/html/NextStep/config/branding.json";
+$branding_path = "/srv/http/NextStep/config/branding.json";
 $branding = json_decode(file_get_contents($branding_path), true);
 
 

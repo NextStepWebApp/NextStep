@@ -1,5 +1,5 @@
 {
-   "password_save_path": "/var/www/html",
-   "database_file_path": "/var/www/html/NextStep/setup/nextstep_data.db",
-   "python_import_path": "/var/www/html/NextStep/data/import.py"
+   "password_save_path": "/srv/http/",
+   "database_file_path": "/srv/http/NextStep/setup/nextstep_data.db",
+   "python_import_path": "/srv/http/NextStep/data/import.py"
 }
