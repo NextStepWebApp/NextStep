@@ -44,8 +44,7 @@ $tab = $_GET['tab'] ?? 'general';
     <div class="tabs">
         <a href="?tab=general"><button class="tab <?= $tab==='general'?'active':'' ?>">General</button></a>
         <a href="?tab=records"><button class="tab <?= $tab==='records'?'active':'' ?>">Records</button></a>
-        <a href="?tab=labels"><button class="tab <?= $tab==='labels'?'active':'' ?>">Labels</button></a>
-        <a href="?tab=users"><button class="tab <?= $tab==='users'?'active':'' ?>">Users</button></a>
+        <a href="?tab=system_management"><button class="tab <?= $tab==='system_management'?'active':'' ?>">System Management</button></a>
         <a href="?tab=preferences"><button class="tab <?= $tab==='preferences'?'active':'' ?>">Preferences</button></a>
     </div>
 
