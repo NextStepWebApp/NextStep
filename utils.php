@@ -367,3 +367,16 @@ function get_foreign_key_roles (SQLite3 $db, string $role) {
     $role_key = $row['role_id'];
     return $role_key;
 }
+
+
+# This function does onboarding
+
+function setup_checker() {
+    $setup_config_path = "/srv/http/NextStep/config/nextstep_config.json";
+    $setup_config = json_decode(file_get_contents($setup_config_path), true);
+    $value = $setup_config["setup_value"];
+    if ($value === 0) {
+        header("Location: NextStep/setup/dbcreate.php");
+        exit();
+    }
+}
