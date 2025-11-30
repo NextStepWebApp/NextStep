@@ -1,5 +1,6 @@
 <?php
 require_once "utils.php";
+setup_checker(); 
 session_start();
 
 try {
