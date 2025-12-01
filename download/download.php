@@ -36,5 +36,26 @@ if ($settings == "student") {
     exit();
 }
 
+if ($settings = "admin") {
+    # Delete the setup folder
+    $config = json_decode(file_get_contents($nextstep_config), true); # $nextstep_config comes from utils
+    $dirname = $config["setup_path_dir"];
+    array_map('unlink', glob("$dirname/*.*"));
+    rmdir($dirname);
+    
+    # Download the admin credentials
+    $admin_credentials = $_SESSION["new_admin_credentials"];
+    $filename = $_SESSION["new_admin_filename"];
+    session_destroy(); # There is still no login so just destroy not needed anymore
+    header('Content-Type: text/plain');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . strlen($admin_credentials));
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    echo $admin_credentials;
+    exit();
+}
+
 header("Location: /NextStep/");
 exit();

@@ -12,11 +12,11 @@ $nextstep_config = json_decode(file_get_contents($nextstep_config_path), true);
 $db_file = $nextstep_config["database_file_path"];
 
 # These are the configs for validations
-$config_path = "/var/lib/nextstepwebapp/config.json";
+$config_path = $nextstep_config["config_path"];
 $config = json_decode(file_get_contents($config_path), true);
 
 # This is the location to the branding json
-$branding_path = "/var/lib/nextstepwebapp/branding.json";
+$branding_path = $nextstep_config["branding_path"];
 $branding = json_decode(file_get_contents($branding_path), true);
 
 
@@ -213,13 +213,14 @@ function genPassword(int $length)
 
 # function that is used for the download pages to see what for type of download is asked
 function download_page_settings() {
-    $page_settings = ["teacher", "student"];
+    $page_settings = ["teacher", "student", "admin"];
     
     if (isset($_SESSION["new_teacher_credentials"]) || isset($_SESSION["new_teacher_filename"])) {
         $settings = $page_settings[0];
-        
-    } else if (isset($_SESSION["export_csv_content"]) || isset($_SESSION["export_csv_filename"])) {
+    } elseif (isset($_SESSION["export_csv_content"]) || isset($_SESSION["export_csv_filename"])) {
         $settings = $page_settings[1];
+    } elseif (isset($_SESSION["new_admin_credentials"]) || isset($_SESSION["new_admin_filename"])) {
+        $settings = $page_settings[2];
     } else {
         header("Location: /NextStep/");
         exit();

@@ -29,19 +29,25 @@ document.addEventListener("DOMContentLoaded", () => {
     <?php flashMessages(); ?>
     
     <?php
-     if ($settings == "teacher") {
+    if ($settings == "teacher") {
          echo '<h2>Teacher Created Successfully</h2>';
          echo '<p>The credentials file will download automatically.';
          echo '<p>If it doesn’t, <a href="download.php">click here to download manually</a>.</p>';
          echo '<a href="/NextStep/teachers" class="simple-btn">View Teachers</a>';
-     }
-     if ($settings == "student") {
+    }
+    if ($settings == "student") {
         echo '<h2>Downloading export csv file</h2>';
         echo '<p>The csv export file will download automatically.';
         echo '<p>If it doesn’t, <a href="download.php">click here to download manually</a>.</p>';
-        echo '<a href="students.php" class="simple-btn">Back to Students</a>';
-     }
-     ?>
+        echo '<a href="/NextStep/students" class="simple-btn">Back to Students</a>';
+    }
+    if ($settings == "admin") {
+         echo '<h2>Downloading ADMIN credentials</h2>';
+         echo '<p>The ADMIN credentials file will download automatically.';
+         echo '<p>If it doesn’t, <a href="download.php">click here to download manually</a>.</p>';
+         echo '<a href="/NextStep" class="simple-btn">Take the NextStep</a>';
+    } 
+    ?>
     </div>
     <script src="js/script.js"></script>
 </body>

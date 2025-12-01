@@ -1,10 +1,15 @@
 <?php
 # This piece the code is responsible to create the database for the nextstep application
 
+session_start(); # This is to give the account credentials to the download functionality
+
 require_once "utils.php";
 
+# get acces to the config file 
+$config = json_decode(file_get_contents($nextstep_config), true); # $nextstep_config comes from utils
+
 # Filepath to the setup.json
-$setup_config_path = "/var/lib/nextstepwebapp/setup.json";
+$setup_config_path = $config["setup_config_path"];
 if (!file_exists($setup_config_path)) {
     die("setup.json not found at $setup_config_path\n");
 }
@@ -15,11 +20,6 @@ if (!isset($setup_config["setup_value"]) || $setup_config["setup_value"] !== 0) 
     header("Location: /NextStep/");
     exit();
 }
-
-# get acces to the config file 
-$config = json_decode(file_get_contents($nextstep_config), true);
-
-$db_file = $config["database_file_path"]; 
 
 # Reset
 if (file_exists($db_file)) {
@@ -248,5 +248,14 @@ if (file_put_contents($setup_config_path, json_encode($setup_config, JSON_PRETTY
     error_log("Failed to update setup.json\n");
 }
 
-header("Location: /NextStep/");
+# Download the credentials
+# Create credentials file content
+$credentials_content = "NextStep ADMIN Account\n";
+$credentials_content .= "=========================================\n\n";
+$credentials_content .= "Username: " . "ADMIN" ."\n";
+$credentials_content .= "Password: " . $unsafe_password . "\n\n";
+       
+$_SESSION["new_admin_credentials"] = $credentials_content;
+$_SESSION["new_admin_filename"]    = "ADMIN-login-credentials.txt";
+header("Location: /NextStep/download/download_success.php");
 exit();
