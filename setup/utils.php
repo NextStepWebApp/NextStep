@@ -30,9 +30,9 @@ function savefile(string $location, string $name, string $text)
     }
 
     if (file_put_contents($filename, $text) !== false) {
-        echo " - File '$filename' created successfully!\n";
+        error_log(" - File '$filename' created successfully!\n");
     } else {
-        echo " - Error: Could not create file.\n";
+        error_log(" - Error: Could not create file.\n");
     }
 }
 
@@ -54,16 +54,16 @@ function tableCreate(string $query, SQLite3 $db, string $name_table)
     $stmt = $db->prepare($query);
 
     if (!$stmt) {
-        echo "Error preparing query for $name_table: " .
+        error_log("Error preparing query for $name_table: " .
             $db->lastErrorMsg() .
-            "\n";
+            "\n");
     }
 
     $result = $stmt->execute();
 
     if (!$result) {
-        echo "Error creating $name_table: " . $db->lastErrorMsg() . "\n";
+        error_log("Error creating $name_table: " . $db->lastErrorMsg() . "\n");
     } else {
-        echo "$name_table table created successfully\n";
+        error_log("$name_table table created successfully\n");
     }
 }

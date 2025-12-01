@@ -372,7 +372,7 @@ function get_foreign_key_roles (SQLite3 $db, string $role) {
 # This function does onboarding
 
 function setup_checker() {
-    $setup_config_path = "/etc/nextstepwebapp/nextstep_config.json";
+    $setup_config_path = "/etc/nextstepwebapp/setup.json";
     $setup_config = json_decode(file_get_contents($setup_config_path), true);
     $value = $setup_config["setup_value"];
     if ($value === 0) {

@@ -3,12 +3,25 @@
 
 require_once "utils.php";
 
+# Filepath to the setup.json
+$setup_config_path = "/etc/nextstepwebapp/setup.json";
+if (!file_exists($setup_config_path)) {
+    die("setup.json not found at $setup_config_path\n");
+}
+$setup_config = json_decode(file_get_contents($setup_config_path), true);
+
+# Check if the value is 0; if not, redirect and exit
+if (!isset($setup_config["setup_value"]) || $setup_config["setup_value"] !== 0) {
+    header("Location: /NextStep/");
+    exit();
+}
+
 # get acces to the config file 
 $config = json_decode(file_get_contents($nextstep_config), true);
 
 $db_file = $config["database_file_path"]; 
 
-# Temporary!!
+# Reset
 if (file_exists($db_file)) {
     unlink($db_file);
 }
@@ -17,7 +30,7 @@ $db = new SQLite3($db_file); # database object
 if (!$db) {
     die("Error creating database $db_file: " . $db->lastErrorMsg() . "\n");
 } else {
-    echo "Database created (or opened) successfully\n";
+    error_log("Database created (or opened) successfully\n");
     $db->exec("PRAGMA foreign_keys = ON;"); # This is for foreign key support for the tables
 }
 
@@ -44,14 +57,14 @@ foreach ($roles_list as $role_list) {
         "INSERT INTO ROLES (role_name) VALUES (:role)";
     $stmt = $db->prepare($query);
     if (!$stmt) {
-        echo "Error preparing query for role qreation: " . $db->lastErrorMsg() . "\n";
+        error_log("Error preparing query for role qreation: " . $db->lastErrorMsg() . "\n");
     }
     $stmt->bindValue(":role", $role_list, SQLITE3_TEXT);
     $result = $stmt->execute();
     if (!$result) {
-        echo " - Error inserting $role_list role: " . $db->lastErrorMsg() . "\n";
+        error_log(" - Error inserting $role_list role: " . $db->lastErrorMsg() . "\n");
     } else {
-        echo " - Role $role_list  created and inserted successfully\n";
+        error_log(" - Role $role_list  created and inserted successfully\n");
     }
 }
 
@@ -80,14 +93,14 @@ $password = password_hash($unsafe_password, PASSWORD_DEFAULT);
 $query = "SELECT role_id FROM ROLES WHERE role_name = :role";
 $stmt = $db->prepare($query);
 if (!$stmt) {
-    echo "Error preparing query for getting foreign key for admin: " . $db->lastErrorMsg() . "\n";
+    error_log("Error preparing query for getting foreign key for admin: " . $db->lastErrorMsg() . "\n");
 }
 $stmt->bindValue(":role", "ADMIN", SQLITE3_TEXT);
 $result = $stmt->execute();
 if (!$result) {
-    echo " - Error selecting admin foreign key: " . $db->lastErrorMsg() . "\n";
+    error_log(" - Error selecting admin foreign key: " . $db->lastErrorMsg() . "\n");
 } else {
-    echo " - Succes selecting foreign key\n";
+    error_log(" - Succes selecting foreign key\n");
 }
 $row = $result->fetchArray(SQLITE3_ASSOC);
 $role_admin_key = $row['role_id'];
@@ -100,7 +113,7 @@ EOF;
     
 $stmt = $db->prepare($query);
 if (!$stmt) {
-    echo "Error preparing query: " . $db->lastErrorMsg() . "\n";
+    error_log("Error preparing query: " . $db->lastErrorMsg() . "\n");
 }
 
 $stmt->bindValue(":email", "admin@admin.com", SQLITE3_TEXT);
@@ -112,9 +125,9 @@ $stmt->bindValue(":role", $role_admin_key, SQLITE3_INTEGER);
 $result = $stmt->execute();
 
 if (!$result) {
-    echo "Error inserting admin: " . $db->lastErrorMsg() . "\n";
+    error_log("Error inserting admin: " . $db->lastErrorMsg() . "\n");
 } else {
-    echo "ADMIN created and inserted successfully\n";
+    error_log("ADMIN created and inserted successfully\n");
 
     # Get the location for where to save the generated password
     $location = $config["password_save_path"];
@@ -227,3 +240,13 @@ EOF;
 tableCreate($query, $db, "STUDENTS");
 
 $db->close();
+
+# Change the value 0 in the setup.json to 1
+$setup_config["setup_value"] = 1;
+# Save the updated JSON back to the file
+if (file_put_contents($setup_config_path, json_encode($setup_config, JSON_PRETTY_PRINT)) === false) {
+    error_log("Failed to update setup.json\n");
+}
+
+header("Location: /NextStep/");
+exit();
