@@ -1,11 +1,7 @@
 <?php
 require_once "../utils.php";
 session_start();
-if (!isset($_SESSION["new_admin_credentials"])) {
-    loginsecurity();
-}
-super_user_privilages($_SESSION["teacher_username"]);
-$settings = download_page_settings();
+$settings = download_page_settings(); # internal checking security
 
 if ($settings == "teacher") {
     $credentials_content = $_SESSION["new_teacher_credentials"];
@@ -40,10 +36,10 @@ if ($settings == "student") {
 
 if ($settings == "admin") {
     # Delete the setup folder
-    $config = json_decode(file_get_contents($nextstep_config), true); # $nextstep_config comes from utils
-    $dirname = $config["setup_path_dir"];
-    array_map('unlink', glob("$dirname/*.*"));
-    rmdir($dirname);
+    #$config = json_decode(file_get_contents($nextstep_config_path), true); # $nextstep_config comes from utils
+    #$dirname = $config["setup_path_dir"];
+    #array_map('unlink', glob("$dirname/*.*"));
+    #rmdir($dirname);
     
     # Download the admin credentials
     $admin_credentials = $_SESSION["new_admin_credentials"];
