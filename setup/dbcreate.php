@@ -4,7 +4,7 @@
 require_once "utils.php";
 
 # Filepath to the setup.json
-$setup_config_path = "/etc/nextstepwebapp/setup.json";
+$setup_config_path = "/var/lib/nextstepwebapp/setup.json";
 if (!file_exists($setup_config_path)) {
     die("setup.json not found at $setup_config_path\n");
 }

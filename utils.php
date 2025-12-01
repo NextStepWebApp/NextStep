@@ -12,11 +12,11 @@ $nextstep_config = json_decode(file_get_contents($nextstep_config_path), true);
 $db_file = $nextstep_config["database_file_path"];
 
 # These are the configs for validations
-$config_path = "/etc/nextstepwebapp/config.json";
+$config_path = "/var/lib/nextstepwebapp/config.json";
 $config = json_decode(file_get_contents($config_path), true);
 
 # This is the location to the branding json
-$branding_path = "/etc/nextstepwebapp/branding.json";
+$branding_path = "/var/lib/nextstepwebapp/branding.json";
 $branding = json_decode(file_get_contents($branding_path), true);
 
 
@@ -372,7 +372,7 @@ function get_foreign_key_roles (SQLite3 $db, string $role) {
 # This function does onboarding
 
 function setup_checker() {
-    $setup_config_path = "/etc/nextstepwebapp/setup.json";
+    $setup_config_path = "/var/lib/nextstepwebapp/setup.json";
     $setup_config = json_decode(file_get_contents($setup_config_path), true);
     $value = $setup_config["setup_value"];
     if ($value === 0) {
