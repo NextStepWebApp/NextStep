@@ -1,9 +1,7 @@
 <?php
 require_once "../utils.php";
 session_start();
-loginSecurity();
-super_user_privilages($_SESSION["teacher_username"]);
-$settings = download_page_settings();
+$settings = download_page_settings(); # Security checks are in this function
 ?>
 <!DOCTYPE html>
 <html lang="en">

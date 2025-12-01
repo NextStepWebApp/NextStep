@@ -216,19 +216,26 @@ function download_page_settings() {
     $page_settings = ["teacher", "student", "admin"];
     
     if (isset($_SESSION["new_teacher_credentials"]) || isset($_SESSION["new_teacher_filename"])) {
-        $settings = $page_settings[0];
+        # Teacher download requires login
+        loginSecurity();
+        super_user_privilages($_SESSION["teacher_username"]);
+        return $page_settings[0];
+        
     } elseif (isset($_SESSION["export_csv_content"]) || isset($_SESSION["export_csv_filename"])) {
-        $settings = $page_settings[1];
+        # Student export requires login
+        loginSecurity();
+        super_user_privilages($_SESSION["teacher_username"]);
+        return $page_settings[1];
+        
     } elseif (isset($_SESSION["new_admin_credentials"]) || isset($_SESSION["new_admin_filename"])) {
-        $settings = $page_settings[2];
+        # Admin download during onboarding - no login required
+        return $page_settings[2];
+        
     } else {
         header("Location: /NextStep/");
         exit();
     }
-    return $settings;
 }
-
-
 # This is made to a function to avoid a lot of code repetition
 # Input validation functions used in settings, edit and create page
 

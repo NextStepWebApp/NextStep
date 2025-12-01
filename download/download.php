@@ -1,7 +1,9 @@
 <?php
 require_once "../utils.php";
 session_start();
-loginsecurity();
+if (!isset($_SESSION["new_admin_credentials"])) {
+    loginsecurity();
+}
 super_user_privilages($_SESSION["teacher_username"]);
 $settings = download_page_settings();
 
@@ -36,7 +38,7 @@ if ($settings == "student") {
     exit();
 }
 
-if ($settings = "admin") {
+if ($settings == "admin") {
     # Delete the setup folder
     $config = json_decode(file_get_contents($nextstep_config), true); # $nextstep_config comes from utils
     $dirname = $config["setup_path_dir"];
