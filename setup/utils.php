@@ -20,21 +20,6 @@ function genPassword(int $length)
     return $password;
 }
 
-# funtion to save files with information
-function savefile(string $location, string $name, string $text)
-{
-    $filename = "{$location}/{$name}";
-
-    if (!is_dir($location)) {
-        mkdir($location, 0644, true);
-    }
-
-    if (file_put_contents($filename, $text) !== false) {
-        error_log(" - File '$filename' created successfully!\n");
-    } else {
-        error_log(" - Error: Could not create file.\n");
-    }
-}
 
 # function to create tables, with some error checking
 # To not repeatingly do this in the dbcreate.php

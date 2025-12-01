@@ -1,9 +1,9 @@
 <?php
 # This piece the code is responsible to create the database for the nextstep application
 
+require_once "utils.php";
 session_start(); # This is to give the account credentials to the download functionality
 
-require_once "utils.php";
 
 # get acces to the config file 
 $config = json_decode(file_get_contents($nextstep_config), true); # $nextstep_config comes from utils
@@ -128,12 +128,6 @@ if (!$result) {
     error_log("Error inserting admin: " . $db->lastErrorMsg() . "\n");
 } else {
     error_log("ADMIN created and inserted successfully\n");
-
-    # Get the location for where to save the generated password
-    $location = $config["password_save_path"];
-
-    # savefile is a funtion in utils.php
-    savefile($location, "ADMIN-password.txt", $unsafe_password);
 }
 
 #########################################
