@@ -1,6 +1,6 @@
 <?php
-require_once "../utils.php";
 session_start();
+require_once "../utils.php";
 $settings = download_page_settings(); # internal checking security
 
 if ($settings == "teacher") {

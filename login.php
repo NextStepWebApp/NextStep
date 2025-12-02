@@ -1,7 +1,7 @@
 <?php
+session_start();
 require_once "utils.php";
 setup_checker(); 
-session_start();
 
 try {
     $db = new SQLite3($db_file);
