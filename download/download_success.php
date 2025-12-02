@@ -1,6 +1,6 @@
 <?php
-require_once "../utils.php";
 session_start();
+require_once "../utils.php";
 $settings = download_page_settings(); # Security checks are in this function
 ?>
 <!DOCTYPE html>
@@ -22,7 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </head>
 <body>
-    <?php include "../navbar.php"; ?>
+    <?php 
+    # Only show navbar if not admin onboarding
+    if ($settings !== "admin") {
+        include "../navbar.php"; 
+    }
+    ?>
     <div class="page-box">
     <?php flashMessages(); ?>
     
@@ -47,6 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } 
     ?>
     </div>
-    <script src="js/script.js"></script>
+    <?php 
+    # Only get js if not admin onboarding
+    if ($settings !== "admin") {
+        echo '<script src="js/script.js"></script>';
+    }
+    ?>
 </body>
 </html>
