@@ -18,7 +18,7 @@ except Exception:
 
 
 # open the nextstep_config.json to get access to the other file paths
-nextstep_config_path = "/etc/nextstepwebapp"
+nextstep_config_path = "/etc/nextstepwebapp/nextstep_config.json"
 nextstep_config = open(nextstep_config_path)
 nextstep_data = json.load(nextstep_config)
 
