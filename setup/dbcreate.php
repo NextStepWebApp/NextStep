@@ -1,8 +1,7 @@
 <?php
 # This piece the code is responsible to create the database for the nextstep application
-
-require_once "utils.php";
 session_start(); # This is to give the account credentials to the download functionality
+require_once "utils.php";
 
 
 # get acces to the config file 
@@ -20,6 +19,8 @@ if (!isset($setup_config["setup_value"]) || $setup_config["setup_value"] !== 0) 
     header("Location: /NextStep/");
     exit();
 }
+
+$db_file = $config["database_file_path"]; 
 
 # Reset
 if (file_exists($db_file)) {
