@@ -16,14 +16,30 @@ except Exception:
     print("Missing command line argument (file path to csv)")
     exit()
 
+
+# open the nextstep_config.json to get access to the other file paths
+nextstep_config_path = "/etc/nextstepwebapp"
+nextstep_config = open(nextstep_config_path)
+nextstep_data = json.load(nextstep_config)
+
+#path_config = "/var/www/html/NextStep/config/config.json"
+path_config = nextstep_data["config_path"]
+
+#path_database = "/var/www/html/NextStep/setup/nextstep_data.db"
+path_database = nextstep_data["database_file_path"]
+
+#errors_path = "/var/www/html/NextStep/data/errors.json"
+errors_path = nextstep_data["errors_path"]
+
+nextstep_config.close()
+
+
 # Example csv_file_name = "/var/www/html/NextStep/data/data.csv"
 
 # This is the file path to the configs and the csv file name
 #path_config = "/home/william/Documents/programming/PWS/NextStep/config/config.json"
-path_config = "/var/www/html/NextStep/config/config.json"
+
 #path_database = "/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db"
-path_database = "/var/www/html/NextStep/setup/nextstep_data.db"
-errors_path = "/var/www/html/NextStep/data/errors.json"
 
 # This is the json template
 errors = {

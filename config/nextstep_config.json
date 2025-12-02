@@ -4,5 +4,6 @@
    "config_path": "/var/lib/nextstepwebapp/config.json",
    "branding_path": "/var/lib/nextstepwebapp/branding.json",
    "setup_config_path": "/var/lib/nextstepwebapp/setup.json",
-   "setup_path_dir": "/srv/http/NextStep/setup"
+   "setup_path_dir": "/srv/http/NextStep/setup",
+   "errors_path": "/var/lib/nextstepwebapp/errors.json"
 }
