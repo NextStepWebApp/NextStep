@@ -7,7 +7,7 @@
 $nextstep_config_path = "/etc/nextstepwebapp/nextstep_config.json";
 
 $nextstep_config = json_decode(file_get_contents($nextstep_config_path), true);
- 
+
 # This is location to the database
 $db_file = $nextstep_config["database_file_path"];
 
@@ -18,7 +18,6 @@ $config = json_decode(file_get_contents($config_path), true);
 # This is the location to the branding json
 $branding_path = $nextstep_config["branding_path"];
 $branding = json_decode(file_get_contents($branding_path), true);
-
 
 function loginSecurity()
 {
@@ -53,48 +52,54 @@ function errorMessages(string $message, string $details)
     exit();
 }
 
-
 # Funtion that checks if the student_id is valid ( used in view, edit and delete)
-function check_id(?string $id, string $group) {
-        if (!isset($id)) {
-            switch ($group) {
-                case "Students":
-                    $_SESSION["error"] = "Missing student_id";
-                    header("Location: index.php");
-                    exit();
-                       
-                case "Teacher":
-                    $_SESSION["error"] = "Missing teacher_id";
-                    header("Location: teachers.php");
-                    exit();
-                       
-                default:
-                    errorMessages("Invalid group passed in check_id function", "Group: $group");
-                    exit();
-            }
+function check_id(?string $id, string $group)
+{
+    if (!isset($id)) {
+        switch ($group) {
+            case "Students":
+                $_SESSION["error"] = "Missing student_id";
+                header("Location: index.php");
+                exit();
+
+            case "Teacher":
+                $_SESSION["error"] = "Missing teacher_id";
+                header("Location: teachers.php");
+                exit();
+
+            default:
+                errorMessages(
+                    "Invalid group passed in check_id function",
+                    "Group: $group",
+                );
+                exit();
         }
-           
-        if (!is_numeric($id)) {
-            switch ($group) {
-                case "Students":
-                    $_SESSION['error'] = "Invalid value for student_id";
-                    header("Location: index.php");
-                    exit();
-                       
-                case "Teacher":
-                    $_SESSION['error'] = "Invalid value for teacher_id";
-                    header("Location: teachers.php");
-                    exit();
-                       
-                default:
-                    errorMessages("Invalid group passed in check_id function", "Group: $group");
-                    exit();
-               }
+    }
+
+    if (!is_numeric($id)) {
+        switch ($group) {
+            case "Students":
+                $_SESSION["error"] = "Invalid value for student_id";
+                header("Location: index.php");
+                exit();
+
+            case "Teacher":
+                $_SESSION["error"] = "Invalid value for teacher_id";
+                header("Location: teachers.php");
+                exit();
+
+            default:
+                errorMessages(
+                    "Invalid group passed in check_id function",
+                    "Group: $group",
+                );
+                exit();
         }
+    }
 }
 
-
-function full_students_database_query($db_file) {
+function full_students_database_query($db_file)
+{
     try {
         $db = new SQLite3($db_file);
     } catch (Exception $e) {
@@ -142,56 +147,80 @@ function full_students_database_query($db_file) {
     return $row;
 }
 
-function get_or_create_foreign_key($db, $table, $id_column, $name_column, $value) {
+function get_or_create_foreign_key(
+    $db,
+    $table,
+    $id_column,
+    $name_column,
+    $value,
+) {
     // First, try to get existing foreign key
     $select_query = "SELECT $id_column FROM $table WHERE $name_column = :value";
     $stmt = $db->prepare($select_query);
-    
+
     if (!$stmt) {
-        errorMessages("Error preparing select query in utils", $db->lastErrorMsg());
+        errorMessages(
+            "Error preparing select query in utils",
+            $db->lastErrorMsg(),
+        );
     }
-    
+
     $stmt->bindValue(":value", $value, SQLITE3_TEXT);
-   
-    error_log("Attempting to insert into $table: '$value'"); 
-    
+
+    error_log("Attempting to insert into $table: '$value'");
+
     $result = $stmt->execute();
-    
+
     if (!$result) {
-        errorMessages("Error executing select query in utils", $db->lastErrorMsg());
+        errorMessages(
+            "Error executing select query in utils",
+            $db->lastErrorMsg(),
+        );
     }
-    
+
     $row = $result->fetchArray();
-    
+
     // If found, return the ID
     if ($row !== false) {
         return $row[0];
     }
-    
+
     // If not found, create it
     $insert_query = "INSERT INTO $table ($name_column) VALUES (:value)";
     $stmt = $db->prepare($insert_query);
-    
+
     if (!$stmt) {
-        errorMessages("Error preparing insert query in utils", $db->lastErrorMsg());
+        errorMessages(
+            "Error preparing insert query in utils",
+            $db->lastErrorMsg(),
+        );
     }
-    
+
     $stmt->bindValue(":value", $value, SQLITE3_TEXT);
     $result = $stmt->execute();
-    
+
     if (!$result) {
-        errorMessages("Error creating new record in utils", $db->lastErrorMsg());
+        errorMessages(
+            "Error creating new record in utils",
+            $db->lastErrorMsg(),
+        );
     }
-    
+
     return $db->lastInsertRowID();
 }
 
-
-function super_user_privilages(string $super_teacher) {
+function super_user_privilages(string $super_teacher)
+{
     if ($super_teacher != "ADMIN") {
         header("Location: index.php");
         exit();
     }
+    
+    
+    
+    
+    
+    
 }
 
 # function that generates a password with alternating characters and numbers
@@ -210,27 +239,33 @@ function genPassword(int $length)
     return $password;
 }
 
-
 # function that is used for the download pages to see what for type of download is asked
-function download_page_settings() {
+function download_page_settings()
+{
     $page_settings = ["teacher", "student", "admin"];
-    
-    if (isset($_SESSION["new_teacher_credentials"]) || isset($_SESSION["new_teacher_filename"])) {
+
+    if (
+        isset($_SESSION["new_teacher_credentials"]) ||
+        isset($_SESSION["new_teacher_filename"])
+    ) {
         # Teacher download requires login
         loginSecurity();
         super_user_privilages($_SESSION["teacher_username"]);
         return $page_settings[0];
-        
-    } elseif (isset($_SESSION["export_csv_content"]) || isset($_SESSION["export_csv_filename"])) {
+    } elseif (
+        isset($_SESSION["export_csv_content"]) ||
+        isset($_SESSION["export_csv_filename"])
+    ) {
         # Student export requires login
         loginSecurity();
         super_user_privilages($_SESSION["teacher_username"]);
         return $page_settings[1];
-        
-    } elseif (isset($_SESSION["new_admin_credentials"]) || isset($_SESSION["new_admin_filename"])) {
+    } elseif (
+        isset($_SESSION["new_admin_credentials"]) ||
+        isset($_SESSION["new_admin_filename"])
+    ) {
         # Admin download during onboarding - no login required
         return $page_settings[2];
-        
     } else {
         header("Location: /NextStep/");
         exit();
@@ -239,69 +274,73 @@ function download_page_settings() {
 # This is made to a function to avoid a lot of code repetition
 # Input validation functions used in settings, edit and create page
 
-function validate_teacher_name(string $teacher_name, string $page, string $teacher_id = "") {
+function validate_teacher_name(
+    string $teacher_name,
+    string $page,
+    string $teacher_id = "",
+) {
     if (strlen($teacher_name) < 2) {
-        $_SESSION['error'] = "Name must be at least 2 characters long";
-        
+        $_SESSION["error"] = "Name must be at least 2 characters long";
+
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
                 exit();
-                
+
             case "settings":
                 header("Location: settings.php");
                 exit();
-                
+
             case "create_teacher":
                 header("Location: create_teacher.php");
                 exit();
-                
+
             default:
                 header("Location: index.php");
                 exit();
         }
     }
-    
+
     // Check maximum length
     if (strlen($teacher_name) > 50) {
-        $_SESSION['error'] = "Name must not exceed 50 characters";
-        
+        $_SESSION["error"] = "Name must not exceed 50 characters";
+
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
                 exit();
-                
+
             case "settings":
                 header("Location: settings.php");
                 exit();
-                
+
             case "create_teacher":
                 header("Location: create_teacher.php");
                 exit();
-                
+
             default:
                 header("Location: index.php");
                 exit();
         }
     }
-    
+
     // Check valid characters
     if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $teacher_name)) {
-        $_SESSION['error'] = "Name or Username contains invalid characters";
-        
+        $_SESSION["error"] = "Name or Username contains invalid characters";
+
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
                 exit();
-                
+
             case "settings":
                 header("Location: settings.php");
                 exit();
-                
+
             case "create_teacher":
                 header("Location: create_teacher.php");
                 exit();
-                
+
             default:
                 header("Location: index.php");
                 exit();
@@ -309,77 +348,83 @@ function validate_teacher_name(string $teacher_name, string $page, string $teach
     }
 }
 
-function validate_teacher_email(string $teacher_email, string $page, string $teacher_id = "") {
+function validate_teacher_email(
+    string $teacher_email,
+    string $page,
+    string $teacher_id = "",
+) {
     // Check email format
     if (!filter_var($teacher_email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error'] = "Invalid email format";
-        
+        $_SESSION["error"] = "Invalid email format";
+
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
                 exit();
-                
+
             case "settings":
                 header("Location: settings.php");
                 exit();
-                
+
             case "create_teacher":
                 header("Location: create_teacher.php");
                 exit();
-                
+
             default:
                 header("Location: index.php");
                 exit();
         }
     }
-    
+
     // Check maximum length
     if (strlen($teacher_email) > 50) {
-        $_SESSION['error'] = "Email must not exceed 50 characters";
-        
+        $_SESSION["error"] = "Email must not exceed 50 characters";
+
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
                 exit();
-                
+
             case "settings":
                 header("Location: settings.php");
                 exit();
-                
+
             case "create_teacher":
                 header("Location: create_teacher.php");
                 exit();
-                
+
             default:
                 header("Location: index.php");
                 exit();
         }
     }
 }
-
 
 # This is a function that gets the foreign key from the roles db for the teacher db
 
-function get_foreign_key_roles (SQLite3 $db, string $role) {
+function get_foreign_key_roles(SQLite3 $db, string $role)
+{
     $query = "SELECT role_id FROM ROLES WHERE role_name = :role";
     $stmt = $db->prepare($query);
     if (!$stmt) {
-        echo "Error preparing query for role qreation: " . $db->lastErrorMsg() . "\n";
+        echo "Error preparing query for role qreation: " .
+            $db->lastErrorMsg() .
+            "\n";
     }
     $stmt->bindValue(":role", $role, SQLITE3_TEXT);
     $result = $stmt->execute();
     if (!$result) {
         errorMessages("Error selecting $role role", $db->lastErrorMsg());
-    }     
+    }
     $row = $result->fetchArray(SQLITE3_ASSOC);
-    $role_key = $row['role_id'];
+    $role_key = $row["role_id"];
     return $role_key;
 }
 
-
 # This function does onboarding
 
-function setup_checker() {
+function setup_checker()
+{
     $setup_config_path = "/var/lib/nextstepwebapp/setup.json";
     $setup_config = json_decode(file_get_contents($setup_config_path), true);
     $value = $setup_config["setup_value"];
