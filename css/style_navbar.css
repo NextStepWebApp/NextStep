@@ -2,16 +2,81 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family:
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+}
+
+.theme-blue {
+    --nav-gradient-start: #0b243f;
+    --nav-gradient-middle: #1e3a8a;
+    --nav-gradient-end: #2563eb;
+    --nav-brand-start: #0b1d59;
+    --nav-brand-end: #2563eb;
+    --nav-btn-start: #0b1d59;
+    --nav-btn-end: #1e3a8a;
+    --nav-btn-hover-start: #1e3a8a;
+    --nav-btn-hover-end: #3b82f6;
+    --nav-btn-shadow: rgba(11, 29, 89, 0.2);
+    --nav-btn-shadow-hover: rgba(11, 29, 89, 0.3);
+}
+
+.theme-red {
+    --nav-gradient-start: #7f1d1d;
+    --nav-gradient-middle: #b91c1c;
+    --nav-gradient-end: #dc2626;
+    --nav-brand-start: #8b0000;
+    --nav-brand-end: #dc2626;
+    --nav-btn-start: #8b0000;
+    --nav-btn-end: #b91c1c;
+    --nav-btn-hover-start: #b91c1c;
+    --nav-btn-hover-end: #ef4444;
+    --nav-btn-shadow: rgba(139, 0, 0, 0.2);
+    --nav-btn-shadow-hover: rgba(139, 0, 0, 0.3);
+}
+
+.theme-green {
+    --nav-gradient-start: #064e3b;
+    --nav-gradient-middle: #047857;
+    --nav-gradient-end: #10b981;
+    --nav-brand-start: #065f46;
+    --nav-brand-end: #10b981;
+    --nav-btn-start: #065f46;
+    --nav-btn-end: #047857;
+    --nav-btn-hover-start: #047857;
+    --nav-btn-hover-end: #34d399;
+    --nav-btn-shadow: rgba(6, 95, 70, 0.2);
+    --nav-btn-shadow-hover: rgba(6, 95, 70, 0.3);
+}
+
+.theme-purple {
+    --nav-gradient-start: #4c1d95;
+    --nav-gradient-middle: #7e22ce;
+    --nav-gradient-end: #a855f7;
+    --nav-brand-start: #581c87;
+    --nav-brand-end: #a855f7;
+    --nav-btn-start: #581c87;
+    --nav-btn-end: #7e22ce;
+    --nav-btn-hover-start: #7e22ce;
+    --nav-btn-hover-end: #c084fc;
+    --nav-btn-shadow: rgba(88, 28, 135, 0.2);
+    --nav-btn-shadow-hover: rgba(88, 28, 135, 0.3);
 }
 
 body {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0b243f, #1e3a8a 50%, #2563eb);
+    background: linear-gradient(
+        135deg,
+        var(--nav-gradient-start),
+        var(--nav-gradient-middle) 50%,
+        var(--nav-gradient-end)
+    );
     display: flex;
     flex-direction: column;
 }
-
 .navbar {
     position: fixed;
     top: 0;
@@ -24,22 +89,23 @@ body {
     padding: 16px 24px;
     background: #fff;
 }
-
 .brand-name {
     font-size: 30px;
     font-weight: 800;
-    background: linear-gradient(135deg, #0b1d59, #2563eb);
+    background: linear-gradient(
+        135deg,
+        var(--nav-brand-start),
+        var(--nav-brand-end)
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-decoration: none;
 }
-
 .nav-buttons {
     display: flex;
     gap: 12px;
 }
-
 .nav-btn {
     padding: 8px 16px;
     border: none;
@@ -47,25 +113,34 @@ body {
     font-size: 14px;
     font-weight: 600;
     color: #fff;
-    background: linear-gradient(135deg, #0b1d59, #1e3a8a);
+    background: linear-gradient(
+        135deg,
+        var(--nav-btn-start),
+        var(--nav-btn-end)
+    );
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(11, 29, 89, 0.2);
+    box-shadow: 0 4px 10px var(--nav-btn-shadow);
     text-decoration: none;
     display: inline-block;
 }
-
 .nav-btn:hover {
-    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    background: linear-gradient(
+        135deg,
+        var(--nav-btn-hover-start),
+        var(--nav-btn-hover-end)
+    );
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(11, 29, 89, 0.3);
+    box-shadow: 0 6px 16px var(--nav-btn-shadow-hover);
 }
-
 .nav-btn.active {
-    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-    box-shadow: 0 6px 16px rgba(11, 29, 89, 0.3);
+    background: linear-gradient(
+        135deg,
+        var(--nav-btn-hover-start),
+        var(--nav-btn-hover-end)
+    );
+    box-shadow: 0 6px 16px var(--nav-btn-shadow-hover);
 }
-
 /* Navbar Mobile Responsive */
 @media (max-width: 768px) {
     .navbar {
@@ -74,17 +149,14 @@ body {
         padding: 20px;
         gap: 15px;
     }
-
     .brand-name {
         text-align: center;
     }
-
     .nav-buttons {
         justify-content: center;
         flex-wrap: wrap;
     }
 }
-
 @media (max-width: 480px) {
     .brand-name {
         font-size: 24px;

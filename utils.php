@@ -19,6 +19,11 @@ $config = json_decode(file_get_contents($config_path), true);
 $branding_path = $nextstep_config["branding_path"];
 $branding = json_decode(file_get_contents($branding_path), true);
 
+# Global color validate_teacher_name
+# This is the theme that all the users will get by default
+$color_theme_path = $nextstep_config["color_theme_path"];
+$color_theme = json_decode(file_get_contents($color_theme_path), true);
+
 function loginSecurity()
 {
     if (!isset($_SESSION["teacher_username"])) {
@@ -215,12 +220,6 @@ function super_user_privilages(string $super_teacher)
         header("Location: index.php");
         exit();
     }
-    
-    
-    
-    
-    
-    
 }
 
 # function that generates a password with alternating characters and numbers

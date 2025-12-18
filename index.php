@@ -41,7 +41,7 @@ if (!$resultcount) {
     errorMessages("Error executing query", $db->lastErrorMsg());
 }
 $row = $resultcount->fetchArray();
-$totalCount = $row['COUNT'];
+$totalCount = $row["COUNT"];
 ?>
 <!doctype html>
 <html lang="en">
@@ -53,14 +53,14 @@ $totalCount = $row['COUNT'];
 <link rel="stylesheet" href="css/style_page.css"/>
 <title>NextStep</title>
 </head>
-<body>
-<?php include 'navbar.php'; ?>
+<body class="theme-<?= $color_theme["theme_color"] ?>">
+<?php include "navbar.php"; ?>
 <section class="table-section">
-<?php flashMessages();?>
+<?php flashMessages(); ?>
 <div class="action-buttons">
-    <?php
-        echo '<div class="selected-info">'.$totalCount.' records | 0 selected</div>';
-    ?>
+    <?php echo '<div class="selected-info">' .
+        $totalCount .
+        " records | 0 selected</div>"; ?>
     <button type="button" class="action-btn" id="searchBtn">Search & Filter</button>
     <span class="workflow-indicator">→</span>
     <button type="button" class="action-btn" id="composeBtn" disabled>
@@ -86,13 +86,14 @@ $totalCount = $row['COUNT'];
 <?php
 $hasresults = 0;
 while ($row = $results->fetchArray()) {
+
     $hasresults = 1;
     $student_id = htmlspecialchars($row["students_id"]);
     $date = htmlspecialchars($row["students_created_date"]);
     $name = htmlspecialchars($row["students_name"]);
     $email = htmlspecialchars($row["students_email"]);
     $status = htmlspecialchars($row["status_name"]);
-?>
+    ?>
     <tr id="student_<?= $student_id ?>">
         <td><input type="checkbox" class="check-box"/></td>
         <td><a href="view.php?student_id=<?= $student_id ?>"><?= $name ?></a></td>
@@ -102,8 +103,10 @@ while ($row = $results->fetchArray()) {
     </tr>
 <?php
 }
-if ($hasresults == 0)
-    echo('<tr><td colspan="5" class="no-students">No students found. <a href="/NextStep/students">Add Students</a></td></tr>');$db->close();
+if ($hasresults == 0) {
+    echo '<tr><td colspan="5" class="no-students">No students found. <a href="/NextStep/students">Add Students</a></td></tr>';
+}
+$db->close();
 $db->close();
 ?>
 </tbody>
