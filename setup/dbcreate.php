@@ -1,12 +1,10 @@
 <?php
-# This piece the code is responsible to create the database for the nextstep application
+# This piece of code is responsible to create the database for the nextstep application
 session_start(); # This is to give the account credentials to the download functionality
 require_once "utils.php";
 
-
-# get acces to the config file 
+# get acces to the config file
 $config = json_decode(file_get_contents($nextstep_config), true); # $nextstep_config comes from utils
-
 # Filepath to the setup.json
 $setup_config_path = $config["setup_config_path"];
 if (!file_exists($setup_config_path)) {
@@ -15,12 +13,15 @@ if (!file_exists($setup_config_path)) {
 $setup_config = json_decode(file_get_contents($setup_config_path), true);
 
 # Check if the value is 0; if not, redirect and exit
-if (!isset($setup_config["setup_value"]) || $setup_config["setup_value"] !== 0) {
+if (
+    !isset($setup_config["setup_value"]) ||
+    $setup_config["setup_value"] !== 0
+) {
     header("Location: /NextStep/");
     exit();
 }
 
-$db_file = $config["database_file_path"]; 
+$db_file = $config["database_file_path"];
 
 # Reset
 if (file_exists($db_file)) {
@@ -46,28 +47,42 @@ $query = <<<EOF
       role_id INTEGER PRIMARY KEY AUTOINCREMENT,
       role_name TEXT NOT NULL UNIQUE
       );
-EOF;  
+EOF;
 tableCreate($query, $db, "ROLES");
-
 
 # This part creates the roles that are going to be used
 $roles_list = ["ADMIN", "USER", "SUPERUSER", "SYSADMIN"];
 
 foreach ($roles_list as $role_list) {
-    $query =
-        "INSERT INTO ROLES (role_name) VALUES (:role)";
+    $query = "INSERT INTO ROLES (role_name) VALUES (:role)";
     $stmt = $db->prepare($query);
     if (!$stmt) {
-        error_log("Error preparing query for role qreation: " . $db->lastErrorMsg() . "\n");
+        error_log(
+            "Error preparing query for role qreation: " .
+                $db->lastErrorMsg() .
+                "\n",
+        );
     }
     $stmt->bindValue(":role", $role_list, SQLITE3_TEXT);
     $result = $stmt->execute();
     if (!$result) {
-        error_log(" - Error inserting $role_list role: " . $db->lastErrorMsg() . "\n");
+        error_log(
+            " - Error inserting $role_list role: " . $db->lastErrorMsg() . "\n",
+        );
     } else {
         error_log(" - Role $role_list  created and inserted successfully\n");
     }
 }
+
+# Create teacher color theme table
+# This table will have the color themes for teachers not being admin
+$query = <<<EOF
+      CREATE TABLE THEME (
+      theme_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      theme_name TEXT NOT NULL UNIQUE
+      );
+EOF;
+tableCreate($query, $db, "THEME");
 
 # Create teachers table
 $query = <<<EOF
@@ -77,7 +92,9 @@ $query = <<<EOF
       teacher_name TEXT NOT NULL,
       teacher_username TEXT NOT NULL UNIQUE,
       teacher_password TEXT NOT NULL,
+      teacher_theme_id INTEGER,
       teacher_role_id INTEGER NOT NULL,
+      FOREIGN KEY (teacher_theme_id) REFERENCES THEME(theme_id),
       FOREIGN KEY (teacher_role_id) REFERENCES ROLES(role_id)
       );
 EOF;
@@ -94,24 +111,30 @@ $password = password_hash($unsafe_password, PASSWORD_DEFAULT);
 $query = "SELECT role_id FROM ROLES WHERE role_name = :role";
 $stmt = $db->prepare($query);
 if (!$stmt) {
-    error_log("Error preparing query for getting foreign key for admin: " . $db->lastErrorMsg() . "\n");
+    error_log(
+        "Error preparing query for getting foreign key for admin: " .
+            $db->lastErrorMsg() .
+            "\n",
+    );
 }
 $stmt->bindValue(":role", "ADMIN", SQLITE3_TEXT);
 $result = $stmt->execute();
 if (!$result) {
-    error_log(" - Error selecting admin foreign key: " . $db->lastErrorMsg() . "\n");
+    error_log(
+        " - Error selecting admin foreign key: " . $db->lastErrorMsg() . "\n",
+    );
 } else {
     error_log(" - Succes selecting foreign key\n");
 }
 $row = $result->fetchArray(SQLITE3_ASSOC);
-$role_admin_key = $row['role_id'];
+$role_admin_key = $row["role_id"];
 
 # query to insert the admin theacher to the db and a generated password
 $query = <<<EOF
-INSERT INTO TEACHERS (teacher_email, teacher_name, teacher_username, teacher_password, teacher_role_id) 
+INSERT INTO TEACHERS (teacher_email, teacher_name, teacher_username, teacher_password, teacher_role_id)
 VALUES (:email, :name, :username, :password, :role);
 EOF;
-    
+
 $stmt = $db->prepare($query);
 if (!$stmt) {
     error_log("Error preparing query: " . $db->lastErrorMsg() . "\n");
@@ -239,7 +262,12 @@ $db->close();
 # Change the value 0 in the setup.json to 1
 $setup_config["setup_value"] = 1;
 # Save the updated JSON back to the file
-if (file_put_contents($setup_config_path, json_encode($setup_config, JSON_PRETTY_PRINT)) === false) {
+if (
+    file_put_contents(
+        $setup_config_path,
+        json_encode($setup_config, JSON_PRETTY_PRINT),
+    ) === false
+) {
     error_log("Failed to update setup.json\n");
 }
 
@@ -247,10 +275,10 @@ if (file_put_contents($setup_config_path, json_encode($setup_config, JSON_PRETTY
 # Create credentials file content
 $credentials_content = "NextStep ADMIN Account\n";
 $credentials_content .= "=========================================\n\n";
-$credentials_content .= "Username: " . "ADMIN" ."\n";
+$credentials_content .= "Username: " . "ADMIN" . "\n";
 $credentials_content .= "Password: " . $unsafe_password . "\n\n";
-       
+
 $_SESSION["new_admin_credentials"] = $credentials_content;
-$_SESSION["new_admin_filename"]    = "ADMIN-login-credentials.txt";
+$_SESSION["new_admin_filename"] = "ADMIN-login-credentials.txt";
 header("Location: /NextStep/download/download_success.php");
 exit();

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once "utils.php";
-setup_checker(); 
+setup_checker();
 
 try {
     $db = new SQLite3($db_file);
@@ -22,8 +22,8 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     }
 
     # Get all the info you need from the user
-    $query = "SELECT teacher_id, teacher_username, teacher_password 
-              FROM TEACHERS 
+    $query = "SELECT teacher_id, teacher_username, teacher_password
+              FROM TEACHERS
               WHERE teacher_username = :username";
 
     $stmt = $db->prepare($query);
@@ -39,7 +39,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
             if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
                 $newHash = password_hash($password, PASSWORD_DEFAULT);
                 $update = $db->prepare(
-                    "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_username = :username"
+                    "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_username = :username",
                 );
                 $update->bindValue(":password", $newHash, SQLITE3_TEXT);
                 $update->bindValue(":username", $username, SQLITE3_TEXT);
@@ -47,7 +47,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
             }
 
             session_regenerate_id(true);
-            $_SESSION["teacher_id"] = $row["teacher_id"]; 
+            $_SESSION["teacher_id"] = $row["teacher_id"];
             $_SESSION["teacher_username"] = $row["teacher_username"];
 
             $db->close();
@@ -83,9 +83,9 @@ $db->close();
         <script src="js/script.js"></script>
         <title>NextStep - Login</title>
     </head>
-    <body>
+    <body class="theme-<?= $color_theme["theme_color"] ?>">
         <div class="login-container">
-            <div class="brand-name"><?= $branding['app_name'] ?></div>
+            <div class="brand-name"><?= $branding["app_name"] ?></div>
             <div class="welcome">Welcome back</div>
 
             <?php
@@ -97,11 +97,11 @@ $db->close();
 
             <form method="POST">
                 <div class="input-group">
-                    <input 
-                        type="text" 
-                        name="username" 
-                        placeholder="Username" 
-                        value="<?php echo htmlentities($old_username); ?>" 
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="Username"
+                        value="<?php echo htmlentities($old_username); ?>"
                     />
                 </div>
 

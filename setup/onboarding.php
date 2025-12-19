@@ -1,6 +1,11 @@
 <?php
-
+$nextstep_config_path = "/etc/nextstepwebapp/nextstep_config.json";
+$nextstep_config = json_decode(file_get_contents($nextstep_config_path), true);
+$color_theme_path = $nextstep_config["color_theme_path"];
+$color_theme = json_decode(file_get_contents($color_theme_path), true);
 ?>
+
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -28,7 +33,7 @@
     display: flex;
     justify-content: center;
     gap: 16px;
-    flex-wrap: wrap;        
+    flex-wrap: wrap;
 }
 .onboarding-actions .simple-btn {
     min-width: 180px;
@@ -36,7 +41,7 @@
     padding: 12px 24px;
     font-size: 1rem;
     flex: 0 1 auto;
-    white-space: nowrap;     
+    white-space: nowrap;
 }
 @media (max-width: 768px) {
     .brand-big { font-size: 40px; }
@@ -46,12 +51,12 @@
         gap: 12px;
     }
     .onboarding-actions .simple-btn {
-        width: 240px;   
+        width: 240px;
     }
 }
 </style>
 </head>
-<body>
+<body class="theme-<?= $color_theme["theme_color"] ?>">
    <div class="page-box-wide onboarding-box">
        <h1 class="brand-big">Welcome to NextStep</h1>
        <div class="onboarding-actions">
@@ -60,6 +65,6 @@
            </form>
              <a href="https://github.com/NextStepWebApp/NextStep" target="_blank" class="simple-btn">Learn More</a>
        </div>
-   </div> 
+   </div>
 </body>
 </html>
