@@ -10,21 +10,24 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
-
 # handle post from roles
 if (isset($_POST["submit_role"])) {
-    if (isset($_POST["role"]) && isset($_POST["teacher_id"]) && isset($_POST["teacher_username"])) {
+    if (
+        isset($_POST["role"]) &&
+        isset($_POST["teacher_id"]) &&
+        isset($_POST["teacher_username"])
+    ) {
         $new_role_id = intval($_POST["role"]);
         $teacher_id = intval($_POST["teacher_id"]);
         $teacher_username = $_POST["teacher_username"];
-        
+
         # Validate that the role exists
         $query = "SELECT role_id FROM ROLES WHERE role_id = :role_id";
         $stmt = $db->prepare($query);
         if (!$stmt) {
             errorMessages("Error preparing query", $db->lastErrorMsg());
         }
-        $stmt->bindValue(':role_id', $new_role_id, SQLITE3_INTEGER);
+        $stmt->bindValue(":role_id", $new_role_id, SQLITE3_INTEGER);
         $result = $stmt->execute();
         if (!$result) {
             errorMessages("Error executing query", $db->lastErrorMsg());
@@ -41,17 +44,18 @@ if (isset($_POST["submit_role"])) {
                 $_SESSION["error"] = "The original ADMIN can not change roles";
                 $db->close();
                 header("Location: /NextStep/teachers");
-                exit();   
+                exit();
             }
-            
+
             #Update the teacher's role
-            $query = "UPDATE TEACHERS SET teacher_role_id = :role_id WHERE teacher_id = :teacher_id";
+            $query =
+                "UPDATE TEACHERS SET teacher_role_id = :role_id WHERE teacher_id = :teacher_id";
             $stmt = $db->prepare($query);
             if (!$stmt) {
                 errorMessages("Error preparing query", $db->lastErrorMsg());
             }
-            $stmt->bindValue(':role_id', $new_role_id, SQLITE3_INTEGER);
-            $stmt->bindValue(':teacher_id', $teacher_id, SQLITE3_INTEGER);
+            $stmt->bindValue(":role_id", $new_role_id, SQLITE3_INTEGER);
+            $stmt->bindValue(":teacher_id", $teacher_id, SQLITE3_INTEGER);
             $update = $stmt->execute();
             if (!$update) {
                 errorMessages("Error updating role", $db->lastErrorMsg());
@@ -66,11 +70,11 @@ if (isset($_POST["submit_role"])) {
 
 # Fetch all teachers
 $query = <<<EOF
-SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username, 
+SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username,
 TEACHERS.teacher_email, ROLES.role_name
-FROM TEACHERS 
+FROM TEACHERS
 JOIN ROLES ON TEACHERS.teacher_role_id = ROLES.role_id;
-EOF;  
+EOF;
 
 $stmt = $db->prepare($query);
 if (!$stmt) {
@@ -82,7 +86,7 @@ if (!$results_teachers) {
 }
 
 # Get the roles from the db
-$query = "SELECT ROLES.role_id, ROLES.role_name FROM ROLES";  
+$query = "SELECT ROLES.role_id, ROLES.role_name FROM ROLES";
 $stmt = $db->prepare($query);
 if (!$stmt) {
     errorMessages("Error preparing query", $db->lastErrorMsg());
@@ -108,10 +112,11 @@ while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <title>NextStep - Teachers</title>
 </head>
-<body>
+<body class="theme-<?= $color_theme["theme_color"] ?>">
+
 <?php include "../navbar.php"; ?>
-<section class="table-section"> 
-<?php flashMessages();?>
+<section class="table-section">
+<?php flashMessages(); ?>
 <div class="teacher-button">
 <a href="create_teacher.php" class="simple-btn">Create teacher</a>
 </div>
@@ -129,12 +134,13 @@ while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
 <tbody id="tableBody">
     <?php
     while ($row = $results_teachers->fetchArray()) {
+
         $name = htmlspecialchars($row["teacher_name"]);
         $username = htmlspecialchars($row["teacher_username"]);
         $email = htmlspecialchars($row["teacher_email"]);
         $role = htmlspecialchars($row["role_name"]);
         $id = $row["teacher_id"];
-    ?>
+        ?>
         <tr>
             <td><?= $name ?></td>
             <td><?= $username ?></td>
@@ -154,18 +160,19 @@ while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
                               <input type="hidden" name="teacher_id" value="<?= $id ?>">
                               <input type="hidden" name="teacher_username" value="<?= $username ?>">
                               <select name="role">
-                                  <?php
-                                      foreach ($row_roles as $role_option) {
-                                          $selected = ($role_option['role_name'] == $role) ? 'selected' : '';
-                                          echo "<option value='{$role_option['role_id']}' $selected>{$role_option['role_name']}</option>";
-                                      }
-                                  ?>
+                                  <?php foreach ($row_roles as $role_option) {
+                                      $selected =
+                                          $role_option["role_name"] == $role
+                                              ? "selected"
+                                              : "";
+                                      echo "<option value='{$role_option["role_id"]}' $selected>{$role_option["role_name"]}</option>";
+                                  } ?>
                               </select>
                               <div class="button-container">
                                   <input type="submit" class="simple-btn" name="submit_role" value="Update Role">
                                   <button class="simple-btn" data-close-modal>Cancel</button>
                               </div>
-                          </form>                    
+                          </form>
                           </dialog>
                 <?php endif; ?>
             <button class="simple-btn" data-close-modal>Close</button>
@@ -173,7 +180,7 @@ while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
             </td>
         </tr>
     <?php
-    } 
+    }
     $db->close();
     ?>
 </tbody>

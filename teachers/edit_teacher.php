@@ -5,7 +5,7 @@ loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
 check_id($_GET["teacher_id"], "Teacher");
 
-$teacher_id = $_GET['teacher_id'];
+$teacher_id = $_GET["teacher_id"];
 
 try {
     $db = new SQLite3($db_file);
@@ -14,7 +14,7 @@ try {
 }
 
 # Fetch teacher data
-$query = "SELECT teacher_id, teacher_name, teacher_username, teacher_email 
+$query = "SELECT teacher_id, teacher_name, teacher_username, teacher_email
           FROM TEACHERS WHERE teacher_id = :id";
 $stmt = $db->prepare($query);
 
@@ -32,82 +32,83 @@ if (!$result) {
 $teacher = $result->fetchArray();
 
 if (!$teacher) {
-    $_SESSION['error'] = "Teacher not found";
+    $_SESSION["error"] = "Teacher not found";
     header("Location: teachers.php");
     $db->close();
     exit();
 }
 
 # Prevent editing ADMIN account username
-$is_admin = ($teacher['teacher_username'] == 'ADMIN');
+$is_admin = $teacher["teacher_username"] == "ADMIN";
 
 # Handle form submission
 if (isset($_POST["submit"])) {
-
     # Check if all fields are filled
-    if (empty($_POST["teacher_name"]) || empty($_POST["teacher_email"]) || 
-       empty($_POST["teacher_username"])) {
-
-        $_SESSION['error'] = "All fields are required";
+    if (
+        empty($_POST["teacher_name"]) ||
+        empty($_POST["teacher_email"]) ||
+        empty($_POST["teacher_username"])
+    ) {
+        $_SESSION["error"] = "All fields are required";
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         exit();
     }
-    
+
     # These are functions in utils.php that are used for user input validations
-    
+
     # Validate teacher name
     $teacher_name = trim($_POST["teacher_name"]);
     validate_teacher_name($teacher_name, "edit_teacher", $teacher_id);
-    
+
     # Validate email
     $teacher_email = trim($_POST["teacher_email"]);
     validate_teacher_email($teacher_email, "edit_teacher", $teacher_id);
-    
-    
+
     # Validate username
     $teacher_username = trim($_POST["teacher_username"]);
-    
+
     # Prevent changing ADMIN username
-    if ($is_admin && $teacher_username != 'ADMIN') {
-        $_SESSION['error'] = "Cannot change ADMIN username";
+    if ($is_admin && $teacher_username != "ADMIN") {
+        $_SESSION["error"] = "Cannot change ADMIN username";
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         exit();
     }
-    
+
     if (strlen($teacher_username) < 3) {
-        $_SESSION['error'] = "Username must be at least 3 characters long";
+        $_SESSION["error"] = "Username must be at least 3 characters long";
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         exit();
     }
-    
+
     if (strlen($teacher_username) > 30) {
-        $_SESSION['error'] = "Username must not exceed 30 characters";
+        $_SESSION["error"] = "Username must not exceed 30 characters";
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         exit();
     }
-    
+
     if (!preg_match("/^[a-zA-Z0-9_\-]+$/", $teacher_username)) {
-        $_SESSION['error'] = "Username can only contain letters, numbers, hyphens and underscores";
+        $_SESSION["error"] =
+            "Username can only contain letters, numbers, hyphens and underscores";
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         exit();
     }
-   
-    # Check if email or username already exists not looking at the current teacher 
-   
-   if ($teacher_email == "example@example.com") {
-       $query = "SELECT teacher_id FROM TEACHERS WHERE (teacher_username = :username 
+
+    # Check if email or username already exists not looking at the current teacher
+
+    if ($teacher_email == "example@example.com") {
+        $query = "SELECT teacher_id FROM TEACHERS WHERE (teacher_username = :username
         OR teacher_name = :name) AND teacher_id != :id";
-   } else {
-        $query = "SELECT teacher_id FROM TEACHERS WHERE 
-            (teacher_email = :email OR teacher_username = :username OR teacher_name = :name) 
+    } else {
+        $query = "SELECT teacher_id FROM TEACHERS WHERE
+            (teacher_email = :email OR teacher_username = :username OR teacher_name = :name)
             AND teacher_id != :id";
-   }
+    }
     $stmt = $db->prepare($query);
-    
+
     if (!$stmt) {
         errorMessages("Error preparing check query", $db->lastErrorMsg());
     }
-   
+
     if ($teacher_email != "example@example.com") {
         $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
     }
@@ -115,26 +116,28 @@ if (isset($_POST["submit"])) {
     $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
     $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
     $result = $stmt->execute();
-    
+
     if (!$result) {
         errorMessages("Error executing check query", $db->lastErrorMsg());
     }
-       
+
     $existing = $result->fetchArray();
-    
+
     if ($existing) {
         if ($teacher_email == "example@example.com") {
-            $_SESSION['error'] = "A teacher with this username or name already exists";
+            $_SESSION["error"] =
+                "A teacher with this username or name already exists";
         } else {
-            $_SESSION['error'] = "A teacher with this email, username or name already exists";
+            $_SESSION["error"] =
+                "A teacher with this email, username or name already exists";
         }
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         $db->close();
         exit();
     }
-    
+
     # Update teacher
-    $query = "UPDATE TEACHERS SET 
+    $query = "UPDATE TEACHERS SET
               teacher_name = :name,
               teacher_email = :email,
               teacher_username = :username
@@ -154,31 +157,38 @@ if (isset($_POST["submit"])) {
     if (!$result) {
         errorMessages("Error executing update query", $db->lastErrorMsg());
     }
-    
+
     # Handle password reset if requested
     if (isset($_POST["reset_password"]) && $_POST["reset_password"] == "1") {
         if ($teacher["teacher_username"] == "ADMIN") {
-            $unsafe_password = genPassword(8); 
+            $unsafe_password = genPassword(8);
         } else {
-            $unsafe_password = genPassword(6); 
+            $unsafe_password = genPassword(6);
         }
         $password = password_hash($unsafe_password, PASSWORD_DEFAULT);
-        
-        $query = "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_id = :id";
+
+        $query =
+            "UPDATE TEACHERS SET teacher_password = :password WHERE teacher_id = :id";
         $stmt = $db->prepare($query);
-        
+
         if (!$stmt) {
-            errorMessages("Error preparing password update query", $db->lastErrorMsg());
+            errorMessages(
+                "Error preparing password update query",
+                $db->lastErrorMsg(),
+            );
         }
-        
+
         $stmt->bindValue(":password", $password, SQLITE3_TEXT);
         $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
-        
+
         $result = $stmt->execute();
         if (!$result) {
-            errorMessages("Error executing password update query", $db->lastErrorMsg());
+            errorMessages(
+                "Error executing password update query",
+                $db->lastErrorMsg(),
+            );
         }
-        
+
         # Create credentials file content
         $credentials_content = "NextStep Teacher Account - Password Reset\n";
         $credentials_content .= "=========================================\n\n";
@@ -186,17 +196,18 @@ if (isset($_POST["submit"])) {
         $credentials_content .= "Email: " . $teacher_email . "\n";
         $credentials_content .= "Username: " . $teacher_username . "\n";
         $credentials_content .= "New Password: " . $unsafe_password . "\n\n";
-        $credentials_content .= "Reset: " . date('Y-m-d H:i:s') . "\n\n";
-        
+        $credentials_content .= "Reset: " . date("Y-m-d H:i:s") . "\n\n";
+
         $_SESSION["new_teacher_credentials"] = $credentials_content;
-        $_SESSION["new_teacher_filename"]    = $teacher_username . "_password_reset.txt";
-        
+        $_SESSION["new_teacher_filename"] =
+            $teacher_username . "_password_reset.txt";
+
         $db->close();
         header("Location: /NextStep/download/download_success.php");
         exit();
     }
-    
-    $_SESSION['success'] = "Teacher updated successfully";
+
+    $_SESSION["success"] = "Teacher updated successfully";
     $db->close();
     header("Location: /NextStep/teachers/");
     exit();
@@ -214,7 +225,7 @@ $db->close();
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Edit Teacher</title>
 </head>
-<body>
+<body class="theme-<?= $color_theme["theme_color"] ?>">
 <?php include "../navbar.php"; ?>
 <div class="page-box-wide">
 <h2>Edit Teacher</h2>
@@ -222,16 +233,16 @@ $db->close();
 
 <form method="POST" action="edit_teacher.php?teacher_id=<?= $teacher_id ?>">
     <label for="teacher_name">Name:</label>
-    <input type="text" name="teacher_name" 
-           value="<?= htmlspecialchars($teacher['teacher_name']) ?>"/>
+    <input type="text" name="teacher_name"
+           value="<?= htmlspecialchars($teacher["teacher_name"]) ?>"/>
     <label for="teacher_email">Email:</label>
-    <input type="text" name="teacher_email" 
-           value="<?= htmlspecialchars($teacher['teacher_email']) ?>"/>
+    <input type="text" name="teacher_email"
+           value="<?= htmlspecialchars($teacher["teacher_email"]) ?>"/>
     <label for="teacher_username">Username:</label>
-    <input type="text" id="teacher_username" name="teacher_username" 
-           value="<?= htmlspecialchars($teacher['teacher_username']) ?>"
-           <?= $is_admin ? 'readonly' : '' ?>/>
-    
+    <input type="text" id="teacher_username" name="teacher_username"
+           value="<?= htmlspecialchars($teacher["teacher_username"]) ?>"
+           <?= $is_admin ? "readonly" : "" ?>/>
+
     <div class="password-reset-container">
         <input type="checkbox" name="reset_password" value="1" class="checkbox-input"/>
         <label class="checkbox-label">Reset password and download new credentials</label>
@@ -239,7 +250,7 @@ $db->close();
             Check this box to generate a new password for this teacher
         </p>
     </div>
-    
+
     <div class="button-container">
         <input type="submit" class="simple-btn" name="submit" value="Update Teacher">
         <a href="/NextStep/teachers/" class="simple-btn cancel-btn">Cancel</a>

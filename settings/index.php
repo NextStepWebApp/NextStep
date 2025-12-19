@@ -12,7 +12,8 @@ try {
 }
 
 # Fetch teacher info
-$query = "SELECT teacher_name, teacher_email FROM TEACHERS WHERE teacher_id = :id";
+$query =
+    "SELECT teacher_name, teacher_email FROM TEACHERS WHERE teacher_id = :id";
 $stmt = $db->prepare($query);
 $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
 $result = $stmt->execute()->fetchArray();
@@ -22,7 +23,7 @@ $teacher_email = htmlspecialchars($result["teacher_email"]);
 
 $db->close();
 
-$tab = $_GET['tab'] ?? 'general';
+$tab = $_GET["tab"] ?? "general";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +35,7 @@ $tab = $_GET['tab'] ?? 'general';
     <link rel="stylesheet" href="../css/style_page.css"/>
     <title>NextStep - Settings</title>
 </head>
-<body>
+<body class="theme-<?= $color_theme["theme_color"] ?>">
 
 <?php include "../navbar.php"; ?>
 
@@ -42,10 +43,19 @@ $tab = $_GET['tab'] ?? 'general';
 
     <!-- Tabs -->
     <div class="tabs">
-        <a href="?tab=general"><button class="tab <?= $tab==='general'?'active':'' ?>">General</button></a>
-        <a href="?tab=records"><button class="tab <?= $tab==='records'?'active':'' ?>">Records</button></a>
-        <a href="?tab=system_management"><button class="tab <?= $tab==='system_management'?'active':'' ?>">System Management</button></a>
-        <a href="?tab=preferences"><button class="tab <?= $tab==='preferences'?'active':'' ?>">Preferences</button></a>
+        <a href="?tab=general"><button class="tab <?= $tab === "general"
+            ? "active"
+            : "" ?>">General</button></a>
+        <a href="?tab=records"><button class="tab <?= $tab === "records"
+            ? "active"
+            : "" ?>">Records</button></a>
+        <a href="?tab=system_management"><button class="tab <?= $tab ===
+        "system_management"
+            ? "active"
+            : "" ?>">System Management</button></a>
+        <a href="?tab=preferences"><button class="tab <?= $tab === "preferences"
+            ? "active"
+            : "" ?>">Preferences</button></a>
     </div>
 
     <div class="tab-content active">
