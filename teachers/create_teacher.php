@@ -4,11 +4,20 @@ session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
 
+try {
+    $db = new SQLite3($db_file);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
+
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
 if (isset($_POST["submit"])) {
     # Check if all fields are filled
     if (empty($_POST["teacher_name"]) || empty($_POST["teacher_username"])) {
         $_SESSION["error"] = "All fields are required";
         header("Location: create_teacher.php");
+        $db->close();
         exit();
     }
 
@@ -16,21 +25,16 @@ if (isset($_POST["submit"])) {
     # These are functions in utils.php that are used for user input validations
     # Validate teacher name
     $teacher_name = trim($_POST["teacher_name"]);
-    validate_teacher_name($teacher_name, "create_teacher", $teacher_name);
+    validate_teacher_name($db, $teacher_name, "create_teacher", $teacher_name);
 
     # Validate user name (same function)
     $teacher_username = trim($_POST["teacher_username"]);
     validate_teacher_name(
+        $db,
         $teacher_username,
         "create_teacher",
         $teacher_username,
     );
-
-    try {
-        $db = new SQLite3($db_file);
-    } catch (Exception $e) {
-        errorMessages("Database connection failed", $e->getMessage());
-    }
 
     # Check to see if the teacher already exists
     $query = "SELECT teacher_id FROM TEACHERS WHERE
@@ -125,7 +129,7 @@ if (isset($_POST["submit"])) {
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Create Teacher</title>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>
 <div class="page-box-wide">
 <h2>Create Teacher</h2>
@@ -142,6 +146,6 @@ if (isset($_POST["submit"])) {
     </div>
 </form>
 </div>
-<script src="js/script.js"></script>
+<script src="../js/script.js"></script>
 </body>
 </html>

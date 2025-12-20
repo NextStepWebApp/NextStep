@@ -13,6 +13,9 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
 # Fetch teacher data
 $query = "SELECT teacher_id, teacher_name, teacher_username, teacher_email
           FROM TEACHERS WHERE teacher_id = :id";
@@ -58,11 +61,11 @@ if (isset($_POST["submit"])) {
 
     # Validate teacher name
     $teacher_name = trim($_POST["teacher_name"]);
-    validate_teacher_name($teacher_name, "edit_teacher", $teacher_id);
+    validate_teacher_name($db, $teacher_name, "edit_teacher", $teacher_id);
 
     # Validate email
     $teacher_email = trim($_POST["teacher_email"]);
-    validate_teacher_email($teacher_email, "edit_teacher", $teacher_id);
+    validate_teacher_email($db, $teacher_email, "edit_teacher", $teacher_id);
 
     # Validate username
     $teacher_username = trim($_POST["teacher_username"]);
@@ -225,7 +228,7 @@ $db->close();
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Edit Teacher</title>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>
 <div class="page-box-wide">
 <h2>Edit Teacher</h2>

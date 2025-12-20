@@ -12,126 +12,174 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
 # The config is defined in utils
-$accessibility = $config['accessibility'];
-$city = $config['city'];
-$class = $config['class'];
-$country = $config['country'];
-$education = $config['education'];
-$schools = $config['school'];
-$status = $config['status'];
+$accessibility = $config["accessibility"];
+$city = $config["city"];
+$class = $config["class"];
+$country = $config["country"];
+$education = $config["education"];
+$schools = $config["school"];
+$status = $config["status"];
 
 if (isset($_POST["submit"])) {
-
-    if (empty($_POST["student_name"]) || empty($_POST["student_email"]) ||
-        empty($_POST["student_phone"]) || empty($_POST["class_name"]) ||
-        empty($_POST["country_name"]) || empty($_POST["city_name"]) ||
-        empty($_POST["school_name"]) || empty($_POST["program_name"]) ||
-        empty($_POST["status"]) || empty($_POST["accessibility"])) {
-
-        $_SESSION['error'] = "All fields are required";
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
+    if (
+        empty($_POST["student_name"]) ||
+        empty($_POST["student_email"]) ||
+        empty($_POST["student_phone"]) ||
+        empty($_POST["class_name"]) ||
+        empty($_POST["country_name"]) ||
+        empty($_POST["city_name"]) ||
+        empty($_POST["school_name"]) ||
+        empty($_POST["program_name"]) ||
+        empty($_POST["status"]) ||
+        empty($_POST["accessibility"])
+    ) {
+        $_SESSION["error"] = "All fields are required";
+        header(
+            "Location: /NextStep/students/edit_student.php?student_id=" .
+                $_POST["student_id"],
+        );
+        $db->close();
         exit();
     }
 
     # validate student name
-    $student_name = trim($_POST["student_name"]);
-    if (strlen($student_name) < 2) {
-        $_SESSION['error'] = "Name must be at least 2 characters long";
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
-        exit();
-    }
-    
-    if (strlen($student_name) > 50) {
-        $_SESSION['error'] = "Name must not exceed 50 characters";
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
-        exit();
-    }
-    
-    if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $student_name)) {
-        $_SESSION['error'] = "Name contains invalid characters";
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
-        exit();
-    }
-    
+    validate_student_name(
+        $db,
+        $_POST["student_name"],
+        "edit_student",
+        $_POST["student_id"],
+    );
+
     # Validate email
-    $student_email = trim($_POST["student_email"]);
-    if (!filter_var($student_email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error'] = "Invalid email format";
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
-        exit();
-    }
-    
-    if (strlen($student_email) > 50) {
-        $_SESSION['error'] = "Email must not exceed 50 characters";
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
-        exit();
-    }
-    
+    validate_student_email(
+        $db,
+        $_POST["student_email"],
+        "edit_student",
+        $_POST["student_id"],
+    );
+
     # Validate phone number
-    $student_phone = trim($_POST["student_phone"]);
-    $clean_phone = preg_replace('/[\s\-\(\)\+]/', '', $student_phone);
-    
-    if (!preg_match("/^[0-9]{10,15}$/", $clean_phone)) {
-        $_SESSION['error'] = "Phone number must be between 10-15 digits";
-        header("Location: edit.php?student_id=" . $_POST['student_id']);
-        exit();
-    }
-    
+    $clean_phone = validate_student_phone(
+        $db,
+        $_POST["student_phone"],
+        "edit_student",
+        $_POST["student_id"],
+    );
+
     $_POST["student_phone"] = $clean_phone;
 
     # Check if another student has the same email, name, or phone (excluding current student)
-    $query = "SELECT students_id FROM STUDENTS WHERE 
-        (students_email = :email OR 
-        students_name = :name OR 
+    $query = "SELECT students_id FROM STUDENTS WHERE
+        (students_email = :email OR
+        students_name = :name OR
         students_phone_number = :phone)
         AND students_id != :current_id";
     $stmt = $db->prepare($query);
-    
+
     if (!$stmt) {
-        errorMessages("Error preparing duplicate check query", $db->lastErrorMsg());
+        errorMessages(
+            "Error preparing duplicate check query",
+            $db->lastErrorMsg(),
+        );
     }
-    
+
     $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
     $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
     $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
     $stmt->bindValue(":current_id", $_POST["student_id"], SQLITE3_INTEGER);
     $result = $stmt->execute();
-    
+
     if (!$result) {
         errorMessages("Error executing duplicate check", $db->lastErrorMsg());
     }
-    
+
     $existing = $result->fetchArray();
-    
+
     if ($existing) {
-        $_SESSION['error'] = "Another student with this name, email, or phone number already exists";
-        header("Location: /NextStep/students/edit_student.php?student_id=" . $_POST['student_id']);
+        $_SESSION["error"] =
+            "Another student with this name, email, or phone number already exists";
+        header(
+            "Location: /NextStep/students/edit_student.php?student_id=" .
+                $_POST["student_id"],
+        );
+        $db->close();
         exit();
     }
 
     # Validate all dropdown values against config
-    if (!in_array($_POST["class_name"], $class) ||
+    if (
+        !in_array($_POST["class_name"], $class) ||
         !in_array($_POST["country_name"], $country) ||
         !in_array($_POST["city_name"], $city) ||
         !in_array($_POST["school_name"], $schools) ||
         !in_array($_POST["program_name"], $education) ||
         !in_array($_POST["status"], $status) ||
-        !in_array($_POST["accessibility"], $accessibility)) {
-        $_SESSION['error'] = "Invalid selection detected";
+        !in_array($_POST["accessibility"], $accessibility)
+    ) {
+        $_SESSION["error"] = "Invalid selection detected";
         error_log("Config validation error - invalid dropdown value submitted");
-        header("Location: /NextStep/students/edit_student.php?student_id=" . $_POST['student_id']);
+        header(
+            "Location: /NextStep/students/edit_student.php?student_id=" .
+                $_POST["student_id"],
+        );
+        $db->close();
         exit();
     }
 
     # Get or create foreign keys
-    $result_class_id = get_or_create_foreign_key($db, "CLASS", "class_id", "class_name", $_POST["class_name"]);
-    $result_country_id = get_or_create_foreign_key($db, "COUNTRY", "country_id", "country_name", $_POST["country_name"]);
-    $result_city_id = get_or_create_foreign_key($db, "CITY", "city_id", "city_name", $_POST["city_name"]);
-    $result_school_id = get_or_create_foreign_key($db, "SCHOOL", "school_id", "school_name", $_POST["school_name"]);
-    $result_program_id = get_or_create_foreign_key($db, "EDUCATION_PROGRAM", "program_id", "program_name", $_POST["program_name"]);
-    $result_status_id = get_or_create_foreign_key($db, "STATUS", "status_id", "status_name", $_POST["status"]);
-    $result_accessibility_id = get_or_create_foreign_key($db, "ACCESSIBILITY", "accessibility_id", "accessibility_name", $_POST["accessibility"]);
+    $result_class_id = get_or_create_foreign_key(
+        $db,
+        "CLASS",
+        "class_id",
+        "class_name",
+        $_POST["class_name"],
+    );
+    $result_country_id = get_or_create_foreign_key(
+        $db,
+        "COUNTRY",
+        "country_id",
+        "country_name",
+        $_POST["country_name"],
+    );
+    $result_city_id = get_or_create_foreign_key(
+        $db,
+        "CITY",
+        "city_id",
+        "city_name",
+        $_POST["city_name"],
+    );
+    $result_school_id = get_or_create_foreign_key(
+        $db,
+        "SCHOOL",
+        "school_id",
+        "school_name",
+        $_POST["school_name"],
+    );
+    $result_program_id = get_or_create_foreign_key(
+        $db,
+        "EDUCATION_PROGRAM",
+        "program_id",
+        "program_name",
+        $_POST["program_name"],
+    );
+    $result_status_id = get_or_create_foreign_key(
+        $db,
+        "STATUS",
+        "status_id",
+        "status_name",
+        $_POST["status"],
+    );
+    $result_accessibility_id = get_or_create_foreign_key(
+        $db,
+        "ACCESSIBILITY",
+        "accessibility_id",
+        "accessibility_name",
+        $_POST["accessibility"],
+    );
 
     // Update student information
     $query = "UPDATE STUDENTS SET
@@ -162,40 +210,46 @@ if (isset($_POST["submit"])) {
     $stmt->bindValue(":school_id", $result_school_id, SQLITE3_INTEGER);
     $stmt->bindValue(":program_id", $result_program_id, SQLITE3_INTEGER);
     $stmt->bindValue(":status_id", $result_status_id, SQLITE3_INTEGER);
-    $stmt->bindValue(":accessibility_id", $result_accessibility_id, SQLITE3_INTEGER);
+    $stmt->bindValue(
+        ":accessibility_id",
+        $result_accessibility_id,
+        SQLITE3_INTEGER,
+    );
     $stmt->bindValue(":id", $_POST["student_id"], SQLITE3_INTEGER);
 
     $results = $stmt->execute();
     if (!$results) {
         errorMessages("Error executing query", $db->lastErrorMsg());
     }
-    $_SESSION['success'] = 'Student information updated successfully';
-    header("Location: /NextStep/view.php?student_id=" . $_POST['student_id']);
+    $_SESSION["success"] = "Student information updated successfully";
+    header("Location: /NextStep/view.php?student_id=" . $_POST["student_id"]);
+    $db->close();
     exit();
 }
 
 # Get data from the database
-$row = full_students_database_query($db_file);
+$row = full_students_database_query($db);
 
 # Check to see there is a correct student id passed
 if (!$row) {
-    $_SESSION['error'] = 'Student not found';
-    header('Location: index.php');
+    $_SESSION["error"] = "Student not found";
+    header("Location: index.php");
+    $db->close();
     exit();
 }
 
-$student_id            = htmlspecialchars($row['students_id']);
-$student_name          = htmlspecialchars($row['students_name']);
-$student_email         = htmlspecialchars($row['students_email']);
-$student_phone_number  = htmlspecialchars($row['students_phone_number']);
-$class_name            = $row['class_name'];
-$country_name          = $row['country_name'];
-$city_name             = $row['city_name'];
-$school_name           = $row['school_name'];
-$program_name          = $row['program_name'];
-$status_name           = $row['status_name'];
-$accessibility_name    = $row['accessibility_name'];
-
+$student_id = htmlspecialchars($row["students_id"]);
+$student_name = htmlspecialchars($row["students_name"]);
+$student_email = htmlspecialchars($row["students_email"]);
+$student_phone_number = htmlspecialchars($row["students_phone_number"]);
+$class_name = $row["class_name"];
+$country_name = $row["country_name"];
+$city_name = $row["city_name"];
+$school_name = $row["school_name"];
+$program_name = $row["program_name"];
+$status_name = $row["status_name"];
+$accessibility_name = $row["accessibility_name"];
+$db->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -207,29 +261,31 @@ $accessibility_name    = $row['accessibility_name'];
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Edit Student</title>
 </head>
-<body>
+<body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>
 <div class="page-box-wide">
 <h2>Edit Student Information</h2>
 <?php flashMessages(); ?>
 
-<form method="POST" action="edit_student.php?student_id=<?=$student_id?>">
-<input type="hidden" name="student_id" value="<?=$student_id?>" />
+<form method="POST" action="edit_student.php?student_id=<?= $student_id ?>">
+<input type="hidden" name="student_id" value="<?= $student_id ?>" />
 
 <label for="student_name">Name:</label>
-<input type="text" id="student_name" name="student_name" value="<?=$student_name?>" required/>
+<input type="text" id="student_name" name="student_name" value="<?= $student_name ?>" required/>
 
 <label for="student_email">Email:</label>
-<input type="email" id="student_email" name="student_email" value="<?=$student_email?>" required/>
+<input type="email" id="student_email" name="student_email" value="<?= $student_email ?>" required/>
 
 <label for="student_phone">Phone number:</label>
-<input type="tel" id="student_phone" name="student_phone" value="<?=$student_phone_number?>" required/>
+<input type="tel" id="student_phone" name="student_phone" value="<?= $student_phone_number ?>" required/>
 
 <label for="class_name">Class name:</label>
 <select id="class_name" name="class_name" required>
     <option value="">Select Class</option>
     <?php foreach ($class as $c): ?>
-        <option value="<?= htmlspecialchars($c) ?>" <?= $c === $class_name ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($c) ?>" <?= $c === $class_name
+    ? "selected"
+    : "" ?>>
             <?= htmlspecialchars($c) ?>
         </option>
     <?php endforeach; ?>
@@ -239,7 +295,9 @@ $accessibility_name    = $row['accessibility_name'];
 <select id="country_name" name="country_name" required>
     <option value="">Select Country</option>
     <?php foreach ($country as $cnt): ?>
-        <option value="<?= htmlspecialchars($cnt) ?>" <?= $cnt === $country_name ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($cnt) ?>" <?= $cnt === $country_name
+    ? "selected"
+    : "" ?>>
             <?= htmlspecialchars($cnt) ?>
         </option>
     <?php endforeach; ?>
@@ -249,7 +307,9 @@ $accessibility_name    = $row['accessibility_name'];
 <select id="city_name" name="city_name" required>
     <option value="">Select City</option>
     <?php foreach ($city as $cty): ?>
-        <option value="<?= htmlspecialchars($cty) ?>" <?= $cty === $city_name ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($cty) ?>" <?= $cty === $city_name
+    ? "selected"
+    : "" ?>>
             <?= htmlspecialchars($cty) ?>
         </option>
     <?php endforeach; ?>
@@ -259,7 +319,10 @@ $accessibility_name    = $row['accessibility_name'];
 <select id="school_name" name="school_name" required>
     <option value="">Select School</option>
     <?php foreach ($schools as $school): ?>
-        <option value="<?= htmlspecialchars($school) ?>" <?= $school === $school_name ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($school) ?>" <?= $school ===
+$school_name
+    ? "selected"
+    : "" ?>>
             <?= htmlspecialchars($school) ?>
         </option>
     <?php endforeach; ?>
@@ -269,7 +332,9 @@ $accessibility_name    = $row['accessibility_name'];
 <select id="program_name" name="program_name" required>
     <option value="">Select Program</option>
     <?php foreach ($education as $edu): ?>
-        <option value="<?= htmlspecialchars($edu) ?>" <?= $edu === $program_name ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($edu) ?>" <?= $edu === $program_name
+    ? "selected"
+    : "" ?>>
             <?= htmlspecialchars($edu) ?>
         </option>
     <?php endforeach; ?>
@@ -279,7 +344,10 @@ $accessibility_name    = $row['accessibility_name'];
 <select id="status" name="status" required>
     <option value="">Select Status</option>
     <?php foreach ($status as $stat): ?>
-        <option value="<?= htmlspecialchars($stat) ?>" <?= $stat === $status_name ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($stat) ?>" <?= $stat ===
+$status_name
+    ? "selected"
+    : "" ?>>
             <?= htmlspecialchars($stat) ?>
         </option>
     <?php endforeach; ?>
@@ -289,7 +357,10 @@ $accessibility_name    = $row['accessibility_name'];
 <select id="accessibility" name="accessibility" required>
     <option value="">Select</option>
     <?php foreach ($accessibility as $acc): ?>
-        <option value="<?= htmlspecialchars($acc) ?>" <?= $acc === $accessibility_name ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($acc) ?>" <?= $acc ===
+$accessibility_name
+    ? "selected"
+    : "" ?>>
             <?= htmlspecialchars($acc) ?>
         </option>
     <?php endforeach; ?>
@@ -298,7 +369,7 @@ $accessibility_name    = $row['accessibility_name'];
 
 <div class="button-container">
     <input type="submit" class="simple-btn" name="submit" value="Save Changes">
-    <a href="index.php" class="simple-btn cancel-btn">Cancel</a>
+    <a href="/NextStep/" class="simple-btn cancel-btn">Cancel</a>
 </div>
 </form>
 </div>

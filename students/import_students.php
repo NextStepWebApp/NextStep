@@ -4,6 +4,15 @@ session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
 
+try {
+    $db = new SQLite3($db_file);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+$db->close();
+
 # Get the python import program file path from the NextStep config
 $python_script = $nextstep_config["python_import_path"];
 
@@ -67,7 +76,7 @@ if (isset($_POST["submit"])) {
     <link rel="stylesheet" href="../css/style_page.css"/>
     <title>NextStep - Import Students</title>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>
 <div class="page-box-wide">
     <h2>Import Students from CSV</h2>

@@ -18,6 +18,9 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
 if (isset($_POST["submit"])) {
     // Check if all fields are filled
     if (
@@ -34,57 +37,25 @@ if (isset($_POST["submit"])) {
     ) {
         $_SESSION["error"] = "All fields are required";
         header("Location: create_student.php");
+        $db->close();
         exit();
     }
 
     # This section will be validations of name, email and phone
 
-    # Validate student name
-    $student_name = trim($_POST["student_name"]);
-    if (strlen($student_name) < 2) {
-        $_SESSION["error"] = "Name must be at least 2 characters long";
-        header("Location: create_student.php");
-        exit();
-    }
-
-    if (strlen($student_name) > 50) {
-        $_SESSION["error"] = "Name must not exceed 50 characters";
-        header("Location: create_student.php");
-        exit();
-    }
-
-    if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $student_name)) {
-        $_SESSION["error"] = "Name contains invalid characters";
-        header("Location: create_student.php");
-        exit();
-    }
+    # validate student name
+    validate_student_name($db, $_POST["student_name"], "create_student");
 
     # Validate email
-    $student_email = trim($_POST["student_email"]);
-    if (!filter_var($student_email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION["error"] = "Invalid email format";
-        header("Location: create_student.php");
-        exit();
-    }
-
-    if (strlen($student_email) > 50) {
-        $_SESSION["error"] = "Email must not exceed 50 characters";
-        header("Location: create_student.php");
-        exit();
-    }
+    validate_student_email($db, $_POST["student_email"], "create_student");
 
     # Validate phone number
-    $student_phone = trim($_POST["student_phone"]);
-    # Remove common formatting characters
-    $clean_phone = preg_replace("/[\s\-\(\)\+]/", "", $student_phone);
+    $clean_phone = validate_student_phone(
+        $db,
+        $_POST["student_phone"],
+        "create_student",
+    );
 
-    if (!preg_match("/^[0-9]{10,15}$/", $clean_phone)) {
-        $_SESSION["error"] = "Phone number must be between 10-15 digits";
-        header("Location: create_student.php");
-        exit();
-    }
-
-    # Store cleaned phone number for database insertion
     $_POST["student_phone"] = $clean_phone;
 
     # Check to see if the student already exists
@@ -119,6 +90,7 @@ if (isset($_POST["submit"])) {
         $_SESSION["error"] =
             "A student with this name, email, or phone number already exists";
         header("Location: create_student.php");
+        $db->close();
         exit();
     }
 
@@ -135,6 +107,7 @@ if (isset($_POST["submit"])) {
         $_SESSION["error"] = "Invalid selection detected";
         error_log("Config validation error - invalid dropdown value submitted");
         header("Location: students.php");
+        $db->close();
         exit();
     }
     # Here are the queries to get the foriegn keys
@@ -248,21 +221,22 @@ if (isset($_POST["submit"])) {
     $success = "Student created successfully";
     $_SESSION["success"] = $success;
     header("Location: /NextStep/students/");
+    $db->close();
     exit();
 }
+$db->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="icon" type="image/x-icon" href="images/logo.webp"/>
+<link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Create Student</title>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>
 <div class="page-box-wide">
 <h2>Create Student</h2>
