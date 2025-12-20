@@ -1,11 +1,8 @@
 <?php
-$current_app_name = $branding["app_name"];
-$selected_theme = $color_theme["theme_color"];
+$app_name = $branding["app_name"]; # from utils
+$theme = $color_theme["theme_color"];
 
 if (isset($_POST["preferences"])) {
-    $app_name = $current_app_name;
-    $theme = $selected_theme;
-
     # App name
     if (empty($_POST["app_name"])) {
         $_SESSION["error"] = "Application name cannot be empty";
@@ -35,23 +32,111 @@ if (isset($_POST["preferences"])) {
         }
     }
 
-    # Save
-    if (!isset($_SESSION["error"])) {
-        $branding["app_name"] = $app_name;
-        $color_theme["theme_color"] = $theme;
+    # Seeing what method to use
 
-        file_put_contents(
-            $branding_path,
-            json_encode($branding, JSON_PRETTY_PRINT),
-        );
-        file_put_contents(
-            $color_theme_path,
-            json_encode($color_theme, JSON_PRETTY_PRINT),
-        );
+    # Connect to the db
+    try {
+        $db = new SQLite3($db_file);
+    } catch (Exception $e) {
+        errorMessages("Database connection failed", $e->getMessage());
+    }
+
+    # preperation to see if whe have a admin
+    $query = "SELECT teacher_role_id
+        FROM TEACHERS
+        WHERE teacher_id = :teacher_id";
+    $stmt = $db->prepare($query);
+    $stmt->bindValue(":teacher_id", $_SESSION["teacher_id"], SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    $row = $result->fetchArray();
+
+    # Get the role id for admin (only admins can reset)
+    $role_id = get_foreign_key_roles($db, "ADMIN");
+
+    # compare
+    if ((int) $row["teacher_role_id"] === (int) $role_id) {
+        $method = "json"; # admin
+    } else {
+        $method = "sql"; # other users
+    }
+
+    if (!isset($_SESSION["error"])) {
+        # Branding
+        $branding["app_name"] = $app_name;
+
+        if (
+            file_put_contents(
+                $branding_path,
+                json_encode($branding, JSON_PRETTY_PRINT),
+            ) === false
+        ) {
+            $_SESSION["error"] = "Failed to save branding settings.";
+            $db->close();
+            header("Location: /NextStep/settings/?tab=preferences");
+            exit();
+        }
+
+        # Theme
+
+        # Get the foreign key for the theme color
+        function get_key_theme(SQLite3 $db, string $theme)
+        {
+            $query =
+                "SELECT theme_id FROM THEME WHERE theme_name = :theme_name";
+            $stmt = $db->prepare($query);
+            $stmt->bindValue(":theme_name", $theme, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            $row = $result->fetchArray();
+            try {
+                $theme_id = $row[0];
+                return $theme_id;
+            } catch (Exception) {
+                $theme_id = null;
+                return $theme_id;
+            }
+        }
+        $theme_id = get_key_theme($db, $theme);
+        if ($theme_id === null) {
+            $query = "INSERT INTO THEME (theme_name) VALUES (:theme_name)";
+            $stmt = $db->prepare($query);
+            $stmt->bindValue(":theme_name", $theme, SQLITE3_TEXT);
+            $result = $stmt->execute();
+
+            # now get it
+            $theme_id = get_key_theme($db, $theme);
+        }
+
+        if ($method == "sql") {
+            $query =
+                "UPDATE TEACHERS SET teacher_theme_id = :theme_id WHERE teacher_id = :teacher_id";
+            $stmt = $db->prepare($query);
+            $stmt->bindValue(":theme_id", $theme_id, SQLITE3_INTEGER);
+            $stmt->bindValue(
+                ":teacher_id",
+                $_SESSION["teacher_id"],
+                SQLITE3_INTEGER,
+            );
+            $result = $stmt->execute();
+        } elseif ($method == "json") {
+            $color_theme["theme_color"] = $theme;
+
+            if (
+                file_put_contents(
+                    $color_theme_path,
+                    json_encode($color_theme, JSON_PRETTY_PRINT),
+                ) === false
+            ) {
+                $_SESSION["error"] = "Failed to save theme settings.";
+                $db->close();
+                header("Location: /NextStep/settings/?tab=preferences");
+                exit();
+            }
+        }
 
         $_SESSION["success"] = "Preferences updated successfully";
     }
 
+    $db->close();
     header("Location: /NextStep/settings/?tab=preferences");
     exit();
 }
@@ -62,14 +147,18 @@ if (isset($_POST["preferences"])) {
 
     <h3 class="extra-spacing">Application Name</h3>
     <input type="text" name="app_name"
-           value="<?= htmlspecialchars($current_app_name) ?>">
+           value="<?= htmlspecialchars($app_name) ?>">
 
     <h3 class="extra-spacing">Color Theme</h3>
     <select name="theme">
         <?php foreach (["blue", "red", "green", "purple"] as $color) {
-            echo "<option value='$color'" .
-                ($color === $selected_theme ? " selected" : "") .
-                ">$color</option>";
+            echo "<option value='" .
+                htmlspecialchars($color) .
+                "'" .
+                ($color === $theme ? " selected" : "") .
+                ">" .
+                htmlspecialchars($color) .
+                "</option>";
         } ?>
     </select>
 
