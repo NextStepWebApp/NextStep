@@ -22,7 +22,7 @@ $branding = json_decode(file_get_contents($branding_path), true);
 # Global color validate_teacher_name
 # This is the theme that all the users will get by default
 $color_theme_path = $nextstep_config["color_theme_path"];
-$color_theme = json_decode(file_get_contents($color_theme_path), true);
+$color_theme_system = json_decode(file_get_contents($color_theme_path), true);
 
 function loginSecurity()
 {
@@ -103,14 +103,8 @@ function check_id(?string $id, string $group)
     }
 }
 
-function full_students_database_query($db_file)
+function full_students_database_query(SQLite3 $db)
 {
-    try {
-        $db = new SQLite3($db_file);
-    } catch (Exception $e) {
-        errorMessages("Database connection failed", $e->getMessage());
-    }
-
     $query = "SELECT
     STUDENTS.students_id,
     STUDENTS.students_name,
@@ -147,7 +141,6 @@ function full_students_database_query($db_file)
         errorMessages("Error executing query", $db->lastErrorMsg());
     }
     $row = $results->fetchArray();
-    $db->close();
 
     return $row;
 }
@@ -274,6 +267,7 @@ function download_page_settings()
 # Input validation functions used in settings, edit and create page
 
 function validate_teacher_name(
+    SQLite3 $db,
     string $teacher_name,
     string $page,
     string $teacher_id = "",
@@ -284,18 +278,22 @@ function validate_teacher_name(
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                $db->close();
                 exit();
 
             case "settings":
                 header("Location: settings.php");
+                $db->close();
                 exit();
 
             case "create_teacher":
                 header("Location: create_teacher.php");
+                $db->close();
                 exit();
 
             default:
                 header("Location: index.php");
+                $db->close();
                 exit();
         }
     }
@@ -307,18 +305,22 @@ function validate_teacher_name(
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                $db->close();
                 exit();
 
             case "settings":
                 header("Location: settings.php");
+                $db->close();
                 exit();
 
             case "create_teacher":
                 header("Location: create_teacher.php");
+                $db->close();
                 exit();
 
             default:
                 header("Location: index.php");
+                $db->close();
                 exit();
         }
     }
@@ -330,24 +332,29 @@ function validate_teacher_name(
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                $db->close();
                 exit();
 
             case "settings":
                 header("Location: settings.php");
+                $db->close();
                 exit();
 
             case "create_teacher":
                 header("Location: create_teacher.php");
+                $db->close();
                 exit();
 
             default:
                 header("Location: index.php");
+                $db->close();
                 exit();
         }
     }
 }
 
 function validate_teacher_email(
+    SQLite3 $db,
     string $teacher_email,
     string $page,
     string $teacher_id = "",
@@ -359,18 +366,22 @@ function validate_teacher_email(
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                $db->close();
                 exit();
 
             case "settings":
                 header("Location: settings.php");
+                $db->close();
                 exit();
 
             case "create_teacher":
                 header("Location: create_teacher.php");
+                $db->close();
                 exit();
 
             default:
                 header("Location: index.php");
+                $db->close();
                 exit();
         }
     }
@@ -382,21 +393,173 @@ function validate_teacher_email(
         switch ($page) {
             case "edit_teacher":
                 header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+                $db->close();
                 exit();
 
             case "settings":
                 header("Location: settings.php");
+                $db->close();
                 exit();
 
             case "create_teacher":
                 header("Location: create_teacher.php");
+                $db->close();
                 exit();
 
             default:
                 header("Location: index.php");
+                $db->close();
                 exit();
         }
     }
+}
+function validate_student_name(
+    SQLite3 $db,
+    string $post_student_name,
+    string $page,
+    int $post_student_id = 0,
+) {
+    $student_name = trim($post_student_name);
+
+    if (strlen($student_name) < 2) {
+        $_SESSION["error"] = "Name must be at least 2 characters long";
+        switch ($page) {
+            case "edit_student":
+                header(
+                    "Location: /NextStep/students/edit_student.php?student_id=" .
+                        $post_student_id,
+                );
+                break;
+            case "create_student":
+                header("Location: /NextStep/students/create_student.php");
+                break;
+            default:
+                header("Location: /NextStep/students/index.php");
+                break;
+        }
+        $db->close();
+        exit();
+    }
+
+    if (strlen($student_name) > 50) {
+        $_SESSION["error"] = "Name must not exceed 50 characters";
+        switch ($page) {
+            case "edit_student":
+                header(
+                    "Location: /NextStep/students/edit_student.php?student_id=" .
+                        $post_student_id,
+                );
+                break;
+            case "create_student":
+                header("Location: /NextStep/students/create_student.php");
+                break;
+            default:
+                header("Location: /NextStep/students/index.php");
+                break;
+        }
+        $db->close();
+        exit();
+    }
+
+    if (!preg_match("/^[a-zA-Z\s\-'\.]+$/u", $student_name)) {
+        $_SESSION["error"] = "Name contains invalid characters";
+        switch ($page) {
+            case "edit_student":
+                header(
+                    "Location: /NextStep/students/edit_student.php?student_id=" .
+                        $post_student_id,
+                );
+                break;
+            case "create_student":
+                header("Location: /NextStep/students/create_student.php");
+                break;
+            default:
+                header("Location: /NextStep/students/index.php");
+                break;
+        }
+        $db->close();
+        exit();
+    }
+}
+function validate_student_email(
+    SQLite3 $db,
+    string $post_student_email,
+    string $page,
+    int $post_student_id = 0,
+) {
+    $student_email = trim($post_student_email);
+
+    if (!filter_var($student_email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION["error"] = "Invalid email format";
+        switch ($page) {
+            case "edit_student":
+                header(
+                    "Location: /NextStep/students/edit_student.php?student_id=" .
+                        $post_student_id,
+                );
+                break;
+            case "create_student":
+                header("Location: /NextStep/students/create_student.php");
+                break;
+            default:
+                header("Location: /NextStep/students/index.php");
+                break;
+        }
+        $db->close();
+        exit();
+    }
+
+    if (strlen($student_email) > 50) {
+        $_SESSION["error"] = "Email must not exceed 50 characters";
+        switch ($page) {
+            case "edit_student":
+                header(
+                    "Location: /NextStep/students/edit_student.php?student_id=" .
+                        $post_student_id,
+                );
+                break;
+            case "create_student":
+                header("Location: /NextStep/students/create_student.php");
+                break;
+            default:
+                header("Location: /NextStep/students/index.php");
+                break;
+        }
+        $db->close();
+        exit();
+    }
+}
+
+function validate_student_phone(
+    SQLite3 $db,
+    string $post_student_phone,
+    string $page,
+    int $post_student_id = 0,
+) {
+    $student_phone = trim($post_student_phone);
+    $clean_phone = preg_replace("/[\s\-\(\)]/", "", $student_phone);
+
+    if (!preg_match("/^\+?[0-9]{10,15}$/", $clean_phone)) {
+        $_SESSION["error"] = "Phone number must be between 10-15 digits";
+        switch ($page) {
+            case "edit_student":
+                header(
+                    "Location: /NextStep/students/edit_student.php?student_id=" .
+                        $post_student_id,
+                );
+                break;
+            case "create_student":
+                header("Location: /NextStep/students/create_student.php");
+                break;
+            default:
+                header("Location: /NextStep/students/index.php");
+                break;
+        }
+        $db->close();
+        exit();
+    }
+
+    return $clean_phone;
 }
 
 # This is a function that gets the foreign key from the roles db for the teacher db
@@ -430,5 +593,56 @@ function setup_checker()
     if ($value === 0) {
         header("Location: /NextStep/setup/onboarding.php");
         exit();
+    }
+}
+
+function is_admin_checker(SQLite3 $db)
+{
+    # preperation to see if whe have a admin
+    $query = "SELECT teacher_role_id
+        FROM TEACHERS
+        WHERE teacher_id = :teacher_id";
+    $stmt = $db->prepare($query);
+    $stmt->bindValue(":teacher_id", $_SESSION["teacher_id"], SQLITE3_INTEGER);
+    $result = $stmt->execute();
+    $row = $result->fetchArray();
+
+    # Get the role id for admin (only admins can reset)
+    $role_id = get_foreign_key_roles($db, "ADMIN");
+
+    # compare
+    if ((int) $row["teacher_role_id"] === (int) $role_id) {
+        $method = "json"; # admin
+    } else {
+        $method = "sql"; # other users
+    }
+    return $method;
+}
+
+function color_theme_helper(SQLite3 $db, string $color_theme)
+{
+    $method = is_admin_checker($db);
+    if ($method == "json") {
+        return $color_theme;
+    } elseif ($method == "sql") {
+        $query = "SELECT THEME.theme_name FROM THEME
+        JOIN TEACHERS ON THEME.theme_id = TEACHERS.teacher_theme_id
+        WHERE TEACHERS.teacher_id = :teacher_id";
+        $stmt = $db->prepare($query);
+        $stmt->bindValue(
+            ":teacher_id",
+            $_SESSION["teacher_id"],
+            SQLITE3_INTEGER,
+        );
+        $result = $stmt->execute();
+        $row = $result->fetchArray();
+
+        # The teacher does not yet have a own color selected (new teacher)
+        if (!$row) {
+            return $color_theme;
+        }
+
+        $teacher_color = $row[0];
+        return $teacher_color;
     }
 }
