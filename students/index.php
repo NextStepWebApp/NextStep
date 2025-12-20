@@ -3,6 +3,16 @@ require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
+
+try {
+    $db = new SQLite3($db_file);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
+
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+$db->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +24,7 @@ super_user_privilages($_SESSION["teacher_username"]);
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Student</title>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
 
 <?php include "../navbar.php"; ?>
 <div class="page-box">

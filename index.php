@@ -42,6 +42,11 @@ if (!$resultcount) {
 }
 $row = $resultcount->fetchArray();
 $totalCount = $row["COUNT"];
+
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
+#$db->close(); is used still in the html
 ?>
 <!doctype html>
 <html lang="en">
@@ -53,7 +58,7 @@ $totalCount = $row["COUNT"];
 <link rel="stylesheet" href="css/style_page.css"/>
 <title>NextStep</title>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
 <?php include "navbar.php"; ?>
 <section class="table-section">
 <?php flashMessages(); ?>

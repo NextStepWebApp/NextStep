@@ -2,8 +2,16 @@
 session_start();
 require_once "../utils.php";
 $settings = download_page_settings();
-
 # Security checks are in this function
+
+try {
+    $db = new SQLite3($db_file);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
+
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,9 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
     <?php # Only show navbar if not admin onboarding
-    if ($settings !== "admin") {
+
+if ($settings !== "admin") {
         include "../navbar.php";
     } ?>
     <div class="page-box">
@@ -53,7 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
     ?>
     </div>
     <?php # Only get js if not admin onboarding
-    if ($settings !== "admin") {
+
+if ($settings !== "admin") {
         echo '<script src="js/script.js"></script>';
     } ?>
 </body>

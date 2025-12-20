@@ -21,6 +21,8 @@ $result = $stmt->execute()->fetchArray();
 $teacher_name = htmlspecialchars($result["teacher_name"]);
 $teacher_email = htmlspecialchars($result["teacher_email"]);
 
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 $db->close();
 
 $tab = $_GET["tab"] ?? "general";
@@ -35,7 +37,7 @@ $tab = $_GET["tab"] ?? "general";
     <link rel="stylesheet" href="../css/style_page.css"/>
     <title>NextStep - Settings</title>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
 
 <?php include "../navbar.php"; ?>
 

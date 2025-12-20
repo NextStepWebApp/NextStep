@@ -83,7 +83,7 @@ $db->close();
         <script src="js/script.js"></script>
         <title>NextStep - Login</title>
     </head>
-    <body class="theme-<?= $color_theme["theme_color"] ?>">
+    <body class="theme-<?= $color_theme_system["theme_color"] ?>">
         <div class="login-container">
             <div class="brand-name"><?= $branding["app_name"] ?></div>
             <div class="welcome">Welcome back</div>

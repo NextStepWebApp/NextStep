@@ -10,6 +10,9 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
 # handle post from roles
 if (isset($_POST["submit_role"])) {
     if (
@@ -37,6 +40,7 @@ if (isset($_POST["submit_role"])) {
             $_SESSION["error"] = "Invalid role selected";
             $db->close();
             header("Location: /NextStep/teachers");
+            $db->close();
             exit();
         } else {
             # Check to see if username is "ADMIN" (safty rail)
@@ -44,6 +48,7 @@ if (isset($_POST["submit_role"])) {
                 $_SESSION["error"] = "The original ADMIN can not change roles";
                 $db->close();
                 header("Location: /NextStep/teachers");
+                $db->close();
                 exit();
             }
 
@@ -112,7 +117,7 @@ while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <title>NextStep - Teachers</title>
 </head>
-<body class="theme-<?= $color_theme["theme_color"] ?>">
+<body class="theme-<?= $color_theme ?>">
 
 <?php include "../navbar.php"; ?>
 <section class="table-section">
