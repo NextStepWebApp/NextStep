@@ -32,12 +32,7 @@ if (isset($_POST["nextstep-reset"])) {
         $row = $result->fetchArray();
 
         # Get the role id for admin (only admins can reset)
-        $query = "SELECT role_id FROM ROLES WHERE role_name = :role_name";
-        $stmt = $db->prepare($query);
-        $stmt->bindValue(":role_name", "ADMIN", SQLITE3_TEXT);
-        $result = $stmt->execute();
-        $role_list = $result->fetchArray();
-        $role_id = $role_list[0];
+        $role_id = get_foreign_key_roles($db, "ADMIN");
 
         # Check if user exists
         if (!$row) {
