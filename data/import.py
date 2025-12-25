@@ -1,18 +1,25 @@
 #!/bin/python3
-import json
-import time
 import csv
-import sqlite3
+import json
 import os
-import re
+import sqlite3
 import sys
+import time
+
+from functions_nstep import (
+    INSERT_OR_IGNORE,
+    compare_data,
+    validate_email,
+    validate_name,
+    validate_phone,
+)
 
 start_time = time.time()
 
 # Get the command line argument
 try:
     csv_file_name = sys.argv[1]
-except Exception: 
+except Exception:
     print("Missing command line argument (file path to csv)")
     exit()
 
@@ -22,13 +29,13 @@ nextstep_config_path = "/etc/nextstepwebapp/nextstep_config.json"
 nextstep_config = open(nextstep_config_path)
 nextstep_data = json.load(nextstep_config)
 
-#path_config = "/var/www/html/NextStep/config/config.json"
+# path_config = "/var/www/html/NextStep/config/config.json"
 path_config = nextstep_data["config_path"]
 
-#path_database = "/var/www/html/NextStep/setup/nextstep_data.db"
+# path_database = "/var/www/html/NextStep/setup/nextstep_data.db"
 path_database = nextstep_data["database_file_path"]
 
-#errors_path = "/var/www/html/NextStep/data/errors.json"
+# errors_path = "/var/www/html/NextStep/data/errors.json"
 errors_path = nextstep_data["errors_path"]
 
 nextstep_config.close()
@@ -37,24 +44,20 @@ nextstep_config.close()
 # Example csv_file_name = "/var/www/html/NextStep/data/data.csv"
 
 # This is the file path to the configs and the csv file name
-#path_config = "/home/william/Documents/programming/PWS/NextStep/config/config.json"
+# path_config = "/home/william/Documents/programming/PWS/NextStep/config/config.json"
 
-#path_database = "/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db"
+# path_database = "/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db"
 
 # This is the json template
-errors = {
-    "validation_errors": [],
-    "duplicate_errors": [],
-    "format_errors": []
-}
+errors = {"validation_errors": [], "duplicate_errors": [], "format_errors": []}
 
 # Remove old errors.json and create new one from start
 if os.path.exists(errors_path):
     os.remove(errors_path)
 
 # Create new errors.json file
-try: 
-    fhand_errors = open(errors_path, 'w')
+try:
+    fhand_errors = open(errors_path, "w")
     json.dump(errors, fhand_errors, indent=4)
     fhand_errors.close()
 except Exception as e:
@@ -75,132 +78,95 @@ except Exception as e:
 # Load and process CSV file
 csv_data = []
 try:
-    fhand_csv = open(csv_file_name, 'r', encoding='utf-8')
+    fhand_csv = open(csv_file_name, "r", encoding="utf-8")
     reader = csv.DictReader(fhand_csv)
-    
-   # Validate CSV headers before processing
-    required_columns = ['name', 'email', 'phone', 'class', 'country', 'city', 
-        'school', 'education_program', 'status', 'accessibility']
-       
+
+    # Validate CSV headers before processing
+    required_columns = [
+        "name",
+        "email",
+        "phone",
+        "class",
+        "country",
+        "city",
+        "school",
+        "education_program",
+        "status",
+        "accessibility",
+    ]
+
     if reader.fieldnames is None:
         print("ERROR: CSV file is empty or invalid")
         fhand_csv.close()
         exit()
-       
-    csv_headers = [h.strip() for h in reader.fieldnames]
-    missing = [col for col in required_columns if col not in csv_headers]
-    
+
+    csv_headers = []
+    for header in reader.fieldnames:
+        csv_headers.append(header.strip())
+
+    missing = []
+    for col in required_columns:
+        if col not in csv_headers:
+            missing.append(col)
     if missing:
         print(f"ERROR: CSV missing required columns: {missing}")
         fhand_csv.close()
         exit()
-    
+
     for row in reader:
-        clean_row = {key.strip(): value.strip().strip("\"'") for key, value in row.items()}
+        clean_row = {
+            key.strip(): value.strip().strip("\"'") for key, value in row.items()
+        }
         csv_data.append(clean_row)
-    
+
     fhand_csv.close()
-    
+
 except Exception as e:
     print("Could not load the csv file")
     print(f"Reason: {e}")
-    exit()
-    
-# Validation functions
-def compare_data(data_value, config_name):
-    data_exists = False
-    for config_value in config[config_name]:
-        if data_value == config_value:
-            data_exists = True
-            break
-    return data_exists
+    exit(0)
 
-def validate_email(email):
-    if not email or len(email.strip()) == 0:
-        return False
-    
-    # Basic email regex pattern
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    if not re.match(pattern, email):
-        return False
-    
-    return True
-
-def validate_phone(phone):
-    if not phone or len(phone.strip()) == 0:
-        return False
-    
-    # Remove common separators
-    clean_phone = re.sub(r'[\s\-\(\)\.]', '', phone)
-    
-    # Check if it contains only digits and optional + at start
-    if not re.match(r'^\+?\d{8,15}$', clean_phone):
-        return False
-    
-    return True
-
-def validate_name(name):
-    if not name or len(name.strip()) == 0:
-        return False
-    
-    if len(name.strip()) < 2:
-        return False
-    
-    if len(name) > 100:
-        return False
-    
-    # Check if name contains only letters, spaces, hyphens, and apostrophes
-    if not re.match(r"^[a-zA-Z\s\-'\.]+$", name):
-        return False
-    
-    return True
 
 # Validate all people
 valid_people = []
 
 for person in csv_data:
     person_valid = True
-    
+
     # Format validation (email, phone, name)
     if not validate_email(person["email"]):
         errors["format_errors"].append(person)
         continue
-    
+
     if not validate_phone(person["phone"]):
         errors["format_errors"].append(person)
         continue
-    
+
     if not validate_name(person["name"]):
         errors["format_errors"].append(person)
         continue
-    
+
     # Config validation, only if format validation passed
-    if compare_data(person['class'], "class") == False:
-        person_valid = False
-        
-    if compare_data(person['country'], "country") == False:
-        person_valid = False
-        
-    if compare_data(person['city'], "city") == False:
-        person_valid = False
-        
-    if compare_data(person['school'], "school") == False:
-        person_valid = False
-        
-    if compare_data(person['education_program'], "education") == False:
-        person_valid = False
-        
-    if compare_data(person['status'], "status") == False:
-        person_valid = False
-        
-    if compare_data(person['accessibility'], "accessibility") == False:
-        person_valid = False
-    
-    if person_valid == True:
+    fields_to_check = [
+        ("class", "class"),
+        ("country", "country"),
+        ("city", "city"),
+        ("school", "school"),
+        ("education_program", "education"),
+        ("status", "status"),
+        ("accessibility", "accessibility"),
+    ]
+
+    for field, config_key in fields_to_check:
+        if not compare_data(person[field], config_key, config):
+            person_valid = False
+            break
+
+    if person_valid:
         valid_people.append(person)
     else:
         errors["validation_errors"].append(person)
- 
+
 # Populate database part
 try:
     conn = sqlite3.connect(path_database)
@@ -210,83 +176,83 @@ except Exception as e:
     print(f"Reason: {e}")
     exit()
 
-# Adding the data from the configs in the db if needed
-def INSERT_OR_IGNORE(TABLE_NAME, data_value_person):
-    if TABLE_NAME == "EDUCATION_PROGRAM":
-        column_name = "program_name"
-    else:
-        column_name = TABLE_NAME.lower() + "_name"
-    cursor.execute(
-        f"INSERT OR IGNORE INTO {TABLE_NAME} ({column_name}) VALUES (?)",
-        (data_value_person,),
-    )
 
-# Insert all data from the tables  
+# Insert all data from the tables
 for person in valid_people:
-    INSERT_OR_IGNORE("ACCESSIBILITY", person['accessibility'])
-    INSERT_OR_IGNORE("CITY", person['city'])
-    INSERT_OR_IGNORE("CLASS", person['class'])
-    INSERT_OR_IGNORE("COUNTRY", person['country'])
-    INSERT_OR_IGNORE("EDUCATION_PROGRAM", person['education_program'])
-    INSERT_OR_IGNORE("SCHOOL", person['school'])
-    INSERT_OR_IGNORE("STATUS", person['status'])
+    INSERT_OR_IGNORE("ACCESSIBILITY", person["accessibility"], cursor)
+    INSERT_OR_IGNORE("CITY", person["city"], cursor)
+    INSERT_OR_IGNORE("CLASS", person["class"], cursor)
+    INSERT_OR_IGNORE("COUNTRY", person["country"], cursor)
+    INSERT_OR_IGNORE("EDUCATION_PROGRAM", person["education_program"], cursor)
+    INSERT_OR_IGNORE("SCHOOL", person["school"], cursor)
+    INSERT_OR_IGNORE("STATUS", person["status"], cursor)
 
 # This code block gets the id's of the different tables for each specific person
 for person in valid_people:
     cursor.execute(
         "SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = ?",
-        (person['accessibility'],),
+        (person["accessibility"],),
     )
     result = cursor.fetchone()
     accessibility_id = result[0] if result else None
 
-    cursor.execute("SELECT city_id FROM CITY WHERE city_name = ?", (person['city'],))
+    cursor.execute("SELECT city_id FROM CITY WHERE city_name = ?", (person["city"],))
     result = cursor.fetchone()
     city_id = result[0] if result else None
 
-    cursor.execute("SELECT class_id FROM CLASS WHERE class_name = ?", (person['class'],))
+    cursor.execute(
+        "SELECT class_id FROM CLASS WHERE class_name = ?", (person["class"],)
+    )
     result = cursor.fetchone()
     class_id = result[0] if result else None
 
     cursor.execute(
-        "SELECT country_id FROM COUNTRY WHERE country_name = ?", (person['country'],)
+        "SELECT country_id FROM COUNTRY WHERE country_name = ?", (person["country"],)
     )
     result = cursor.fetchone()
     country_id = result[0] if result else None
 
     cursor.execute(
-        "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = ?", (person['education_program'],)
+        "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = ?",
+        (person["education_program"],),
     )
     result = cursor.fetchone()
     program_id = result[0] if result else None
 
-    cursor.execute("SELECT school_id FROM SCHOOL WHERE school_name = ?", (person['school'],))
+    cursor.execute(
+        "SELECT school_id FROM SCHOOL WHERE school_name = ?", (person["school"],)
+    )
     result = cursor.fetchone()
     school_id = result[0] if result else None
 
-    cursor.execute("SELECT status_id FROM STATUS WHERE status_name = ?", (person['status'],))
+    cursor.execute(
+        "SELECT status_id FROM STATUS WHERE status_name = ?", (person["status"],)
+    )
     result = cursor.fetchone()
     status_id = result[0] if result else None
 
     # Check if student with this email already exists
     cursor.execute(
-        "SELECT students_id FROM STUDENTS WHERE students_email = ?",
-        (person['email'],)
+        "SELECT students_id FROM STUDENTS WHERE students_email = ?", (person["email"],)
     )
     result_email = cursor.fetchone()
-    
+
     # Check if name or phone already exists (but with different email)
     cursor.execute(
         "SELECT students_id FROM STUDENTS WHERE (students_phone_number = ? OR students_name = ?) AND students_email != ?",
-        (person['phone'], person['name'], person['email'],)
+        (
+            person["phone"],
+            person["name"],
+            person["email"],
+        ),
     )
     result_name_phone = cursor.fetchone()
-      
+
     if result_email:
         # Student exists with this email, UPDATE the record
         student_id = result_email[0]
         cursor.execute(
-            """UPDATE STUDENTS SET 
+            """UPDATE STUDENTS SET
             students_name = ?,
             students_phone_number = ?,
             students_class_id = ?,
@@ -299,8 +265,8 @@ for person in valid_people:
             students_last_updated = CAST(strftime('%s', 'now') AS INTEGER)
             WHERE students_id = ?""",
             (
-                person['name'],
-                person['phone'],
+                person["name"],
+                person["phone"],
                 class_id,
                 country_id,
                 city_id,
@@ -323,9 +289,9 @@ for person in valid_people:
             students_accessibility_id, students_created_date, students_last_updated)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  CAST(strftime('%Y', 'now') AS INTEGER), CAST(strftime('%s', 'now') AS INTEGER))""",
             (
-                person['name'],
-                person['email'],
-                person['phone'],
+                person["name"],
+                person["email"],
+                person["phone"],
                 class_id,
                 country_id,
                 city_id,
@@ -339,15 +305,15 @@ for person in valid_people:
 try:
     conn.commit()
 except Exception as e:
-    conn.rollback() 
+    conn.rollback()
     print(f"Database error, rolled back: {e}")
     exit()
 
 conn.close()
 
 # Final error handling, always write to errors.json
-try: 
-    fhand_errors = open(errors_path, 'w')
+try:
+    fhand_errors = open(errors_path, "w")
     json.dump(errors, fhand_errors, indent=4)
     fhand_errors.close()
 except Exception as e:
@@ -355,7 +321,11 @@ except Exception as e:
     print(f"Reason: {e}")
 
 # Report results
-total_errors = len(errors["validation_errors"]) + len(errors["duplicate_errors"]) + len(errors["format_errors"])
+total_errors = (
+    len(errors["validation_errors"])
+    + len(errors["duplicate_errors"])
+    + len(errors["format_errors"])
+)
 if total_errors > 0:
     print(f"\nERROR - Import completed with {total_errors} error(s):")
     if len(errors["format_errors"]) > 0:
