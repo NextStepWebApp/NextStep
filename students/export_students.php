@@ -16,8 +16,8 @@ try {
 # Execute the query
 $query = <<<EOF
 SELECT
-    STUDENTS.students_name,
     STUDENTS.students_email,
+    STUDENTS.students_name,
     STUDENTS.students_phone_number,
     CLASS.class_name,
     COUNTRY.country_name,
@@ -53,7 +53,21 @@ while ($row = $result->fetchArray(SQLITE3_NUM)) {
 $csv_content = "";
 
 # Creating the header
-$header_list = ["time", "email", "name", "phone", "class", "country", "city", "school", "education_program", "status", "accessibility"];
+$header_list = [
+    "time",
+    "email",
+    "name",
+    "phone",
+    "class",
+    "country",
+    "city",
+    "school",
+    "education_program",
+    "status",
+    "accessibility",
+    "year",
+    "timestamp",
+];
 $count_list = count($header_list) - 1;
 $count = 0;
 
@@ -68,12 +82,12 @@ foreach ($header_list as $header_item) {
 
 # Loop that writes the data to the CSV content
 foreach ($rows as $row) {
-    $current_time = date('Y-m-d H:i:s'); # Get the current date and time
+    $current_time = date("Y-m-d H:i:s"); # Get the current date and time
     $csv_content .= "$current_time, ";
-    
+
     $count_tuple = count($row) - 1;
     $count = 0;
-    
+
     foreach ($row as $item) {
         if ($count != $count_tuple) {
             $csv_content .= "$item, ";
@@ -88,7 +102,8 @@ $db->close();
 
 # Store CSV content and filename in session
 $_SESSION["export_csv_content"] = $csv_content;
-$_SESSION["export_csv_filename"] = "nextstep_export_" . date('Y-m-d_His') . ".csv";
+$_SESSION["export_csv_filename"] =
+    "nextstep_export_" . date("Y-m-d_His") . ".csv";
 
 header("Location: /NextStep/download/download_success.php");
 exit();
