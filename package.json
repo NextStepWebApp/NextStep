@@ -1,7 +1,6 @@
 {
   "nextstep": {
     "name": "NextStep Web App",
-    "package_version": 1,
     "remote_project": "https://raw.githubusercontent.com/NextStepWebApp/NextStep/refs/heads/main/version.json",
     "install_script": "/opt/nstep/setup_nextstep.sh",
     "webpath": "/srv/http/NextStep",
