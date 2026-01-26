@@ -5,9 +5,18 @@
     "install_script": "/opt/nstep/setup_nextstep.sh",
     "webpath": "/srv/http/NextStep",
     "required_dirs": [
-      "/var/lib/nextstepwebapp",
-      "/opt/nextstepwebapp",
-      "/etc/nextstepwebapp"
+      {
+        "dir": "/var/lib/nextstepwebapp",
+        "permission": 664
+      },
+      {
+        "dir": "/opt/nextstepwebapp",
+        "permisson": 664
+      },
+      {
+        "dir": "/etc/nextstepwebapp",
+        "permission": 664
+      }
     ],
     "operations": {
       "update": {
@@ -17,7 +26,7 @@
             "to": "/opt/nextstepwebapp/import.py",
             "owner": "root",
             "group": "root",
-            "permissions": "755"
+            "permissions": 755
           }
         ],
         "removes": [
@@ -32,49 +41,49 @@
             "to": "/etc/nextstepwebapp/nextstep_config.json",
             "owner": "root",
             "group": "root",
-            "permissions": "644"
+            "permissions": 644
           },
           {
             "from": "/srv/http/NextStep/config/branding.json",
             "to": "/var/lib/nextstepwebapp/branding.json",
             "owner": "www-data",
             "group": "www-data",
-            "permissions": "644"
+            "permissions": 644
           },
           {
             "from": "/srv/http/NextStep/config/config.json",
             "to": "/var/lib/nextstepwebapp/config.json",
             "owner": "www-data",
             "group": "www-data",
-            "permissions": "644"
+            "permissions": 644
           },
           {
             "from": "/srv/http/NextStep/config/theme.json",
             "to": "/var/lib/nextstepwebapp/theme.json",
             "owner": "www-data",
             "group": "www-data",
-            "permissions": "644"
+            "permissions": 644
           },
           {
             "from": "/srv/http/NextStep/config/errors.json",
             "to": "/var/lib/nextstepwebapp/errors.json",
             "owner": "www-data",
             "group": "www-data",
-            "permissions": "644"
+            "permissions": 644
           },
           {
             "from": "/srv/http/NextStep/config/setup.json",
             "to": "/var/lib/nextstepwebapp/setup.json",
             "owner": "www-data",
             "group": "www-data",
-            "permissions": "600"
+            "permissions": 600
           },
           {
             "from": "/srv/http/NextStep/data/import.py",
             "to": "/opt/nextstepwebapp/import.py",
             "owner": "root",
             "group": "root",
-            "permissions": "755"
+            "permissions": 755
           }
         ],
         "removes": [
