@@ -11,7 +11,7 @@
       },
       {
         "dir": "/opt/nextstepwebapp",
-        "permisson": 664
+        "permission": 664
       },
       {
         "dir": "/etc/nextstepwebapp",
