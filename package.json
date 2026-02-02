@@ -7,14 +7,17 @@
     "required_dirs": [
       {
         "dir": "/var/lib/nextstepwebapp",
+        "group": "http",
         "permission": 775
       },
       {
         "dir": "/opt/nextstepwebapp",
+        "group": "http",
         "permission": 755
       },
       {
         "dir": "/etc/nextstepwebapp",
+        "group": "http",
         "permission": 755
       }
     ],
