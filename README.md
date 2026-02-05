@@ -65,7 +65,11 @@ If you are a student or interested in contributing but don’t yet have strong c
 
 These are two courses I personally completed and highly recommend.
 
-### Linux & Bash
+### Git, Linux & Bash
+
+* **Git & GitHub Course**
+  [https://youtu.be/zTjRZNkhiEU](https://youtu.be/zTjRZNkhiEU)
+  A very good introduction to Git and GitHub. I recommend completing this early, as Git is essential for contributing to open-source projects.
 
 To learn Linux, I recommend trying different Linux distributions and experimenting on your own. Have fun with it! There is a huge amount of free information available online (for example, on YouTube).
 
