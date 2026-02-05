@@ -74,4 +74,4 @@ To learn Linux, I recommend trying different Linux distributions and experimenti
   This is a very good Bash scripting course. I recommend it after learning the basics of Python, PHP, and Linux.
 
 
-With this knowledge, you can become a **NextStep Contributor** 🚀
+With this knowledge, you can become a **NextStep Contributor!**
