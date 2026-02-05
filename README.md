@@ -50,6 +50,32 @@ Keep in mind this is our vision. This project is made for a last year school pro
 
 ## Contributing
 
-Contributions are very welcome. Please make sure to communicate and open an issue before working on something to avoid duplicate efforts.
+Contributions are very welcome!
+Please communicate and open an issue before starting work on a feature or fix to avoid duplicate efforts.
 
-If you encounter any problems, please open an issue and you will be assisted.
+If you encounter any problems or bugs, feel free to open an issue and you will be assisted.
+
+### New Contributors & Students
+
+If you are a student or interested in contributing but don’t yet have strong computer science or programming knowledge, here is the learning roadmap I recommend:
+
+* **Python for Everybody**
+  [https://www.py4e.com/](https://www.py4e.com/)
+  A great Python course and an excellent place to start your programming journey.
+
+* **Web Applications for Everybody**
+  [https://www.wa4e.com/](https://www.wa4e.com/)
+  After completing the Python course, this is a solid next step for learning web applications.
+
+These are two courses I personally completed and highly recommend.
+
+### Linux & Bash
+
+To learn Linux, I recommend trying different Linux distributions and experimenting on your own. Have fun with it! There is a huge amount of free information available online (for example, on YouTube).
+
+* **Bash Scripting Course (Optional)**
+  [https://youtu.be/Sx9zG7wa4FA](https://youtu.be/Sx9zG7wa4FA)
+  This is a very good Bash scripting course. I recommend it after learning the basics of Python, PHP, and Linux.
+
+
+With this knowledge, you can become a **NextStep Contributor** 🚀
