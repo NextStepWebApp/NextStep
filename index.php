@@ -2,11 +2,7 @@
 require_once "utils.php";
 setup_checker();
 session_start();
-
-if (!isset($_SESSION["teacher_username"])) {
-    header("Location: login.php");
-    exit();
-}
+loginSecurity();
 
 try {
     $db = new SQLite3($db_file);
