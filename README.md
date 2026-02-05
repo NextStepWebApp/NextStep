@@ -8,10 +8,6 @@ NextStep is the main project of the NextStep ecosystem and serves as the foundat
 
 **Warning:** The web app is still unstable. There are some core features that are not yet finished. Please check the to-do list below before deploying for production use.
 
-## Demo
-
-Here is a video demo of v0.1.0 of the NextStep web app:
-[temporary url example on youtube]
 
 ## Installation
 
