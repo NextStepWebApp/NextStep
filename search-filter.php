@@ -1,0 +1,184 @@
+<?php
+require_once "utils.php";
+setup_checker();
+session_start();
+loginSecurity();
+
+try {
+    $db = new SQLite3($db_file);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
+
+if (isset($_GET["submit"])) {
+    if (
+        empty($_GET["student_name"]) &&
+        empty($_GET["student_email"]) &&
+        empty($_GET["student_phone"]) &&
+        empty($_GET["class_name"]) &&
+        empty($_GET["country_name"]) &&
+        empty($_GET["city_name"]) &&
+        empty($_GET["school_name"]) &&
+        empty($_GET["program_name"]) &&
+        empty($_GET["status"]) &&
+        empty($_GET["accessibility"])
+    ) {
+        $_SESSION["error"] = "Atleast one field is required";
+        header("Location: /NextStep/search-filter.php");
+        $db->close();
+        exit();
+    }
+
+    $query_params = [];
+
+    if (!empty($_GET["student_name"])) {
+        $query_params[] = "name=" . urlencode($_GET["student_name"]);
+    }
+    if (!empty($_GET["student_email"])) {
+        $query_params[] = "email=" . urlencode($_GET["student_email"]);
+    }
+    if (!empty($_GET["student_phone"])) {
+        $query_params[] = "phone=" . urlencode($_GET["student_phone"]);
+    }
+    if (!empty($_GET["class_name"])) {
+        $query_params[] = "class=" . urlencode($_GET["class_name"]);
+    }
+    if (!empty($_GET["country_name"])) {
+        $query_params[] = "country=" . urlencode($_GET["country_name"]);
+    }
+    if (!empty($_GET["city_name"])) {
+        $query_params[] = "city=" . urlencode($_GET["city_name"]);
+    }
+    if (!empty($_GET["school_name"])) {
+        $query_params[] = "school=" . urlencode($_GET["school_name"]);
+    }
+    if (!empty($_GET["program_name"])) {
+        $query_params[] = "program=" . urlencode($_GET["program_name"]);
+    }
+    if (!empty($_GET["status"])) {
+        $query_params[] = "status=" . urlencode($_GET["status"]);
+    }
+    if (!empty($_GET["accessibility"])) {
+        $query_params[] = "accessibility=" . urlencode($_GET["accessibility"]);
+    }
+
+    $query_string = implode("&", $query_params);
+    header("Location: /NextStep/?" . $query_string);
+    $db->close();
+    exit();
+}
+
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
+$accessibility = $config["accessibility"];
+$city = $config["city"];
+$class = $config["class"];
+$country = $config["country"];
+$education = $config["education"];
+$schools = $config["school"];
+$status = $config["status"];
+?>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" type="image/x-icon" href="images/logo.webp"/>
+<link rel="stylesheet" href="css/style_navbar.css"/>
+<link rel="stylesheet" href="css/style_page.css"/>
+<title>NextStep - Search & Filter</title>
+</head>
+<body class="theme-<?= $color_theme ?>">
+<?php include "navbar.php"; ?>
+<div class="page-box-wide">
+<h2>Search & Filter Alumni</h2>
+<?php flashMessages(); ?>
+
+<form method="GET" action="search-filter.php">
+    <label for="student_name">Name:</label>
+    <input type="text" id="student_name" name="student_name"/>
+
+    <label for="student_email">Email:</label>
+    <input type="email" id="student_email" name="student_email"/>
+
+    <label for="student_phone">Phone number:</label>
+    <input type="tel" id="student_phone" name="student_phone"/>
+
+    <label for="class_name">Class name:</label>
+    <select id="class_name" name="class_name">
+        <option value="">Select Class</option>
+        <?php foreach ($class as $c): ?>
+            <option value="<?= htmlspecialchars($c) ?>">
+                <?= htmlspecialchars($c) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="country_name">Country:</label>
+    <select id="country_name" name="country_name">
+        <option value="">Select Country</option>
+        <?php foreach ($country as $cnt): ?>
+            <option value="<?= htmlspecialchars($cnt) ?>">
+                <?= htmlspecialchars($cnt) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="city_name">City:</label>
+    <select id="city_name" name="city_name">
+        <option value="">Select City</option>
+        <?php foreach ($city as $cty): ?>
+            <option value="<?= htmlspecialchars($cty) ?>">
+                <?= htmlspecialchars($cty) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="school_name">School:</label>
+    <select id="school_name" name="school_name">
+        <option value="">Select School</option>
+        <?php foreach ($schools as $school): ?>
+            <option value="<?= htmlspecialchars($school) ?>">
+                <?= htmlspecialchars($school) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="program_name">Program:</label>
+    <select id="program_name" name="program_name">
+        <option value="">Select Program</option>
+        <?php foreach ($education as $edu): ?>
+            <option value="<?= htmlspecialchars($edu) ?>">
+                <?= htmlspecialchars($edu) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="status">Status:</label>
+    <select id="status" name="status">
+        <option value="">Select Status</option>
+        <?php foreach ($status as $stat): ?>
+            <option value="<?= htmlspecialchars($stat) ?>">
+                <?= htmlspecialchars($stat) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="accessibility">Accessibility:</label>
+    <select id="accessibility" name="accessibility">
+        <option value="">Select</option>
+        <?php foreach ($accessibility as $acc): ?>
+            <option value="<?= htmlspecialchars($acc) ?>">
+                <?= htmlspecialchars($acc) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <div class="button-container">
+        <input type="submit" class="simple-btn" name="submit" value="Search Alumni">
+        <a href="/NextStep/" class="simple-btn cancel-btn">Cancel</a>
+    </div>
+</form>
+</div>
+<script src="js/script.js"></script>
+</body>
+</html>

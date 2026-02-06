@@ -66,7 +66,10 @@ $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
     <?php echo '<div class="selected-info">' .
         $totalCount .
         " records | 0 selected</div>"; ?>
-    <button type="button" class="action-btn" id="searchBtn">Search & Filter</button>
+
+    <a href="search-filter.php" class="action-btn">Search & Filter</a>
+
+
     <span class="workflow-indicator">→</span>
     <button type="button" class="action-btn" id="composeBtn" disabled>
         Compose Email (<span id="selectedCount">0</span> selected)
