@@ -21,7 +21,8 @@ if (isset($_GET["submit"])) {
         empty($_GET["school_name"]) &&
         empty($_GET["program_name"]) &&
         empty($_GET["status"]) &&
-        empty($_GET["accessibility"])
+        empty($_GET["accessibility"]) &&
+        empty($_GET["date"])
     ) {
         $_SESSION["error"] = "Atleast one field is required";
         header("Location: /NextStep/search-filter.php");
@@ -141,9 +142,12 @@ if (isset($_GET["submit"])) {
         }
     }
 
+    if (!empty($_GET["date"])) {
+        $query_params[] = "date=" . urlencode($_GET["date"]);
+    }
+
     $query_string = implode("&", $query_params);
     header("Location: /NextStep/?" . $query_string);
-    $db->close();
     exit();
 }
 
@@ -156,6 +160,28 @@ $country = $config["country"];
 $education = $config["education"];
 $schools = $config["school"];
 $status = $config["status"];
+
+// Get all the created dates from the database
+
+$query = "SELECT DISTINCT students_created_date FROM STUDENTS;";
+
+$stmt = $db->prepare($query);
+if (!$stmt) {
+    errorMessages("Error preparing query $query", $db->lastErrorMsg());
+}
+
+$results = $stmt->execute();
+
+if (!$results) {
+    errorMessages("Error executing query", $db->lastErrorMsg());
+}
+
+$dates = [];
+while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
+    $dates[] = $row["students_created_date"];
+}
+
+$db->close();
 ?>
 <!doctype html>
 <html lang="en">
@@ -252,6 +278,20 @@ $status = $config["status"];
             </option>
         <?php endforeach; ?>
     </select>
+
+    <label for="date">Date:</label>
+      <select id="date" name="date">
+          <option value="">Select</option>
+          <
+          <?php foreach ($dates as $date): ?>
+              <option value="<?= htmlspecialchars($date) ?>">
+                  <?= htmlspecialchars($date) ?>
+              </option>
+          <?php endforeach; ?>
+
+      </select>
+
+
     <div class="button-container">
         <input type="submit" class="simple-btn" name="submit" value="Search Alumni">
         <a href="/NextStep/" class="simple-btn cancel-btn">Cancel</a>

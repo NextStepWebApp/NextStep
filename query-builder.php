@@ -64,6 +64,11 @@ function buildAlumniSearchQuery(SQLite3 $db, array $params = [])
         $bind_params[":accessibility"] = $params["accessibility"];
     }
 
+    if (!empty($params["date"])) {
+        $where_clauses[] = "STUDENTS.students_created_date = :date";
+        $bind_params[":date"] = $params["date"];
+    }
+
     // Build WHERE clause
     $where_sql = "";
     if (!empty($where_clauses)) {

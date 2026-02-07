@@ -27,6 +27,7 @@ $search_params = [
     "program" => $_GET["program"] ?? "",
     "status" => $_GET["status"] ?? "",
     "accessibility" => $_GET["accessibility"] ?? "",
+    "date" => $_GET["date"] ?? "",
 ];
 
 $has_search = false;
