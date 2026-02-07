@@ -1,7 +1,8 @@
 <?php
-require_once "utils.php";
-setup_checker();
 session_start();
+require_once "utils.php";
+require_once "query-builder.php";
+setup_checker();
 
 if (!isset($_SESSION["teacher_username"])) {
     header("Location: login.php");
@@ -13,35 +14,48 @@ try {
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
 }
-$query = "SELECT
-    STUDENTS.students_id,
-    STUDENTS.students_name,
-    STUDENTS.students_email,
-    STATUS.status_name,
-    STUDENTS.students_created_date
-FROM STUDENTS
-LEFT JOIN STATUS ON STUDENTS.students_status_id = STATUS.status_id;";
 
-$stmt = $db->prepare($query);
-if (!$stmt) {
-    errorMessages("Error preparing query", $db->lastErrorMsg());
-}
-$results = $stmt->execute();
-if (!$results) {
-    errorMessages("Error executing query", $db->lastErrorMsg());
+// These are the get requests from search-filter.php
+$search_params = [
+    "name" => $_GET["name"] ?? "",
+    "email" => $_GET["email"] ?? "",
+    "phone" => $_GET["phone"] ?? "",
+    "class" => $_GET["class"] ?? "",
+    "country" => $_GET["country"] ?? "",
+    "city" => $_GET["city"] ?? "",
+    "school" => $_GET["school"] ?? "",
+    "program" => $_GET["program"] ?? "",
+    "status" => $_GET["status"] ?? "",
+    "accessibility" => $_GET["accessibility"] ?? "",
+];
+
+$has_search = false;
+foreach ($search_params as $value) {
+    if ($value !== "" && $value !== null) {
+        $has_search = true;
+        break;
+    }
 }
 
-$query = "SELECT count(*) AS COUNT FROM STUDENTS";
-$stmt = $db->prepare($query);
-if (!$stmt) {
-    errorMessages("Error preparing query", $db->lastErrorMsg());
+$totalCount = 0;
+$results = null;
+
+if ($has_search) {
+    $queries = buildAlumniSearchQuery($db, $search_params);
+
+    $stmt = $queries["data"];
+    $stmt_count = $queries["count"];
+
+    $results = $stmt->execute();
+    $result_count = $stmt_count->execute();
+
+    if (!$results || !$result_count) {
+        errorMessages("Error executing query", $db->lastErrorMsg());
+    }
+
+    $row = $result_count->fetchArray(SQLITE3_ASSOC);
+    $totalCount = (int) $row["COUNT"];
 }
-$resultcount = $stmt->execute();
-if (!$resultcount) {
-    errorMessages("Error executing query", $db->lastErrorMsg());
-}
-$row = $resultcount->fetchArray();
-$totalCount = $row["COUNT"];
 
 # Get help from the theme helper
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
@@ -90,33 +104,38 @@ $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 <th>Date</th>
 </tr>
 </thead>
-<tbody id="tableBody">
-<?php
-$hasresults = 0;
-while ($row = $results->fetchArray()) {
 
-    $hasresults = 1;
-    $student_id = htmlspecialchars($row["students_id"]);
-    $date = htmlspecialchars($row["students_created_date"]);
-    $name = htmlspecialchars($row["students_name"]);
-    $email = htmlspecialchars($row["students_email"]);
-    $status = htmlspecialchars($row["status_name"]);
-    ?>
-    <tr id="student_<?= $student_id ?>">
-        <td><input type="checkbox" class="check-box"/></td>
-        <td><a href="view.php?student_id=<?= $student_id ?>"><?= $name ?></a></td>
-        <td><?= $email ?></td>
-        <td><?= $status ?></td>
-        <td><?= $date ?></td>
-    </tr>
-<?php
-}
-if ($hasresults == 0) {
-    echo '<tr><td colspan="5" class="no-students">No students found. <a href="/NextStep/students">Add Students</a></td></tr>';
-}
-$db->close();
-$db->close();
-?>
+<tbody id="tableBody">
+<?php if (!$has_search) {
+    echo '<tr>
+            <td colspan="5" class="no-students">
+                Use <strong>Search & Filter</strong> to find alumni.
+            </td>
+          </tr>';
+} elseif ($totalCount === 0) {
+    echo '<tr>
+            <td colspan="5" class="no-students">
+                No students found.
+                <a href="/NextStep/students">Add Students</a>
+            </td>
+          </tr>';
+} else {
+    while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
+        $student_id = htmlspecialchars($row["students_id"]);
+        $date = htmlspecialchars($row["students_created_date"]);
+        $name = htmlspecialchars($row["students_name"]);
+        $email = htmlspecialchars($row["students_email"]);
+        $status = htmlspecialchars($row["status_name"]);
+
+        echo "<tr id='student_$student_id'>
+                <td><input type='checkbox' class='check-box'></td>
+                <td><a href='view.php?student_id=$student_id'>$name</a></td>
+                <td>$email</td>
+                <td>$status</td>
+                <td>$date</td>
+              </tr>";
+    }
+} ?>
 </tbody>
 </table>
 </div>
