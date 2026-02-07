@@ -60,6 +60,8 @@ if ($has_search) {
 # Get help from the theme helper
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 
+$queryString = http_build_query($search_params);
+
 #$db->close(); is used still in the html
 ?>
 <!doctype html>
@@ -127,9 +129,15 @@ $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
         $email = htmlspecialchars($row["students_email"]);
         $status = htmlspecialchars($row["status_name"]);
 
+        $viewUrl = "view.php?student_id=$student_id";
+
+        if (!empty($queryString)) {
+            $viewUrl .= "&" . htmlspecialchars($queryString);
+        }
+
         echo "<tr id='student_$student_id'>
                 <td><input type='checkbox' class='check-box'></td>
-                <td><a href='view.php?student_id=$student_id'>$name</a></td>
+                <td><a href='$viewUrl'>$name</a></td>
                 <td>$email</td>
                 <td>$status</td>
                 <td>$date</td>

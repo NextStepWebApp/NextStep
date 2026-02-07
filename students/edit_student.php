@@ -250,6 +250,19 @@ $program_name = $row["program_name"];
 $status_name = $row["status_name"];
 $accessibility_name = $row["accessibility_name"];
 $db->close();
+
+// Create back URL
+parse_str($_SERVER["QUERY_STRING"], $params);
+unset($params["student_id"]);
+$backQuery = http_build_query($params);
+
+$backUrl = "/NextStep/";
+
+if (!empty($backQuery)) {
+    $backUrl .= "?" . $backQuery;
+}
+
+$backUrl .= "#student_" . $student_id;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -369,7 +382,9 @@ $accessibility_name
 
 <div class="button-container">
     <input type="submit" class="simple-btn" name="submit" value="Save Changes">
-    <a href="/NextStep/" class="simple-btn cancel-btn">Cancel</a>
+    <a href="<?= htmlspecialchars(
+        $backUrl,
+    ) ?>" class="simple-btn cancel-btn">Cancel</a>
 </div>
 </form>
 </div>

@@ -26,7 +26,6 @@ if (!$results) {
 }
 $result_name = $results->fetchArray();
 
-
 # Check to see if it is a valid value
 if (!$result_name) {
     $_SESSION["error"] = "Invalid value for student_id";
@@ -49,5 +48,14 @@ if (!$results) {
 }
 $db->close();
 $_SESSION["success"] = "Student $student_name deleted successfully";
-header("Location: /NextStep/");
+
+// Back url with search filters
+parse_str($_SERVER["QUERY_STRING"], $params);
+unset($params["student_id"]);
+
+$redirect = "/NextStep/";
+if (!empty($params)) {
+    $redirect .= "?" . http_build_query($params);
+}
+header("Location: $redirect");
 exit();

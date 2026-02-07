@@ -34,6 +34,31 @@ $accessibility = htmlspecialchars($row["accessibility_name"]);
 $created_date = htmlspecialchars($row["students_created_date"]);
 $last_update = htmlspecialchars($row["students_last_updated"]);
 $readable_date = date("Y-m-d H:i:s", $last_update);
+
+$db->close();
+
+// Create back URL
+parse_str($_SERVER["QUERY_STRING"], $params);
+unset($params["student_id"]);
+$backQuery = http_build_query($params);
+
+$backUrl = "/NextStep/";
+if (!empty($backQuery)) {
+    $backUrl .= "?" . $backQuery;
+}
+$backUrl .= "#student_" . $student_id;
+
+// Create edit URL
+$editUrl = "/NextStep/students/edit_student.php?student_id=" . $student_id;
+if (!empty($backQuery)) {
+    $editUrl .= "&" . $backQuery;
+}
+
+// Create delete URL
+$deleteUrl = "/NextStep/students/delete_student.php?student_id=" . $student_id;
+if (!empty($backQuery)) {
+    $deleteUrl .= "&" . $backQuery;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,17 +90,19 @@ $readable_date = date("Y-m-d H:i:s", $last_update);
 <p>Date created: <strong><?= $created_date ?></strong></p>
 <p>Date last update: <strong><?= $readable_date ?></strong></p>
 <?php if ($_SESSION["teacher_username"] == "ADMIN") { ?>
-    <a href="/NextStep/students/edit_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
+    <a href="<?= htmlspecialchars($editUrl) ?>" class="simple-btn">Edit</a>
     <button class="simple-btn" data-open-modal>Delete</button>
     <dialog data-modal>
         <h2>Are you sure?</h2>
         <p>This action cannot be undone.</p>
-        <a href="/NextStep/students/delete_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Confirm Delete</a>
+        <a href="<?= htmlspecialchars(
+            $deleteUrl,
+        ) ?>" class="simple-btn">Confirm Delete</a>
         <button class="simple-btn" data-close-modal>Cancel</button>
     </dialog>
 
 <?php } ?>
-<a href="/NextStep/#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
+<a href="<?= htmlspecialchars($backUrl) ?>" class="simple-btn">Back</a>
 </div>
 <script src="js/script.js"></script>
 </body>
