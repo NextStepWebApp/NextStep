@@ -29,11 +29,12 @@ There is a lot to do still, but the most important tasks are:
 
 ### Critical Features (needed to make the web app usable)
 - Add email support
-- Add search capability
-- Add user hierarchy (frontend already exists)
-- Performance testing - we want the web app to work on old computers with 50,000 alumni
+- Add search capability (finished)
+- Add user hierarchy, frontend already exists
+- Fix alumni data import/export
 
 ### Quality of Life Features (after critical features)
+- Performance testing - we want the web app to work on old computers with 50,000 alumni
 - Add data visualization
 - Add PDF export option
 - More quality of life options
