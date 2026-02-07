@@ -31,6 +31,7 @@ if (isset($_GET["submit"])) {
 
     $query_params = [];
 
+    // These are unique and are in one table
     if (!empty($_GET["student_name"])) {
         $query_params[] = "name=" . urlencode($_GET["student_name"]);
     }
@@ -40,26 +41,104 @@ if (isset($_GET["submit"])) {
     if (!empty($_GET["student_phone"])) {
         $query_params[] = "phone=" . urlencode($_GET["student_phone"]);
     }
+
+    // These are in other tables, so need to get the foreign key
+
     if (!empty($_GET["class_name"])) {
-        $query_params[] = "class=" . urlencode($_GET["class_name"]);
+        $class_id = getForeignKey(
+            $db,
+            "SELECT class_id FROM CLASS WHERE class_name = :class_name",
+            ":class_name",
+            $_GET["class_name"],
+            SQLITE3_TEXT,
+        );
+
+        if ($class_id !== null) {
+            $query_params[] = "class=" . urlencode($class_id);
+        }
     }
+
     if (!empty($_GET["country_name"])) {
-        $query_params[] = "country=" . urlencode($_GET["country_name"]);
+        $country_id = getForeignKey(
+            $db,
+            "SELECT country_id FROM COUNTRY WHERE country_name = :country_name",
+            ":country_name",
+            $_GET["country_name"],
+            SQLITE3_TEXT,
+        );
+
+        if ($country_id !== null) {
+            $query_params[] = "country=" . urlencode($country_id);
+        }
     }
+
     if (!empty($_GET["city_name"])) {
-        $query_params[] = "city=" . urlencode($_GET["city_name"]);
+        $city_id = getForeignKey(
+            $db,
+            "SELECT city_id FROM CITY WHERE city_name = :city_name",
+            ":city_name",
+            $_GET["city_name"],
+            SQLITE3_TEXT,
+        );
+
+        if ($city_id !== null) {
+            $query_params[] = "city=" . urlencode($city_id);
+        }
     }
+
     if (!empty($_GET["school_name"])) {
-        $query_params[] = "school=" . urlencode($_GET["school_name"]);
+        $school_id = getForeignKey(
+            $db,
+            "SELECT school_id FROM SCHOOL WHERE school_name = :school_name",
+            ":school_name",
+            $_GET["school_name"],
+            SQLITE3_TEXT,
+        );
+
+        if ($school_id !== null) {
+            $query_params[] = "school=" . urlencode($school_id);
+        }
     }
     if (!empty($_GET["program_name"])) {
-        $query_params[] = "program=" . urlencode($_GET["program_name"]);
+        $program_id = getForeignKey(
+            $db,
+            "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = :program_name",
+            ":program_name",
+            $_GET["program_name"],
+            SQLITE3_TEXT,
+        );
+
+        if ($program_id !== null) {
+            $query_params[] = "program=" . urlencode($program_id);
+        }
     }
+
     if (!empty($_GET["status"])) {
-        $query_params[] = "status=" . urlencode($_GET["status"]);
+        $status_id = getForeignKey(
+            $db,
+            "SELECT status_id FROM STATUS WHERE status_name = :status_name",
+            ":status_name",
+            $_GET["status"],
+            SQLITE3_TEXT,
+        );
+
+        if ($status_id !== null) {
+            $query_params[] = "status=" . urlencode($status_id);
+        }
     }
+
     if (!empty($_GET["accessibility"])) {
-        $query_params[] = "accessibility=" . urlencode($_GET["accessibility"]);
+        $accessibility_id = getForeignKey(
+            $db,
+            "SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = :accessibility_name",
+            ":accessibility_name",
+            $_GET["accessibility"],
+            SQLITE3_TEXT,
+        );
+
+        if ($accessibility_id !== null) {
+            $query_params[] = "accessibility=" . urlencode($accessibility_id);
+        }
     }
 
     $query_string = implode("&", $query_params);

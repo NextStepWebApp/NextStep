@@ -120,13 +120,13 @@ function full_students_database_query(SQLite3 $db)
     STUDENTS.students_created_date,
     STUDENTS.students_last_updated
     FROM STUDENTS
-    LEFT JOIN CLASS ON STUDENTS.students_class_id = CLASS.class_id
-    LEFT JOIN COUNTRY ON STUDENTS.students_country_id = COUNTRY.country_id
-    LEFT JOIN CITY ON STUDENTS.students_city_id = CITY.city_id
-    LEFT JOIN SCHOOL ON STUDENTS.students_school_id = SCHOOL.school_id
-    LEFT JOIN EDUCATION_PROGRAM ON STUDENTS.students_education_program_id = EDUCATION_PROGRAM.program_id
-    LEFT JOIN STATUS ON STUDENTS.students_status_id = STATUS.status_id
-    LEFT JOIN ACCESSIBILITY ON STUDENTS.students_accessibility_id = ACCESSIBILITY.accessibility_id
+    JOIN CLASS ON STUDENTS.students_class_id = CLASS.class_id
+    JOIN COUNTRY ON STUDENTS.students_country_id = COUNTRY.country_id
+    JOIN CITY ON STUDENTS.students_city_id = CITY.city_id
+    JOIN SCHOOL ON STUDENTS.students_school_id = SCHOOL.school_id
+    JOIN EDUCATION_PROGRAM ON STUDENTS.students_education_program_id = EDUCATION_PROGRAM.program_id
+    JOIN STATUS ON STUDENTS.students_status_id = STATUS.status_id
+    JOIN ACCESSIBILITY ON STUDENTS.students_accessibility_id = ACCESSIBILITY.accessibility_id
     WHERE STUDENTS.students_id = :id;";
 
     $stmt = $db->prepare($query);
@@ -645,4 +645,32 @@ function color_theme_helper(SQLite3 $db, string $color_theme)
         $teacher_color = $row[0];
         return $teacher_color;
     }
+}
+
+// Used in the search and filter page.
+// getForeignKey helper to avoid code duplication
+function getForeignKey(
+    SQLite3 $db,
+    string $query,
+    string $paramName,
+    $paramValue,
+    int $paramType = SQLITE3_TEXT,
+) {
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
+        errorMessages("Error preparing query $query", $db->lastErrorMsg());
+        return null;
+    }
+
+    $stmt->bindValue($paramName, $paramValue, $paramType);
+
+    $result = $stmt->execute();
+    if (!$result) {
+        errorMessages("Error executing query $query", $db->lastErrorMsg());
+        return null;
+    }
+
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+
+    return $row ? array_values($row)[0] : null;
 }
