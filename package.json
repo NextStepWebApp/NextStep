@@ -94,16 +94,6 @@
                     "/srv/http/NextStep/data"
                 ]
             }
-        },
-        "plugins": {
-            "composer": {
-                "enabled": true,
-                "working_dir": "/srv/http/NextStep",
-                "flags": [
-                    "--no-dev",
-                    "--optimize-autoloader"
-                ]
-            }
         }
     }
 }
