@@ -13,7 +13,7 @@ if (!isset($_POST["submit_general"])) {
 }
 
 if (empty($_POST["account_name"]) || empty($_POST["account_email"])) {
-    $_SESSION['error'] = "All fields are required";
+    $_SESSION["error"] = "All fields are required";
     header("Location: index.php?tab=general");
     exit();
 }
@@ -21,11 +21,11 @@ if (empty($_POST["account_name"]) || empty($_POST["account_email"])) {
 $teacher_name = trim($_POST["account_name"]);
 $teacher_email = trim($_POST["account_email"]);
 
-validate_teacher_name($teacher_name, "settings");
-validate_teacher_email($teacher_email, "settings");
+validate_teacher_name($db, $teacher_name, "settings");
+validate_teacher_email($db, $teacher_email, "settings");
 
 # Check if name or email exists
-$stmt = $db->prepare("SELECT teacher_id FROM TEACHERS 
+$stmt = $db->prepare("SELECT teacher_id FROM TEACHERS
                       WHERE (teacher_name = :name OR teacher_email = :email)
                       AND teacher_id != :id");
 
@@ -35,19 +35,21 @@ $stmt->bindValue(":id", $teacher_id);
 $existing = $stmt->execute()->fetchArray();
 
 if ($existing) {
-    $_SESSION['error'] = "A teacher with this name or email already exists";
+    $_SESSION["error"] = "A teacher with this name or email already exists";
     header("Location: index.php?tab=general");
     exit();
 }
 
 # Update
-$stmt = $db->prepare("UPDATE TEACHERS SET teacher_name = :name, teacher_email = :email WHERE teacher_id = :id");
+$stmt = $db->prepare(
+    "UPDATE TEACHERS SET teacher_name = :name, teacher_email = :email WHERE teacher_id = :id",
+);
 $stmt->bindValue(":name", $teacher_name);
 $stmt->bindValue(":email", $teacher_email);
 $stmt->bindValue(":id", $teacher_id);
 $stmt->execute();
 
-$_SESSION['success'] = "Settings updated successfully";
+$_SESSION["success"] = "Settings updated successfully";
 
 header("Location: index.php?tab=general");
 exit();
