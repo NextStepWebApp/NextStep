@@ -16,7 +16,7 @@ function validate_teacher_name(
                 exit();
 
             case "settings":
-                header("Location: settings.php");
+                header("Location: /NextStep/settings/?tab=general");
                 $db->close();
                 exit();
 
@@ -43,7 +43,7 @@ function validate_teacher_name(
                 exit();
 
             case "settings":
-                header("Location: settings.php");
+            header("Location: /NextStep/settings/?tab=general");
                 $db->close();
                 exit();
 
@@ -70,7 +70,7 @@ function validate_teacher_name(
                 exit();
 
             case "settings":
-                header("Location: settings.php");
+                header("Location: /NextStep/settings/?tab=general");
                 $db->close();
                 exit();
 
@@ -104,7 +104,7 @@ function validate_teacher_email(
                 exit();
 
             case "settings":
-                header("Location: settings.php");
+                header("Location: /NextStep/settings/?tab=general");
                 $db->close();
                 exit();
 
@@ -131,7 +131,7 @@ function validate_teacher_email(
                 exit();
 
             case "settings":
-                header("Location: settings.php");
+                header("Location: /NextStep/settings/?tab=general");
                 $db->close();
                 exit();
 
