@@ -2,7 +2,7 @@
 require_once "../utils.php";
 session_start();
 loginSecurity();
-super_user_privilages($_SESSION["teacher_username"]);
+require_permission("teachers_access");
 
 try {
     $db = new SQLite3($db_file);

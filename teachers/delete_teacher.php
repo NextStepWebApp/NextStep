@@ -2,7 +2,7 @@
 require_once "../utils.php";
 session_start();
 loginSecurity();
-super_user_privilages($_SESSION["teacher_username"]);
+require_permission("teachers_access");
 check_id($_GET["teacher_id"], "Teacher");
 
 try {
@@ -12,7 +12,8 @@ try {
 }
 
 # This part checks who is getting deleted
-$query = "SELECT teacher_username, teacher_name FROM TEACHERS WHERE teacher_id = :id";
+$query =
+    "SELECT teacher_username, teacher_name FROM TEACHERS WHERE teacher_id = :id";
 $stmt = $db->prepare($query);
 if (!$stmt) {
     errorMessages("Error preparing query", $db->lastErrorMsg());

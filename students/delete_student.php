@@ -3,6 +3,7 @@ require_once "../utils.php";
 session_start();
 loginSecurity();
 super_user_privilages($_SESSION["teacher_username"]);
+require_permission("change_students");
 
 check_id($_GET["student_id"], "Students");
 $id = $_GET["student_id"];

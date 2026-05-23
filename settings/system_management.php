@@ -1,5 +1,7 @@
 <?php
 
+require_permission("system_management");
+
 if (isset($_POST["nextstep-reset"])) {
     if (isset($_POST["password"])) {
         $password = trim($_POST["password"] ?? "");

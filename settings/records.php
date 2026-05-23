@@ -1,21 +1,24 @@
 <?php
+
+require_permission("system_records");
+
 $items_per_page = 5;
 
 # Handle form submissions
 if (isset($_POST["config_action"]) && isset($_POST["config_section"])) {
     $action = $_POST["config_action"];
     $section = $_POST["config_section"];
-    
+
     # Reload the config json to get it fresh
     $config = json_decode(file_get_contents($config_path), true);
-    
+
     # Validate section exists in config
     if (!isset($config[$section])) {
         $_SESSION['error'] = "Invalid section";
         header("Location: /NextStep/settings/?tab=records");
         exit();
     }
-    
+
     if ($action === "add") {
         if (empty($_POST["config_value"])) {
             $_SESSION['error'] = "Value cannot be empty";
@@ -23,11 +26,11 @@ if (isset($_POST["config_action"]) && isset($_POST["config_section"])) {
             # Split by comma and process each value
             $values = array_map('trim', explode(',', $_POST["config_value"]));
             $values = array_filter($values, fn($v) => $v !== ''); # Remove empty
-            
+
             $added = 0;
             $skipped = 0;
             $errors = [];
-            
+
             foreach ($values as $value) {
                 if (strlen($value) > 255) {
                     $errors[] = "'$value' is too long";
@@ -38,7 +41,7 @@ if (isset($_POST["config_action"]) && isset($_POST["config_section"])) {
                     $added++;
                 }
             }
-            
+
             if ($added > 0) {
                 if (file_put_contents($config_path, json_encode($config, JSON_PRETTY_PRINT)) === false) {
                     $_SESSION['error'] = "Failed to save configuration";
@@ -58,13 +61,13 @@ if (isset($_POST["config_action"]) && isset($_POST["config_section"])) {
         }
         header("Location: /NextStep/settings/?tab=records");
         exit();
-        
+
     } elseif ($action === "remove") {
         if (!isset($_POST["config_index"])) {
             $_SESSION['error'] = "Invalid request";
         } else {
             $index = (int)$_POST["config_index"];
-            
+
             if ($index < 0 || $index >= count($config[$section])) {
                 $_SESSION['error'] = "Invalid option index";
             } else {
@@ -87,14 +90,14 @@ $config = json_decode(file_get_contents($config_path), true);
     <h2>Manage options for student records</h2>
     <?php flashMessages(); ?>
 
-    <?php foreach ($config as $section => $section_data): 
+    <?php foreach ($config as $section => $section_data):
         $label = ucwords($section);
         $has_more = count($section_data) > $items_per_page;
         $extra_count = count($section_data) - $items_per_page;
     ?>
     <div class="config-table-wrapper">
         <h3 class="extra-spacing"><?= htmlspecialchars($label) ?></h3>
-        
+
         <?php if (empty($section_data)): ?>
             <p class="no-items">No items</p>
         <?php else: ?>
@@ -115,14 +118,14 @@ $config = json_decode(file_get_contents($config_path), true);
                     <?php endforeach; ?>
                 </tbody>
             </table>
-            
+
             <?php if ($has_more): ?>
                 <button class="show-more-btn" data-count="<?= $extra_count ?>" onclick="toggleRows('<?= htmlspecialchars($section) ?>', this)">
                     Show More (<?= $extra_count ?> more)
                 </button>
             <?php endif; ?>
         <?php endif; ?>
-        
+
         <button class="simple-btn big-plus" data-open-modal>+</button>
         <dialog data-modal class="wide-textbox">
             <h2>Add <?= htmlspecialchars($label) ?></h2>
@@ -135,7 +138,7 @@ $config = json_decode(file_get_contents($config_path), true);
                     <button type="button" class="simple-btn" data-close-modal>Cancel</button>
                 </div>
             </form>
-        </dialog>    
+        </dialog>
     </div>
     <?php endforeach; ?>
 
