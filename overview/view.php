@@ -1,5 +1,5 @@
 <?php
-require_once "utils.php";
+require_once "../utils.php";
 session_start();
 loginSecurity();
 check_id($_GET["student_id"], "Students");
@@ -42,7 +42,7 @@ parse_str($_SERVER["QUERY_STRING"], $params);
 unset($params["student_id"]);
 $backQuery = http_build_query($params);
 
-$backUrl = "/NextStep/";
+$backUrl = "/NextStep/overview";
 if (!empty($backQuery)) {
     $backUrl .= "?" . $backQuery;
 }
@@ -67,12 +67,12 @@ if (!empty($backQuery)) {
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_navbar.css"/>
-<link rel="stylesheet" href="css/style_page.css"/>
+<link rel="stylesheet" href="../css/style_navbar.css"/>
+<link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - View</title>
 </head>
 <body class="theme-<?= $color_theme ?>">
-<?php include "navbar.php"; ?>
+<?php include "../navbar.php"; ?>
 
 <div class="page-box">
 <h2>Student information</h2>
@@ -104,6 +104,6 @@ if (!empty($backQuery)) {
 <?php } ?>
 <a href="<?= htmlspecialchars($backUrl) ?>" class="simple-btn">Back</a>
 </div>
-<script src="js/script.js"></script>
+<script src="../js/script.js"></script>
 </body>
 </html>

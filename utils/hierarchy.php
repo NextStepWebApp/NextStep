@@ -11,6 +11,7 @@ function require_permission(string $permission)
         // Teachers
         "teachers_access" => ["ADMIN"],
 
+        // Settings page
         "system_records" => ["ADMIN", "SUPERUSER"],
         "system_management" => ["ADMIN", "SYSADMIN"],
     ];

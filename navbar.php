@@ -11,16 +11,19 @@ loginSecurity();
 
 <div class="nav-buttons">
 <a href="/NextStep/overview" class="nav-btn">Overview</a>
-<?php
-if ($_SESSION["teacher_username"] == "ADMIN") {
-    echo '<a href="/NextStep/teachers/" class="nav-btn">Teachers</a>';
-}
-?>
+
 <?php
 if ($_SESSION["teacher_username"] == "ADMIN") {
     echo '<a href="/NextStep/students/" class="nav-btn">Students</a>';
 }
 ?>
+
+<?php
+if ($_SESSION["teacher_username"] == "ADMIN") {
+    echo '<a href="/NextStep/teachers/" class="nav-btn">Teachers</a>';
+}
+?>
+
 <a href="/NextStep/settings" class="nav-btn">Settings</a>
 <a href="/NextStep/map" class="nav-btn">Data</a>
 <button class="nav-btn" data-open-modal>Log out</button>

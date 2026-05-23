@@ -1,9 +1,10 @@
 <?php
 session_start();
 require_once "../utils.php";
-require_once "../query-builder.php";
+require_once "query-builder.php";
 setup_checker();
 loginSecurity();
+require_permission("view_students");
 
 try {
     $db = new SQLite3($db_file);
@@ -66,7 +67,7 @@ $queryString = http_build_query($search_params);
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="icon" type="image/x-icon" href="images/logo.webp"/>
+<link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep</title>

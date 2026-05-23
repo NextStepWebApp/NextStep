@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "utils.php";
+require_once "../utils.php";
 setup_checker();
 loginSecurity();
 
@@ -147,7 +147,7 @@ if (isset($_GET["submit"])) {
     }
 
     $query_string = implode("&", $query_params);
-    header("Location: /NextStep/?" . $query_string);
+    header("Location: /NextStep/overview/?" . $query_string);
     exit();
 }
 
@@ -189,12 +189,12 @@ $db->close();
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
-<link rel="stylesheet" href="css/style_navbar.css"/>
-<link rel="stylesheet" href="css/style_page.css"/>
+<link rel="stylesheet" href="../css/style_navbar.css"/>
+<link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Search & Filter</title>
 </head>
 <body class="theme-<?= $color_theme ?>">
-<?php include "navbar.php"; ?>
+<?php include "../navbar.php"; ?>
 <div class="page-box-wide">
 <h2>Search & Filter Alumni</h2>
 <?php flashMessages(); ?>
@@ -294,10 +294,10 @@ $db->close();
 
     <div class="button-container">
         <input type="submit" class="simple-btn" name="submit" value="Search Alumni">
-        <a href="/NextStep/" class="simple-btn cancel-btn">Cancel</a>
+        <a href="/NextStep/overview/" class="simple-btn cancel-btn">Cancel</a>
     </div>
 </form>
 </div>
-<script src="js/script.js"></script>
+<script src="../js/script.js"></script>
 </body>
 </html>
