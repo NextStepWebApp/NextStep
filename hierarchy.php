@@ -15,6 +15,7 @@ $PERMISSION = [
     "system_records" => ["ADMIN", "SUPERUSER"],
     "system_management" => ["ADMIN", "SYSADMIN"],
     "system_name" => ["ADMIN"],
+    "system_smtp" => ["ADMIN", "SUPERUSER", "USER"],
     
     // Data/Map access
     "data_overview" => ["ADMIN", "SUPERUSER", "USER"],

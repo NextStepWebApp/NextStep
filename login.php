@@ -110,14 +110,14 @@ $db->close();
                 </div>
 
                 <div class="input-group">
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        id="password"
-                    />
-                    <span class="toggle-password" onclick="togglePassword()">Show</span>
-                </div>
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    id="password"
+                />
+                <span class="toggle-password" id="login_toggle_btn" onclick="togglePassword('password', 'login_toggle_btn')">Show</span>
+                </div> 
 
                 <button type="submit" class="login-btn">Login</button>
             </form>

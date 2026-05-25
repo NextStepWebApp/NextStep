@@ -84,11 +84,24 @@ $query = <<<EOF
 EOF;
 tableCreate($query, $db, "THEME");
 
+# Create smtp settings table for teachers
+$query = <<<EOF
+      CREATE TABLE SMTP (
+      smtp_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      teacher_id INTEGER NOT NULL,
+      smtp_email TEXT NOT NULL,
+      smtp_host TEXT NOT NULL,
+      smtp_port INTEGER NOT NULL,
+      smtp_password TEXT NOT NULL,
+      FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id) ON DELETE CASCADE
+);
+EOF;
+tablecreate($query, $db, "SMTP");
+
 # Create teachers table
 $query = <<<EOF
       CREATE TABLE TEACHERS (
       teacher_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      teacher_email TEXT NOT NULL,
       teacher_name TEXT NOT NULL,
       teacher_username TEXT NOT NULL UNIQUE,
       teacher_password TEXT NOT NULL,
@@ -131,8 +144,8 @@ $role_admin_key = $row["role_id"];
 
 # query to insert the admin theacher to the db and a generated password
 $query = <<<EOF
-INSERT INTO TEACHERS (teacher_email, teacher_name, teacher_username, teacher_password, teacher_role_id)
-VALUES (:email, :name, :username, :password, :role);
+INSERT INTO TEACHERS (teacher_name, teacher_username, teacher_password, teacher_role_id)
+VALUES (:name, :username, :password, :role);
 EOF;
 
 $stmt = $db->prepare($query);
@@ -140,7 +153,6 @@ if (!$stmt) {
     error_log("Error preparing query: " . $db->lastErrorMsg() . "\n");
 }
 
-$stmt->bindValue(":email", "admin@admin.com", SQLITE3_TEXT);
 $stmt->bindValue(":name", "ADMIN", SQLITE3_TEXT);
 $stmt->bindValue(":username", "ADMIN", SQLITE3_TEXT);
 $stmt->bindValue(":password", $password, SQLITE3_TEXT);

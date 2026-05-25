@@ -420,6 +420,28 @@ pages are create_teacer/student for example */
 
 /* End styles edit teacher page*/
 
+/* Email SMTP email password styles*/
+
+.input-group {
+    position: relative; 
+    display: flex; 
+    align-items: center; 
+    width: 100%;
+}
+
+.password-input {
+    width: 100%;
+    padding-right: 60px; /* Prevents text from overlapping with the 'Show' button */
+}
+
+.toggle-password {
+    position: absolute; 
+    right: 15px; 
+    cursor: pointer; 
+    user-select: none;
+}
+/* End email smtp styles*/
+
 /* These are the styles for some of the index page stuff */
 .action-buttons {
     display: flex;

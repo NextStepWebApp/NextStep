@@ -12,14 +12,14 @@ try {
 }
 
 # Fetch teacher info
-$query =
-    "SELECT teacher_name, teacher_email FROM TEACHERS WHERE teacher_id = :id";
-$stmt = $db->prepare($query);
-$stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
-$result = $stmt->execute()->fetchArray();
+//$query =
+//    "SELECT teacher_name, teacher_email FROM TEACHERS WHERE teacher_id = :id";
+//$stmt = $db->prepare($query);
+//$stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
+//$result = $stmt->execute()->fetchArray();
 
-$teacher_name = htmlspecialchars($result["teacher_name"]);
-$teacher_email = htmlspecialchars($result["teacher_email"]);
+//$teacher_name = htmlspecialchars($result["teacher_name"]);
+//$teacher_email = htmlspecialchars($result["teacher_email"]);
 
 # Get help from the theme helper
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
@@ -50,6 +50,11 @@ $tab = $_GET["tab"] ?? "general";
         <a href="?tab=general"><button class="tab <?= $tab === "general"
             ? "active"
             : "" ?>">General</button></a>
+
+        <!-- SMTP tab -->
+        <a href="?tab=email"><button class="tab <?= $tab === "email"
+            ? "active"
+            : "" ?>">Email</button></a>
 
         <!-- Records tab -->
         <?php if (has_permission("system_records")): ?>

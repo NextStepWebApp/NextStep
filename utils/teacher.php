@@ -104,7 +104,7 @@ function validate_teacher_email(
                 exit();
 
             case "settings":
-                header("Location: /NextStep/settings/?tab=general");
+                header("Location: /NextStep/settings/?tab=email");
                 $db->close();
                 exit();
 
@@ -131,7 +131,7 @@ function validate_teacher_email(
                 exit();
 
             case "settings":
-                header("Location: /NextStep/settings/?tab=general");
+                header("Location: /NextStep/settings/?tab=email");
                 $db->close();
                 exit();
 
