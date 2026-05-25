@@ -22,9 +22,12 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     }
 
     # Get all the info you need from the user
-    $query = "SELECT teacher_id, teacher_username, teacher_password, role_name
-              FROM TEACHERS JOIN ROLES ON TEACHERS.teacher_role_id = ROLES.role_id
-              WHERE teacher_username = :username";
+    //  $query = "SELECT teacher_id, teacher_username, teacher_password, role_name
+    //           FROM TEACHERS JOIN ROLES ON TEACHERS.teacher_role_id = ROLES.role_id
+    //          WHERE teacher_username = :username";
+
+    $query = "SELECT teacher_id, teacher_username, teacher_password
+                FROM TEACHERS WHERE teacher_username = :username";
 
     $stmt = $db->prepare($query);
     $stmt->bindValue(":username", $username, SQLITE3_TEXT);
@@ -49,7 +52,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
             session_regenerate_id(true);
             $_SESSION["teacher_id"] = $row["teacher_id"];
             $_SESSION["teacher_username"] = $row["teacher_username"];
-            $_SESSION["teacher_role"] = $row["role_name"];
+            // $_SESSION["teacher_role"] = $row["role_name"];
 
             $db->close();
             header("Location: index.php");

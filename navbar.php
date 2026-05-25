@@ -6,26 +6,40 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once "utils.php";
 loginSecurity();
 ?>
+
 <nav class="navbar">
-<h1><a href="/NextStep/" class="brand-name"><?= $branding['app_name'] ?></a></h1>
+<h1><a href="/NextStep/" class="brand-name"><?= $branding[
+    "app_name"
+] ?></a></h1>
 
 <div class="nav-buttons">
-<a href="/NextStep/overview" class="nav-btn">Overview</a>
 
-<?php
-if ($_SESSION["teacher_username"] == "ADMIN") {
-    echo '<a href="/NextStep/students/" class="nav-btn">Students</a>';
-}
-?>
+<!-- OVERVIEW -->
+<?php if (has_permission("view_students")): ?>
+    <a href="/NextStep/overview" class="nav-btn">Overview</a>
+<?php endif; ?>
 
-<?php
-if ($_SESSION["teacher_username"] == "ADMIN") {
-    echo '<a href="/NextStep/teachers/" class="nav-btn">Teachers</a>';
-}
-?>
+<!-- STUDENTS -->
+<?php if (has_permission("change_students")): ?>
+    <a href="/NextStep/students/" class="nav-btn">Students</a>
+<?php endif; ?>
 
+<!-- TEACHERS -->
+<?php if (has_permission("teachers_access")): ?>
+    <a href="/NextStep/teachers/" class="nav-btn">Teachers</a>
+<?php endif; ?>
+
+<!-- SETTINGS -->
+<!-- everyone has access to a settings page -->
 <a href="/NextStep/settings" class="nav-btn">Settings</a>
-<a href="/NextStep/map" class="nav-btn">Data</a>
+
+<!-- DATA -->
+<?php if (has_permission("data_overview")): ?>
+    <a href="/NextStep/map" class="nav-btn">Data</a>
+<?php endif; ?>
+
+
+
 <button class="nav-btn" data-open-modal>Log out</button>
 <dialog data-modal id="logout-dialog">
     <h2>Confirm Logout</h2>

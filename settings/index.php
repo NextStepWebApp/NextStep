@@ -45,19 +45,32 @@ $tab = $_GET["tab"] ?? "general";
 
     <!-- Tabs -->
     <div class="tabs">
+
+        <!-- Everyone has access to the general tab -->
         <a href="?tab=general"><button class="tab <?= $tab === "general"
             ? "active"
             : "" ?>">General</button></a>
+
+        <!-- Records tab -->
+        <?php if (has_permission("system_records")): ?>
         <a href="?tab=records"><button class="tab <?= $tab === "records"
             ? "active"
             : "" ?>">Records</button></a>
+        <?php endif; ?>
+
+        <!-- System tab -->
+        <?php if (has_permission("system_management")): ?>
         <a href="?tab=system_management"><button class="tab <?= $tab ===
         "system_management"
             ? "active"
             : "" ?>">System Management</button></a>
+        <?php endif; ?>
+
+        <!-- Everyone has a preferences tab -->
         <a href="?tab=preferences"><button class="tab <?= $tab === "preferences"
             ? "active"
             : "" ?>">Preferences</button></a>
+
     </div>
 
     <div class="tab-content active">

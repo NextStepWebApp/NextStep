@@ -10,7 +10,7 @@ function download_page_settings()
     ) {
         # Teacher download requires login
         loginSecurity();
-        super_user_privilages($_SESSION["teacher_username"]);
+        //super_user_privilages($_SESSION["teacher_username"]);
         return $page_settings[0];
     } elseif (
         isset($_SESSION["export_csv_content"]) ||
@@ -18,7 +18,7 @@ function download_page_settings()
     ) {
         # Student export requires login
         loginSecurity();
-        super_user_privilages($_SESSION["teacher_username"]);
+        //super_user_privilages($_SESSION["teacher_username"]);
         return $page_settings[1];
     } elseif (
         isset($_SESSION["new_admin_credentials"]) ||

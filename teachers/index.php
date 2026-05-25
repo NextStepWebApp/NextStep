@@ -25,7 +25,8 @@ if (isset($_POST["submit_role"])) {
         $teacher_username = $_POST["teacher_username"];
 
         # Validate that the role exists
-        $query = "SELECT role_id FROM ROLES WHERE role_id = :role_id";
+        $query =
+            "SELECT role_id, role_name FROM ROLES WHERE role_id = :role_id";
         $stmt = $db->prepare($query);
         if (!$stmt) {
             errorMessages("Error preparing query", $db->lastErrorMsg());
@@ -35,10 +36,9 @@ if (isset($_POST["submit_role"])) {
         if (!$result) {
             errorMessages("Error executing query", $db->lastErrorMsg());
         }
-        $existing = $result->fetchArray();
+        $existing = $result->fetchArray(SQLITE3_ASSOC);
         if (!$existing) {
             $_SESSION["error"] = "Invalid role selected";
-            $db->close();
             header("Location: /NextStep/teachers");
             $db->close();
             exit();
@@ -46,7 +46,6 @@ if (isset($_POST["submit_role"])) {
             # Check to see if username is "ADMIN" (safty rail)
             if ($teacher_username == "ADMIN") {
                 $_SESSION["error"] = "The original ADMIN can not change roles";
-                $db->close();
                 header("Location: /NextStep/teachers");
                 $db->close();
                 exit();
@@ -65,6 +64,7 @@ if (isset($_POST["submit_role"])) {
             if (!$update) {
                 errorMessages("Error updating role", $db->lastErrorMsg());
             }
+
             $_SESSION["success"] = "Teacher role updated successfully";
             header("Location: /NextStep/teachers");
             $db->close();
@@ -74,12 +74,10 @@ if (isset($_POST["submit_role"])) {
 }
 
 # Fetch all teachers
-$query = <<<EOF
-SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username,
+$query = "SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username,
 TEACHERS.teacher_email, ROLES.role_name
 FROM TEACHERS
-JOIN ROLES ON TEACHERS.teacher_role_id = ROLES.role_id;
-EOF;
+JOIN ROLES ON TEACHERS.teacher_role_id = ROLES.role_id;";
 
 $stmt = $db->prepare($query);
 if (!$stmt) {

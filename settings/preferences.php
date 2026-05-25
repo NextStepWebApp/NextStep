@@ -13,20 +13,29 @@ $allowed_themes = ["blue", "red", "green", "purple"];
 
 if (isset($_POST["preferences"])) {
     # App name
-    if (empty($_POST["app_name"])) {
-        $_SESSION["error"] = "Application name cannot be empty";
-    } else {
-        $app_name = trim($_POST["app_name"]);
 
-        if (strlen($app_name) < 2) {
-            $_SESSION["error"] =
-                "Application name must be at least 2 characters long";
-        } elseif (strlen($app_name) > 30) {
-            $_SESSION["error"] =
-                "Application name must not exceed 30 characters";
-        } elseif (!preg_match("/^[a-zA-Z0-9\s\-_]+$/", $app_name)) {
-            $_SESSION["error"] =
-                "Application name can only contain letters, numbers, spaces, hyphens and underscores";
+    // Check if there is an edit been made
+    if (isset($_POST["app_name"]) && $app_name != $_POST["app_name"]) {
+        //Normal users do not get permission to edit brand name
+        require_permission("system_name");
+    }
+
+    if (isset($_POST["app_name"])) {
+        if (empty($_POST["app_name"])) {
+            $_SESSION["error"] = "Application name cannot be empty";
+        } else {
+            $app_name = trim($_POST["app_name"]);
+
+            if (strlen($app_name) < 2) {
+                $_SESSION["error"] =
+                    "Application name must be at least 2 characters long";
+            } elseif (strlen($app_name) > 30) {
+                $_SESSION["error"] =
+                    "Application name must not exceed 30 characters";
+            } elseif (!preg_match("/^[a-zA-Z0-9\s\-_]+$/", $app_name)) {
+                $_SESSION["error"] =
+                    "Application name can only contain letters, numbers, spaces, hyphens and underscores";
+            }
         }
     }
 
@@ -129,11 +138,14 @@ $db->close();
 <h2>Preferences</h2>
 <form method="POST" action="/NextStep/settings/?tab=preferences">
 
-    <h3 class="extra-spacing">Application Name</h3>
-    <input type="text" name="app_name"
-           value="<?= htmlspecialchars($app_name) ?>">
+    <?php if (has_permission("system_name")): ?>
+        <h3 class="extra-spacing">Application Name</h3>
+        <input type="text" name="app_name"
+               value="<?= htmlspecialchars($app_name) ?>">
+    <?php endif; ?>
 
     <h3 class="extra-spacing">Color Theme</h3>
+
     <select name="theme">
         <?php foreach ($allowed_themes as $color) {
             echo "<option value='" .

@@ -3,6 +3,8 @@ require_once "../utils.php";
 session_start();
 loginSecurity();
 check_id($_GET["student_id"], "Students");
+require_permission("view_students");
+
 
 try {
     $db = new SQLite3($db_file);

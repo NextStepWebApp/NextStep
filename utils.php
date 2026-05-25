@@ -2,7 +2,8 @@
 require_once "utils/variables.php";
 require_once "utils/messages.php";
 require_once "utils/security.php";
-require_once "utils/hierarchy.php";
+//Got hierarchy working like this
+require_once "hierarchy.php";
 require_once "utils/passwords.php";
 require_once "utils/database.php";
 require_once "utils/student.php";
