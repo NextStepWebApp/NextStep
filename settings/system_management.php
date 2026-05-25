@@ -88,6 +88,11 @@ if (isset($_POST["nextstep-reset"])) {
 <?php flashMessages(); ?>
 <h2>System Management</h2>
 <form method="POST" action="/NextStep/settings/?tab=system_management">
+
+    <!-- COCKPIT -->
+    <?php $serverUrl = 'http://' . $_SERVER['SERVER_ADDR'] . ':9090'; ?>
+    <a href="<?= $serverUrl ?>" target="_blank" class="simple-btn">Enter Cockpit</a>
+
     <h3 class="extra-spacing">DATABASE RESET</h3>
     <label for="password">Enter Password to Confirm Reset:</label>
     <input type="password" id="password" name="password" placeholder="Enter your password" required>
