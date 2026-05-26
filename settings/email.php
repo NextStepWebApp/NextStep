@@ -2,6 +2,7 @@
 require_once "../utils.php";
 loginSecurity();
 $teacher_id = $_SESSION["teacher_id"];
+require_permission("system_smtp");
 
 try {
     $db = new SQLite3($db_file);

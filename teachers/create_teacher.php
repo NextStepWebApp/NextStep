@@ -21,7 +21,7 @@ if (isset($_POST["submit"])) {
         exit();
     }
 
-    # This section will be validations of name, email, username and password
+    # This section will be validations of name, username and password
     # These are functions in utils.php that are used for user input validations
     # Validate teacher name
     $teacher_name = trim($_POST["teacher_name"]);
@@ -74,13 +74,11 @@ if (isset($_POST["submit"])) {
     $query = "
         INSERT INTO TEACHERS (
             teacher_name,
-            teacher_email,
             teacher_username,
             teacher_password,
             teacher_role_id
         ) VALUES (
             :name,
-            :email,
             :username,
             :password,
             :role
@@ -93,7 +91,6 @@ if (isset($_POST["submit"])) {
     }
 
     $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
-    $stmt->bindValue(":email", "example@example.com", SQLITE3_TEXT);
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
     $stmt->bindValue(":password", $password, SQLITE3_TEXT);
     $stmt->bindValue(":role", $role_key, SQLITE3_INTEGER);

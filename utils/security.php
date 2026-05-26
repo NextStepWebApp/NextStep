@@ -16,12 +16,12 @@ function check_id(?string $id, string $group)
         switch ($group) {
             case "Students":
                 $_SESSION["error"] = "Missing student_id";
-                header("Location: index.php");
+                header("Location: /NextStep/students/");
                 exit();
 
             case "Teacher":
                 $_SESSION["error"] = "Missing teacher_id";
-                header("Location: teachers.php");
+                header("Location: /NextStep/teachers/");
                 exit();
 
             default:
@@ -37,12 +37,12 @@ function check_id(?string $id, string $group)
         switch ($group) {
             case "Students":
                 $_SESSION["error"] = "Invalid value for student_id";
-                header("Location: index.php");
+                header("Location: /NextStep/students/");
                 exit();
 
             case "Teacher":
                 $_SESSION["error"] = "Invalid value for teacher_id";
-                header("Location: teachers.php");
+                header("Location: /NextStep/teachers/");
                 exit();
 
             default:

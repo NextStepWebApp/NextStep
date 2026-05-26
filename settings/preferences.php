@@ -138,7 +138,7 @@ $db->close();
 <h2>Preferences</h2>
 <form method="POST" action="/NextStep/settings/?tab=preferences">
 
-    <?php if (has_permission("system_name")): ?>
+    <?php if (has_permission("system_name", $_SESSION["teacher_id"])): ?>
         <h3 class="extra-spacing">Application Name</h3>
         <input type="text" name="app_name"
                value="<?= htmlspecialchars($app_name) ?>">

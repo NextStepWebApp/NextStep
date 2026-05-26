@@ -420,6 +420,20 @@ pages are create_teacer/student for example */
 
 /* End styles edit teacher page*/
 
+
+/* table link to view style*/
+.email-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.email-link:hover {
+    color: var(--color-primary-light);
+    text-decoration: underline;
+}
+/* End table link to view style*/
+
 /* Email SMTP email password styles*/
 
 .input-group {

@@ -52,19 +52,21 @@ $tab = $_GET["tab"] ?? "general";
             : "" ?>">General</button></a>
 
         <!-- SMTP tab -->
+        <?php if (has_permission("system_smtp", $_SESSION["teacher_id"])): ?>
         <a href="?tab=email"><button class="tab <?= $tab === "email"
             ? "active"
             : "" ?>">Email</button></a>
+        <?php endif; ?>
 
         <!-- Records tab -->
-        <?php if (has_permission("system_records")): ?>
+        <?php if (has_permission("system_records", $_SESSION["teacher_id"])): ?>
         <a href="?tab=records"><button class="tab <?= $tab === "records"
             ? "active"
             : "" ?>">Records</button></a>
         <?php endif; ?>
 
         <!-- System tab -->
-        <?php if (has_permission("system_management")): ?>
+        <?php if (has_permission("system_management", $_SESSION["teacher_id"])): ?>
         <a href="?tab=system_management"><button class="tab <?= $tab ===
         "system_management"
             ? "active"

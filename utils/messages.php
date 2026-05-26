@@ -20,6 +20,6 @@ function errorMessages(string $message, string $details)
 {
     error_log("$message: $details");
     $_SESSION["error"] = $message;
-    header("Location: failure.php");
+    header("Location: /NextStep/failure.php");
     exit();
 }

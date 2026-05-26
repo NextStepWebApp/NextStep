@@ -15,17 +15,17 @@ loginSecurity();
 <div class="nav-buttons">
 
 <!-- OVERVIEW -->
-<?php if (has_permission("view_students")): ?>
+<?php if (has_permission("view_students", $_SESSION["teacher_id"])): ?>
     <a href="/NextStep/overview" class="nav-btn">Overview</a>
 <?php endif; ?>
 
 <!-- STUDENTS -->
-<?php if (has_permission("change_students")): ?>
+<?php if (has_permission("change_students", $_SESSION["teacher_id"])): ?>
     <a href="/NextStep/students/" class="nav-btn">Students</a>
 <?php endif; ?>
 
 <!-- TEACHERS -->
-<?php if (has_permission("teachers_access")): ?>
+<?php if (has_permission("teachers_access", $_SESSION["teacher_id"])): ?>
     <a href="/NextStep/teachers/" class="nav-btn">Teachers</a>
 <?php endif; ?>
 
@@ -34,7 +34,7 @@ loginSecurity();
 <a href="/NextStep/settings" class="nav-btn">Settings</a>
 
 <!-- DATA -->
-<?php if (has_permission("data_overview")): ?>
+<?php if (has_permission("data_overview", $_SESSION["teacher_id"])): ?>
     <a href="/NextStep/map" class="nav-btn">Data</a>
 <?php endif; ?>
 

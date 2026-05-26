@@ -74,10 +74,10 @@ if (isset($_POST["submit_role"])) {
 }
 
 # Fetch all teachers
-$query = "SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username,
-TEACHERS.teacher_email, ROLES.role_name
+$query = "SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username, SMTP.smtp_email, ROLES.role_name
 FROM TEACHERS
-JOIN ROLES ON TEACHERS.teacher_role_id = ROLES.role_id;";
+JOIN ROLES ON TEACHERS.teacher_role_id = ROLES.role_id
+LEFT JOIN SMTP ON TEACHERS.teacher_id = SMTP.teacher_id;";
 
 $stmt = $db->prepare($query);
 if (!$stmt) {
@@ -140,14 +140,22 @@ while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
 
         $name = htmlspecialchars($row["teacher_name"]);
         $username = htmlspecialchars($row["teacher_username"]);
-        $email = htmlspecialchars($row["teacher_email"]);
+        $email = htmlspecialchars($row["smtp_email"] ?? "No email settings set up");
         $role = htmlspecialchars($row["role_name"]);
         $id = $row["teacher_id"];
         ?>
         <tr>
             <td><?= $name ?></td>
             <td><?= $username ?></td>
-            <td><?= $email ?></td>
+            <td>
+                <?php if (has_permission("system_smtp", $id, $role)): ?>
+                    <a href="/NextStep/teachers/view.php?teacher_id=<?= $id ?>" class="email-link">
+                    <?= $email ?>
+                    </a>
+                <?php else: ?>
+                    <?= "No permission" ?>
+                <?php endif; ?> 
+            </td> 
             <td><?= $role ?></td>
             <td>
             <button class="simple-btn" data-open-modal>Actions</button>
