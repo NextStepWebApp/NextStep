@@ -10,7 +10,6 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
-$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 
 if (isset($_POST["submit"])) {
     # Check if all fields are filled
@@ -21,24 +20,13 @@ if (isset($_POST["submit"])) {
         exit();
     }
 
-    # This section will be validations of name, username and password
-    # These are functions in utils.php that are used for user input validations
-    # Validate teacher name
     $teacher_name = trim($_POST["teacher_name"]);
-    validate_teacher_name($db, $teacher_name, "create_teacher", $teacher_name);
-
-    # Validate user name (same function)
     $teacher_username = trim($_POST["teacher_username"]);
-    validate_teacher_name(
-        $db,
-        $teacher_username,
-        "create_teacher",
-        $teacher_username,
-    );
+    validate_teacher_name($db, $teacher_name, "create_teacher");
+    validate_teacher_username($db ,$teacher_username, "create_teacher");
 
     # Check to see if the teacher already exists
-    $query = "SELECT teacher_id FROM TEACHERS WHERE
-          teacher_username = :username OR teacher_username = :name";
+    $query = "SELECT teacher_id FROM TEACHERS WHERE teacher_username = :username;";
     $stmt = $db->prepare($query);
 
     if (!$stmt) {
@@ -46,7 +34,6 @@ if (isset($_POST["submit"])) {
     }
 
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
-    $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
     $result = $stmt->execute();
 
     if (!$result) {
@@ -57,7 +44,7 @@ if (isset($_POST["submit"])) {
 
     if ($existing) {
         $_SESSION["error"] =
-            "A teacher with this username or name already exists";
+            "A teacher with this username already exists";
         header("Location: create_teacher.php");
         $db->close();
         exit();
@@ -115,6 +102,10 @@ if (isset($_POST["submit"])) {
     header("Location: /NextStep/download/download_success.php");
     exit();
 }
+
+
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -135,6 +126,7 @@ if (isset($_POST["submit"])) {
 <form method="POST" action="create_teacher.php">
     <label for="teacher_name">Name:</label>
     <input type="text" id="teacher_name" name="teacher_name"/>
+    <br />
     <label for="teacher_username">Username:</label>
     <input type="text" id="teacher_username" name="teacher_username"/>
     <div class="button-container">

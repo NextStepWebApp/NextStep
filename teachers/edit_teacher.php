@@ -5,119 +5,45 @@ loginSecurity();
 require_permission("teachers_access");
 check_id($_GET["teacher_id"], "Teacher");
 
-$teacher_id = $_GET["teacher_id"];
-
 try {
     $db = new SQLite3($db_file);
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
-# Get help from the theme helper
-$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
-
-# Fetch teacher data
-$query = "SELECT teacher_id, teacher_name, teacher_username, teacher_email
-          FROM TEACHERS WHERE teacher_id = :id";
-$stmt = $db->prepare($query);
-
-if (!$stmt) {
-    errorMessages("Error preparing query", $db->lastErrorMsg());
-}
-
-$stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
-$result = $stmt->execute();
-
-if (!$result) {
-    errorMessages("Error executing query", $db->lastErrorMsg());
-}
-
-$teacher = $result->fetchArray();
-
-if (!$teacher) {
-    $_SESSION["error"] = "Teacher not found";
-    header("Location: teachers.php");
-    $db->close();
-    exit();
-}
-
-# Prevent editing ADMIN account username
-$is_admin = $teacher["teacher_username"] == "ADMIN";
+$teacher_id = $_GET["teacher_id"];
 
 # Handle form submission
 if (isset($_POST["submit"])) {
-    # Check if all fields are filled
-    if (
-        empty($_POST["teacher_name"]) ||
-        empty($_POST["teacher_email"]) ||
-        empty($_POST["teacher_username"])
-    ) {
-        $_SESSION["error"] = "All fields are required";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
+    if (empty($_POST["teacher_username"])) {
+        $_SESSION["error"] = "The username field cannot be empty";
+        header("Location: /NextStep/teachers/edit_teacher.php?teacher_id=" . $teacher_id);
         exit();
     }
-
-    # These are functions in utils.php that are used for user input validations
-
-    # Validate teacher name
-    $teacher_name = trim($_POST["teacher_name"]);
-    validate_teacher_name($db, $teacher_name, "edit_teacher", $teacher_id);
-
-    # Validate email
-    $teacher_email = trim($_POST["teacher_email"]);
-    validate_teacher_email($db, $teacher_email, "edit_teacher", $teacher_id);
 
     # Validate username
     $teacher_username = trim($_POST["teacher_username"]);
 
     # Prevent changing ADMIN username
-    if ($is_admin && $teacher_username != "ADMIN") {
-        $_SESSION["error"] = "Cannot change ADMIN username";
+    if ($teacher_username == "ADMIN") {
+        //$_SESSION["error"] = "Cannot change ADMIN username";
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         exit();
     }
 
-    if (strlen($teacher_username) < 3) {
-        $_SESSION["error"] = "Username must be at least 3 characters long";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
-        exit();
-    }
+    validate_teacher_username($db, $teacher_username, "edit_teacher", $teacher_id);
 
-    if (strlen($teacher_username) > 30) {
-        $_SESSION["error"] = "Username must not exceed 30 characters";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
-        exit();
-    }
+    # Check if username already exists not looking at the current teacher
+    $query = "SELECT teacher_id FROM TEACHERS WHERE teacher_username = :username AND teacher_id != :id";
 
-    if (!preg_match("/^[a-zA-Z0-9_\-]+$/", $teacher_username)) {
-        $_SESSION["error"] =
-            "Username can only contain letters, numbers, hyphens and underscores";
-        header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
-        exit();
-    }
-
-    # Check if email or username already exists not looking at the current teacher
-
-    if ($teacher_email == "example@example.com") {
-        $query = "SELECT teacher_id FROM TEACHERS WHERE (teacher_username = :username
-        OR teacher_name = :name) AND teacher_id != :id";
-    } else {
-        $query = "SELECT teacher_id FROM TEACHERS WHERE
-            (teacher_email = :email OR teacher_username = :username OR teacher_name = :name)
-            AND teacher_id != :id";
-    }
     $stmt = $db->prepare($query);
 
     if (!$stmt) {
         errorMessages("Error preparing check query", $db->lastErrorMsg());
     }
 
-    if ($teacher_email != "example@example.com") {
-        $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
-    }
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
     $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
-    $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
     $result = $stmt->execute();
 
     if (!$result) {
@@ -127,32 +53,20 @@ if (isset($_POST["submit"])) {
     $existing = $result->fetchArray();
 
     if ($existing) {
-        if ($teacher_email == "example@example.com") {
-            $_SESSION["error"] =
-                "A teacher with this username or name already exists";
-        } else {
-            $_SESSION["error"] =
-                "A teacher with this email, username or name already exists";
-        }
+        $_SESSION["error"] = "A teacher with this username already exists";
         header("Location: edit_teacher.php?teacher_id=" . $teacher_id);
         $db->close();
         exit();
     }
 
     # Update teacher
-    $query = "UPDATE TEACHERS SET
-              teacher_name = :name,
-              teacher_email = :email,
-              teacher_username = :username
-              WHERE teacher_id = :id";
+    $query = "UPDATE TEACHERS SET teacher_username = :username WHERE teacher_id = :id";
 
     $stmt = $db->prepare($query);
     if (!$stmt) {
         errorMessages("Error preparing update query", $db->lastErrorMsg());
     }
 
-    $stmt->bindValue(":name", $teacher_name, SQLITE3_TEXT);
-    $stmt->bindValue(":email", $teacher_email, SQLITE3_TEXT);
     $stmt->bindValue(":username", $teacher_username, SQLITE3_TEXT);
     $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
 
@@ -195,8 +109,6 @@ if (isset($_POST["submit"])) {
         # Create credentials file content
         $credentials_content = "NextStep Teacher Account - Password Reset\n";
         $credentials_content .= "=========================================\n\n";
-        $credentials_content .= "Name: " . $teacher_name . "\n";
-        $credentials_content .= "Email: " . $teacher_email . "\n";
         $credentials_content .= "Username: " . $teacher_username . "\n";
         $credentials_content .= "New Password: " . $unsafe_password . "\n\n";
         $credentials_content .= "Reset: " . date("Y-m-d H:i:s") . "\n\n";
@@ -210,11 +122,41 @@ if (isset($_POST["submit"])) {
         exit();
     }
 
-    $_SESSION["success"] = "Teacher updated successfully";
+    $_SESSION["success"] = "Teacher $teacher_username updated successfully";
     $db->close();
-    header("Location: /NextStep/teachers/");
+    //header("Location: /NextStep/teachers/");
+    header("Location: /NextStep/teachers/edit_teacher.php?teacher_id=" . $teacher_id);
+
     exit();
 }
+
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
+$query = "SELECT teacher_username
+          FROM TEACHERS WHERE teacher_id = :id";
+$stmt = $db->prepare($query);
+
+if (!$stmt) {
+    errorMessages("Error preparing query", $db->lastErrorMsg());
+}
+
+$stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
+$result = $stmt->execute();
+
+if (!$result) {
+    errorMessages("Error executing query", $db->lastErrorMsg());
+}
+
+$teacher = $result->fetchArray();
+
+if (!$teacher) {
+    $_SESSION["error"] = "Teacher not found";
+    header("Location: /NextStep/teachers/");
+    $db->close();
+    exit();
+}
+
+$is_admin = $teacher["teacher_username"] == "ADMIN";
 
 $db->close();
 ?>
@@ -235,12 +177,6 @@ $db->close();
 <?php flashMessages(); ?>
 
 <form method="POST" action="edit_teacher.php?teacher_id=<?= $teacher_id ?>">
-    <label for="teacher_name">Name:</label>
-    <input type="text" name="teacher_name"
-           value="<?= htmlspecialchars($teacher["teacher_name"]) ?>"/>
-    <label for="teacher_email">Email:</label>
-    <input type="text" name="teacher_email"
-           value="<?= htmlspecialchars($teacher["teacher_email"]) ?>"/>
     <label for="teacher_username">Username:</label>
     <input type="text" id="teacher_username" name="teacher_username"
            value="<?= htmlspecialchars($teacher["teacher_username"]) ?>"

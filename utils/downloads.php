@@ -27,7 +27,7 @@ function download_page_settings()
         # Admin download during onboarding - no login required
         return $page_settings[2];
     } else {
-        header("Location: /NextStep/");
+        header("Location: /NextStep/teachers/");
         exit();
     }
 }

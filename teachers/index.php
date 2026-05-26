@@ -10,9 +10,6 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
-# Get help from the theme helper
-$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
-
 # handle post from roles
 if (isset($_POST["submit_role"])) {
     if (
@@ -25,8 +22,7 @@ if (isset($_POST["submit_role"])) {
         $teacher_username = $_POST["teacher_username"];
 
         # Validate that the role exists
-        $query =
-            "SELECT role_id, role_name FROM ROLES WHERE role_id = :role_id";
+        $query = "SELECT role_name FROM ROLES WHERE role_id = :role_id";
         $stmt = $db->prepare($query);
         if (!$stmt) {
             errorMessages("Error preparing query", $db->lastErrorMsg());
@@ -43,9 +39,18 @@ if (isset($_POST["submit_role"])) {
             $db->close();
             exit();
         } else {
-            # Check to see if username is "ADMIN" (safty rail)
+            # Check to see if username is "ADMIN" 
             if ($teacher_username == "ADMIN") {
                 $_SESSION["error"] = "The original ADMIN can not change roles";
+                header("Location: /NextStep/teachers");
+                $db->close();
+                exit();
+            }
+
+            // Check to prevent other users to get admin power
+            $role_name = $existing["role_name"]; 
+            if ($role_name == "ADMIN") {
+                $_SESSION["error"] = "There is only one ADMIN!";
                 header("Location: /NextStep/teachers");
                 $db->close();
                 exit();
@@ -65,13 +70,16 @@ if (isset($_POST["submit_role"])) {
                 errorMessages("Error updating role", $db->lastErrorMsg());
             }
 
-            $_SESSION["success"] = "Teacher role updated successfully";
+            $_SESSION["success"] = "Teacher $teacher_username role updated successfully";
             header("Location: /NextStep/teachers");
             $db->close();
             exit();
         }
     }
 }
+
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 
 # Fetch all teachers
 $query = "SELECT TEACHERS.teacher_id, TEACHERS.teacher_name, TEACHERS.teacher_username, SMTP.smtp_email, ROLES.role_name
@@ -102,6 +110,9 @@ if (!$results_roles) {
 # Fetch ALL roles into an array
 $row_roles = [];
 while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
+    if ($role["role_name"] == "ADMIN") {
+        continue;
+    }
     $row_roles[] = $role;
 }
 ?>
@@ -163,7 +174,12 @@ while ($role = $results_roles->fetchArray(SQLITE3_ASSOC)) {
                 <h2>Teacher Actions</h2>
                 <a href="/NextStep/teachers/edit_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Edit</a>
                 <?php if ($username != "ADMIN"): ?>
-                      <a href="/NextStep/teachers/delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Delete</a>
+                    <button class="simple-btn" data-open-modal>Delete</button>
+                    <dialog data-modal>
+                        <h2>Are you sure?</h2>
+                        <a href="/NextStep/teachers/delete_teacher.php?teacher_id=<?= $id ?>" class="simple-btn">Confirm Delete</a>
+                        <button class="simple-btn" data-close-modal>Cancel</button>
+                    </dialog>
                       <button class="simple-btn" data-open-modal>Role</button>
                           <dialog data-modal>
                           <h2>Change Role</h2>
