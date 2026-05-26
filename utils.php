@@ -11,3 +11,5 @@ require_once "utils/teacher.php";
 require_once "utils/theme.php";
 require_once "utils/downloads.php";
 require_once "utils/onboarding.php";
+require_once "utils/system.php";
+require_once "utils/crypto.php";

@@ -22,7 +22,7 @@ if (isset($_POST["submit_smtp"])) {
     $smtp_email = trim($_POST["smtp_email"]);
     $smtp_host = trim($_POST["smtp_host"]);
     $smtp_port = intval($_POST["smtp_port"]);
-    $smtp_password = $_POST["smtp_password"];
+    $smtp_password = crypto_encrypt($_POST["smtp_password"], sys_get_node_status());
 
     validate_teacher_email($db, $smtp_email, "settings");
 
@@ -68,7 +68,7 @@ if ($result) {
     $smtp_email = $result["smtp_email"];
     $smtp_host  = $result["smtp_host"];
     $smtp_port  = $result["smtp_port"];
-    $smtp_password = $result["smtp_password"];
+    $smtp_password = crypto_decrypt($result["smtp_password"], sys_get_node_status());
 } else {
     $smtp_email = "";
     $smtp_host  = "";
@@ -94,16 +94,17 @@ $db->close();
 
     <label for="smtp_email">SMTP Email / Username:</label>
     <input type="text" id="smtp_email" name="smtp_email" value="<?= htmlspecialchars($smtp_email) ?>" placeholder="your-email@example.com" />
+    <br />
 
     <label for="smtp_host">SMTP Host:</label>
     <input type="text" id="smtp_host" name="smtp_host" value="<?= htmlspecialchars($smtp_host) ?>" placeholder="smtp.example.com" />
+    <br />
 
     <label for="smtp_port">SMTP Port:</label>
     <input type="number" id="smtp_port" name="smtp_port" value="<?= htmlspecialchars($smtp_port) ?>" placeholder="465" />
+    <br />
 
     <label for="smtp_password">App Password:</label>
-
-
     <div class="input-group">
     <input
         type="password"
@@ -123,7 +124,7 @@ $db->close();
 
     <div class="button-container">
         <input type="submit" class="simple-btn" name="submit_smtp" value="Save Changes">
-        <a href="/NextStep/settings?tab=general" class="simple-btn cancel-btn">Cancel</a>
+        <a href="/NextStep/settings/?tab=email" class="simple-btn cancel-btn">Cancel</a>
     </div>
 
   </form>
