@@ -11,149 +11,99 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
-if (isset($_GET["submit"])) {
+if (isset($_POST["submit"])) {
     if (
-        empty($_GET["student_name"]) &&
-        empty($_GET["student_email"]) &&
-        empty($_GET["student_phone"]) &&
-        empty($_GET["class_name"]) &&
-        empty($_GET["country_name"]) &&
-        empty($_GET["city_name"]) &&
-        empty($_GET["school_name"]) &&
-        empty($_GET["program_name"]) &&
-        empty($_GET["status"]) &&
-        empty($_GET["accessibility"]) &&
-        empty($_GET["date"])
-    ) {
-        $_SESSION["error"] = "Atleast one field is required";
-        header("Location: /NextStep/search-filter.php");
+    empty(trim($_POST["student_name"])) &&
+    empty(trim($_POST["student_email"])) &&
+    empty(trim($_POST["student_phone"])) &&
+    empty(trim($_POST["class_name"])) &&
+    empty(trim($_POST["country_name"])) &&
+    empty(trim($_POST["city_name"])) &&
+    empty(trim($_POST["school_name"])) &&
+    empty(trim($_POST["program_name"])) &&
+    empty(trim($_POST["status"])) &&
+    empty(trim($_POST["accessibility"])) &&
+    empty(trim($_POST["date"]))
+    )
+    {
+        $_SESSION["error"] = "At least one field is required";
+        header("Location: /NextStep/overview/search-filter.php");
         $db->close();
         exit();
+    }   
+
+    $search = [];
+    $list = [];
+
+    if (!empty(trim($_POST["student_name"]))) {
+        $search["students_name"] = trim($_POST["student_name"]);
+        $list[] = $_POST["student_name"];
+    }
+    if (!empty(trim($_POST["student_email"]))) {
+        $search["students_email"] = trim($_POST["student_email"]);
+        $list[] = $_POST["student_email"];
+    }
+    if (!empty(trim($_POST["student_phone"]))) {
+        $search["students_phone_number"] = trim($_POST["student_phone"]);
+        $list[] = $_POST["student_phone"];
+    }
+    if (!empty($_POST["class_name"])) {
+        $query = "SELECT class_id FROM CLASS WHERE class_name = :class_name;";
+        $students_class_id = getForeignKey($db, $query, ":class_name", $_POST["class_name"], SQLITE3_TEXT); 
+        $search["students_class_id"] = $students_class_id;
+        $list[] = $_POST["class_name"];
+    }
+    if (!empty($_POST["country_name"])) {
+        $query = "SELECT country_id FROM COUNTRY WHERE country_name = :country_name;";
+        $students_country_id = getForeignKey($db, $query, ":country_name", $_POST["country_name"], SQLITE3_TEXT);
+        $search["students_country_id"] = $students_country_id;
+        $list[] = $_POST["country_name"];
+    }
+    if (!empty($_POST["city_name"])) {
+        $query = "SELECT city_id FROM CITY WHERE city_name = :city_name;";
+        $students_city_id = getForeignKey($db, $query, ":city_name", $_POST["city_name"], SQLITE3_TEXT);
+        $search["students_city_id"] = $students_city_id;
+        $list[] = $_POST["city_name"];
+    }
+    if (!empty($_POST["school_name"])) {
+        $query = "SELECT school_id FROM SCHOOL WHERE school_name = :school_name;";
+        $students_school_id = getForeignKey($db, $query, ":school_name", $_POST["school_name"], SQLITE3_TEXT);
+        $search["students_school_id"] = $students_school_id;
+        $list[] = $_POST["school_name"];
+    }
+    if (!empty($_POST["program_name"])) {
+        $query = "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = :program_name;";
+        $students_education_program_id = getForeignKey($db, $query, ":program_name", $_POST["program_name"], SQLITE3_TEXT);
+        $search["students_education_program_id"] = $students_education_program_id;
+        $list[] = $_POST["program_name"];
+    }
+    if (!empty($_POST["status"])) {
+        $query = "SELECT status_id FROM STATUS WHERE status_name = :status_name;";
+        $students_status_id = getForeignKey($db, $query,":status_name", $_POST["status"], SQLITE3_TEXT);
+        $search["students_status_id"] = $students_status_id;
+        $list[] = $_POST["status"];
+    }
+    if (!empty($_POST["accessibility"])) {
+        $query = "SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = :accessibility_name;";
+        $students_accessibility_id = getForeignKey($db, $query, ":accessibility_name", $_POST["accessibility"], SQLITE3_TEXT);
+        $search["students_accessibility_id"] = $students_accessibility_id;
+        $list[] = $_POST["accessibility"];
+    }
+    if (!empty($_POST["date"])) {
+        $search["students_created_date"] = $_POST["date"];
+        $list[] = $_POST["date"];
     }
 
-    $query_params = [];
-
-    // These are unique and are in one table
-    if (!empty($_GET["student_name"])) {
-        $query_params[] = "name=" . urlencode($_GET["student_name"]);
-    }
-    if (!empty($_GET["student_email"])) {
-        $query_params[] = "email=" . urlencode($_GET["student_email"]);
-    }
-    if (!empty($_GET["student_phone"])) {
-        $query_params[] = "phone=" . urlencode($_GET["student_phone"]);
-    }
-
-    // These are in other tables, so need to get the foreign key
-
-    if (!empty($_GET["class_name"])) {
-        $class_id = getForeignKey(
-            $db,
-            "SELECT class_id FROM CLASS WHERE class_name = :class_name",
-            ":class_name",
-            $_GET["class_name"],
-            SQLITE3_TEXT,
-        );
-
-        if ($class_id !== null) {
-            $query_params[] = "class=" . urlencode($class_id);
-        }
-    }
-
-    if (!empty($_GET["country_name"])) {
-        $country_id = getForeignKey(
-            $db,
-            "SELECT country_id FROM COUNTRY WHERE country_name = :country_name",
-            ":country_name",
-            $_GET["country_name"],
-            SQLITE3_TEXT,
-        );
-
-        if ($country_id !== null) {
-            $query_params[] = "country=" . urlencode($country_id);
-        }
-    }
-
-    if (!empty($_GET["city_name"])) {
-        $city_id = getForeignKey(
-            $db,
-            "SELECT city_id FROM CITY WHERE city_name = :city_name",
-            ":city_name",
-            $_GET["city_name"],
-            SQLITE3_TEXT,
-        );
-
-        if ($city_id !== null) {
-            $query_params[] = "city=" . urlencode($city_id);
-        }
-    }
-
-    if (!empty($_GET["school_name"])) {
-        $school_id = getForeignKey(
-            $db,
-            "SELECT school_id FROM SCHOOL WHERE school_name = :school_name",
-            ":school_name",
-            $_GET["school_name"],
-            SQLITE3_TEXT,
-        );
-
-        if ($school_id !== null) {
-            $query_params[] = "school=" . urlencode($school_id);
-        }
-    }
-    if (!empty($_GET["program_name"])) {
-        $program_id = getForeignKey(
-            $db,
-            "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = :program_name",
-            ":program_name",
-            $_GET["program_name"],
-            SQLITE3_TEXT,
-        );
-
-        if ($program_id !== null) {
-            $query_params[] = "program=" . urlencode($program_id);
-        }
-    }
-
-    if (!empty($_GET["status"])) {
-        $status_id = getForeignKey(
-            $db,
-            "SELECT status_id FROM STATUS WHERE status_name = :status_name",
-            ":status_name",
-            $_GET["status"],
-            SQLITE3_TEXT,
-        );
-
-        if ($status_id !== null) {
-            $query_params[] = "status=" . urlencode($status_id);
-        }
-    }
-
-    if (!empty($_GET["accessibility"])) {
-        $accessibility_id = getForeignKey(
-            $db,
-            "SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = :accessibility_name",
-            ":accessibility_name",
-            $_GET["accessibility"],
-            SQLITE3_TEXT,
-        );
-
-        if ($accessibility_id !== null) {
-            $query_params[] = "accessibility=" . urlencode($accessibility_id);
-        }
-    }
-
-    if (!empty($_GET["date"])) {
-        $query_params[] = "date=" . urlencode($_GET["date"]);
-    }
-
-    $query_string = implode("&", $query_params);
-    header("Location: /NextStep/overview/?" . $query_string);
+    // Save the search and list to session
+    $_SESSION["list"] = $list;
+    $_SESSION["search"] = $search;
+    header("Location: /NextStep/overview/search-filter.php");
+    $db->close();
     exit();
 }
+ 
 
-$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
-
+// The data options from the config files
 $accessibility = $config["accessibility"];
 $city = $config["city"];
 $class = $config["class"];
@@ -163,24 +113,21 @@ $schools = $config["school"];
 $status = $config["status"];
 
 // Get all the created dates from the database
-
 $query = "SELECT DISTINCT students_created_date FROM STUDENTS;";
-
 $stmt = $db->prepare($query);
 if (!$stmt) {
     errorMessages("Error preparing query $query", $db->lastErrorMsg());
 }
-
 $results = $stmt->execute();
-
 if (!$results) {
     errorMessages("Error executing query", $db->lastErrorMsg());
 }
-
 $dates = [];
 while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
     $dates[] = $row["students_created_date"];
 }
+
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 
 $db->close();
 ?>
@@ -189,7 +136,7 @@ $db->close();
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="icon" type="image/x-icon" href="images/logo.webp"/>
+<link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - Search & Filter</title>
@@ -200,7 +147,7 @@ $db->close();
 <h2>Search & Filter Alumni</h2>
 <?php flashMessages(); ?>
 
-<form method="GET" action="search-filter.php">
+<form method="POST" action="search-filter.php">
     <label for="student_name">Name:</label>
     <input type="text" id="student_name" name="student_name"/>
 
@@ -283,7 +230,6 @@ $db->close();
     <label for="date">Date:</label>
       <select id="date" name="date">
           <option value="">Select</option>
-          <
           <?php foreach ($dates as $date): ?>
               <option value="<?= htmlspecialchars($date) ?>">
                   <?= htmlspecialchars($date) ?>

@@ -123,14 +123,13 @@ function get_foreign_key_roles(SQLite3 $db, string $role)
     return $role_key;
 }
 
-// Used in the search and filter page.
-// getForeignKey helper to avoid code duplication
+// Used in search-filter.php
 function getForeignKey(
     SQLite3 $db,
     string $query,
     string $paramName,
     $paramValue,
-    int $paramType = SQLITE3_TEXT,
+    $paramType,
 ) {
     $stmt = $db->prepare($query);
     if (!$stmt) {

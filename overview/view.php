@@ -39,28 +39,6 @@ $readable_date = date("Y-m-d H:i:s", $last_update);
 
 $db->close();
 
-// Create back URL
-parse_str($_SERVER["QUERY_STRING"], $params);
-unset($params["student_id"]);
-$backQuery = http_build_query($params);
-
-$backUrl = "/NextStep/overview";
-if (!empty($backQuery)) {
-    $backUrl .= "?" . $backQuery;
-}
-$backUrl .= "#student_" . $student_id;
-
-// Create edit URL
-$editUrl = "/NextStep/students/edit_student.php?student_id=" . $student_id;
-if (!empty($backQuery)) {
-    $editUrl .= "&" . $backQuery;
-}
-
-// Create delete URL
-$deleteUrl = "/NextStep/students/delete_student.php?student_id=" . $student_id;
-if (!empty($backQuery)) {
-    $deleteUrl .= "&" . $backQuery;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,14 +75,12 @@ if (!empty($backQuery)) {
     <dialog data-modal>
         <h2>Are you sure?</h2>
         <p>This action cannot be undone.</p>
-        <a href="<?= htmlspecialchars(
-            $deleteUrl,
-        ) ?>" class="simple-btn">Confirm Delete</a>
+        <a href="/NextStep/students/delete_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Confirm Delete</a>
         <button class="simple-btn" data-close-modal>Cancel</button>
     </dialog>
 
 <?php } ?>
-<a href="<?= htmlspecialchars($backUrl) ?>" class="simple-btn">Back</a>
+<a href="/NextStep/#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
 </div>
 <script src="../js/script.js"></script>
 </body>

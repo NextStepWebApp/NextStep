@@ -420,6 +420,44 @@ pages are create_teacer/student for example */
 
 /* End styles edit teacher page*/
 
+/* Active filters bar */
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background-color: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+}
+
+.filters-label {
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-right: 4px;
+}
+
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.filter-expiry {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+/* end active filters bar */
 
 /* table link to view style*/
 .email-link {

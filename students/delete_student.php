@@ -50,13 +50,6 @@ if (!$results) {
 $db->close();
 $_SESSION["success"] = "Student $student_name deleted successfully";
 
-// Back url with search filters
-parse_str($_SERVER["QUERY_STRING"], $params);
-unset($params["student_id"]);
 
-$redirect = "/NextStep/";
-if (!empty($params)) {
-    $redirect .= "?" . http_build_query($params);
-}
-header("Location: $redirect");
+header("Location: /NextStep/overview/");
 exit();

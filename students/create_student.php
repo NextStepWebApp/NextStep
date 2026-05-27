@@ -208,11 +208,7 @@ if (isset($_POST["submit"])) {
     $stmt->bindValue(":school_id", $result_school_id, SQLITE3_INTEGER);
     $stmt->bindValue(":program_id", $result_program_id, SQLITE3_INTEGER);
     $stmt->bindValue(":status_id", $result_status_id, SQLITE3_INTEGER);
-    $stmt->bindValue(
-        ":accessibility_id",
-        $result_accessibility_id,
-        SQLITE3_INTEGER,
-    );
+    $stmt->bindValue(":accessibility_id", $result_accessibility_id, SQLITE3_INTEGER);
 
     $result = $stmt->execute();
     if (!$result) {
