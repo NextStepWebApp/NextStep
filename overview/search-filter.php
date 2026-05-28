@@ -13,95 +13,65 @@ try {
 
 if (isset($_POST["submit"])) {
     if (
-    empty(trim($_POST["student_name"])) &&
-    empty(trim($_POST["student_email"])) &&
-    empty(trim($_POST["student_phone"])) &&
-    empty(trim($_POST["class_name"])) &&
-    empty(trim($_POST["country_name"])) &&
-    empty(trim($_POST["city_name"])) &&
-    empty(trim($_POST["school_name"])) &&
-    empty(trim($_POST["program_name"])) &&
-    empty(trim($_POST["status"])) &&
-    empty(trim($_POST["accessibility"])) &&
-    empty(trim($_POST["date"]))
-    )
-    {
+        empty(trim($_POST["student_name"])) &&
+        empty(trim($_POST["student_email"])) &&
+        empty(trim($_POST["student_phone"])) &&
+        empty(trim($_POST["class_name"])) &&
+        empty(trim($_POST["country_name"])) &&
+        empty(trim($_POST["city_name"])) &&
+        empty(trim($_POST["school_name"])) &&
+        empty(trim($_POST["program_name"])) &&
+        empty(trim($_POST["status"])) &&
+        empty(trim($_POST["accessibility"])) &&
+        empty(trim($_POST["date"]))
+    ) {
         $_SESSION["error"] = "At least one field is required";
         header("Location: /NextStep/overview/search-filter.php");
         $db->close();
         exit();
-    }   
+    }
 
     $search = [];
-    $list = [];
 
     if (!empty(trim($_POST["student_name"]))) {
         $search["students_name"] = trim($_POST["student_name"]);
-        $list[] = $_POST["student_name"];
     }
     if (!empty(trim($_POST["student_email"]))) {
         $search["students_email"] = trim($_POST["student_email"]);
-        $list[] = $_POST["student_email"];
     }
     if (!empty(trim($_POST["student_phone"]))) {
         $search["students_phone_number"] = trim($_POST["student_phone"]);
-        $list[] = $_POST["student_phone"];
     }
     if (!empty($_POST["class_name"])) {
-        $query = "SELECT class_id FROM CLASS WHERE class_name = :class_name;";
-        $students_class_id = getForeignKey($db, $query, ":class_name", $_POST["class_name"], SQLITE3_TEXT); 
-        $search["students_class_id"] = $students_class_id;
-        $list[] = $_POST["class_name"];
+        $search["class_name"] = $_POST["class_name"];
     }
     if (!empty($_POST["country_name"])) {
-        $query = "SELECT country_id FROM COUNTRY WHERE country_name = :country_name;";
-        $students_country_id = getForeignKey($db, $query, ":country_name", $_POST["country_name"], SQLITE3_TEXT);
-        $search["students_country_id"] = $students_country_id;
-        $list[] = $_POST["country_name"];
+        $search["country_name"] = $_POST["country_name"];
     }
     if (!empty($_POST["city_name"])) {
-        $query = "SELECT city_id FROM CITY WHERE city_name = :city_name;";
-        $students_city_id = getForeignKey($db, $query, ":city_name", $_POST["city_name"], SQLITE3_TEXT);
-        $search["students_city_id"] = $students_city_id;
-        $list[] = $_POST["city_name"];
+        $search["city_name"] = $_POST["city_name"];
     }
     if (!empty($_POST["school_name"])) {
-        $query = "SELECT school_id FROM SCHOOL WHERE school_name = :school_name;";
-        $students_school_id = getForeignKey($db, $query, ":school_name", $_POST["school_name"], SQLITE3_TEXT);
-        $search["students_school_id"] = $students_school_id;
-        $list[] = $_POST["school_name"];
+        $search["school_name"] = $_POST["school_name"];
     }
     if (!empty($_POST["program_name"])) {
-        $query = "SELECT program_id FROM EDUCATION_PROGRAM WHERE program_name = :program_name;";
-        $students_education_program_id = getForeignKey($db, $query, ":program_name", $_POST["program_name"], SQLITE3_TEXT);
-        $search["students_education_program_id"] = $students_education_program_id;
-        $list[] = $_POST["program_name"];
+        $search["program_name"] = $_POST["program_name"];
     }
     if (!empty($_POST["status"])) {
-        $query = "SELECT status_id FROM STATUS WHERE status_name = :status_name;";
-        $students_status_id = getForeignKey($db, $query,":status_name", $_POST["status"], SQLITE3_TEXT);
-        $search["students_status_id"] = $students_status_id;
-        $list[] = $_POST["status"];
+        $search["status_name"] = $_POST["status"];
     }
     if (!empty($_POST["accessibility"])) {
-        $query = "SELECT accessibility_id FROM ACCESSIBILITY WHERE accessibility_name = :accessibility_name;";
-        $students_accessibility_id = getForeignKey($db, $query, ":accessibility_name", $_POST["accessibility"], SQLITE3_TEXT);
-        $search["students_accessibility_id"] = $students_accessibility_id;
-        $list[] = $_POST["accessibility"];
+        $search["accessibility_name"] = $_POST["accessibility"];
     }
     if (!empty($_POST["date"])) {
         $search["students_created_date"] = $_POST["date"];
-        $list[] = $_POST["date"];
     }
 
-    // Save the search and list to session
-    $_SESSION["list"] = $list;
     $_SESSION["search"] = $search;
-    header("Location: /NextStep/overview/search-filter.php");
+    header("Location: /NextStep/overview/");
     $db->close();
     exit();
 }
- 
 
 // The data options from the config files
 $accessibility = $config["accessibility"];

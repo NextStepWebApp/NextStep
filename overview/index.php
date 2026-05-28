@@ -5,7 +5,6 @@ setup_checker();
 loginSecurity();
 require_permission("view_students");
 
-// --- Clear search session ---
 if (isset($_GET["clear"])) {
     unset($_SESSION["search"]);
     unset($_SESSION["list"]);
@@ -39,75 +38,75 @@ if (!empty($_SESSION["search"])) {
         "students_created_date"
     ];
 
-    $id_fields = [
-        "students_class_id",
-        "students_country_id",
-        "students_city_id",
-        "students_school_id",
-        "students_education_program_id",
-        "students_status_id",
-        "students_accessibility_id"
+    $name_fields = [
+        "class_name"         => ["table" => "CLASS",             "column" => "class_name"],
+        "country_name"       => ["table" => "COUNTRY",           "column" => "country_name"],
+        "city_name"          => ["table" => "CITY",              "column" => "city_name"],
+        "school_name"        => ["table" => "SCHOOL",            "column" => "school_name"],
+        "program_name"       => ["table" => "EDUCATION_PROGRAM", "column" => "program_name"],
+        "status_name"        => ["table" => "STATUS",            "column" => "status_name"],
+        "accessibility_name" => ["table" => "ACCESSIBILITY",     "column" => "accessibility_name"],
     ];
 
     foreach ($like_fields as $field) {
         if (!empty($search[$field])) {
             $placeholder = ":" . $field;
-            $conditions[] = "s.$field LIKE $placeholder";
+            $conditions[] = "STUDENTS.$field LIKE $placeholder";
             $params[$placeholder] = ["value" => "%" . $search[$field] . "%", "type" => SQLITE3_TEXT];
         }
     }
 
-    foreach ($id_fields as $field) {
-        if (!empty($search[$field])) {
-            $placeholder = ":" . $field;
-            $conditions[] = "s.$field = $placeholder";
-            $params[$placeholder] = ["value" => (int)$search[$field], "type" => SQLITE3_INTEGER];
+    foreach ($name_fields as $key => $info) {
+        if (!empty($search[$key])) {
+            $placeholder = ":" . $key;
+            $conditions[] = "{$info['column']} = $placeholder";
+            $params[$placeholder] = ["value" => $search[$key], "type" => SQLITE3_TEXT];
         }
     }
 
     $where_clause = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";
 
-    // Count query
-    $count_query = "SELECT COUNT(*) as total
-                    FROM STUDENTS s
-                    LEFT JOIN STATUS st ON s.students_status_id = st.status_id
-                    $where_clause;";
+    $joins = "JOIN STATUS ON STUDENTS.students_status_id = STATUS.status_id
+              JOIN CLASS ON STUDENTS.students_class_id = CLASS.class_id
+              JOIN COUNTRY ON STUDENTS.students_country_id = COUNTRY.country_id
+              JOIN CITY ON STUDENTS.students_city_id = CITY.city_id
+              JOIN SCHOOL ON STUDENTS.students_school_id = SCHOOL.school_id
+              JOIN EDUCATION_PROGRAM ON STUDENTS.students_education_program_id = EDUCATION_PROGRAM.program_id
+              JOIN ACCESSIBILITY ON STUDENTS.students_accessibility_id = ACCESSIBILITY.accessibility_id";
 
-    $stmt = $db->prepare($count_query);
+    $query = "SELECT COUNT(*) as total FROM STUDENTS $joins $where_clause;";
+
+    $stmt = $db->prepare($query);
     if (!$stmt) {
         errorMessages("Error preparing count query", $db->lastErrorMsg());
     }
     foreach ($params as $key => $p) {
         $stmt->bindValue($key, $p["value"], $p["type"]);
     }
-    $count_result = $stmt->execute();
-    if ($count_result) {
-        $count_row = $count_result->fetchArray(SQLITE3_ASSOC);
-        $totalCount = $count_row["total"] ?? 0;
+    $result = $stmt->execute();
+    if ($result) {
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        $totalCount = $row["total"] ?? 0;
     }
 
-    // Main query
-    $main_query = "SELECT s.students_id, s.students_name, s.students_email,
-                          s.students_created_date, st.status_name
-                   FROM STUDENTS s
-                   LEFT JOIN STATUS st ON s.students_status_id = st.status_id
-                   $where_clause
-                   ORDER BY s.students_name ASC;";
+    $query = "SELECT students_id, students_name, students_email,
+                students_created_date, status_name
+              FROM STUDENTS $joins $where_clause
+              ORDER BY STUDENTS.students_name ASC;";
 
-    $stmt2 = $db->prepare($main_query);
-    if (!$stmt2) {
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
         errorMessages("Error preparing main query", $db->lastErrorMsg());
     }
     foreach ($params as $key => $p) {
-        $stmt2->bindValue($key, $p["value"], $p["type"]);
+        $stmt->bindValue($key, $p["value"], $p["type"]);
     }
-    $raw = $stmt2->execute();
-    if (!$raw) {
+    $result = $stmt->execute();
+    if (!$result) {
         errorMessages("Error executing main query", $db->lastErrorMsg());
     }
 
-    // Collect all rows into a plain array BEFORE closing the DB
-    while ($row = $raw->fetchArray(SQLITE3_ASSOC)) {
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
         $rows[] = $row;
     }
 }
@@ -131,9 +130,6 @@ $db->close();
 <?php flashMessages(); ?>
 
 <div class="action-buttons">
-    <div class="selected-info">
-        <?= $totalCount ?> records | 0 selected
-    </div>
 
     <?php if ($has_search): ?>
         <a href="/NextStep/overview/?clear=1" class="action-btn cancel-btn">✕ Clear Filters</a>
@@ -142,19 +138,21 @@ $db->close();
     <?php endif; ?>
 
     <span class="workflow-indicator">→</span>
-    <button type="button" class="action-btn" id="composeBtn" disabled>
-        Compose Email (<span id="selectedCount">0</span> selected)
-    </button>
-    <div class="select-all-container">
-        <input type="checkbox" id="selectAll"/>
-        <label for="selectAll">Select All</label>
-    </div>
+   
+    <?php if ($has_search && $totalCount > 0): ?>
+        <a href="/NextStep/overview/email.php" class="action-btn">
+            Compose Email (<?= $totalCount ?> <?= $totalCount === 1 ? 'record' : 'records' ?>)
+        </a>
+    <?php else: ?>
+        <a class="action-btn disabled-btn">Compose Email</a>
+    <?php endif; ?>
+
 </div>
 
-<?php if ($has_search && !empty($_SESSION["list"])): ?>
+<?php if ($has_search && !empty($_SESSION["search"])): ?>
 <div class="active-filters">
     <span class="filters-label">Active filters:</span>
-    <?php foreach ($_SESSION["list"] as $filter): ?>
+    <?php foreach ($_SESSION["search"] as $filter): ?>
         <span class="filter-tag"><?= htmlspecialchars($filter) ?></span>
     <?php endforeach; ?>
 </div>
@@ -164,7 +162,6 @@ $db->close();
 <table>
 <thead>
 <tr>
-<th>Select</th>
 <th>Name</th>
 <th>Email</th>
 <th>Status</th>
@@ -199,8 +196,11 @@ $db->close();
             }
         ?>
         <tr id="student_<?= $student_id ?>">
-            <td><input type="checkbox" class="check-box"></td>
-            <td><a href="<?= $viewUrl ?>"><?= $name ?></a></td>
+        <td>
+            <a href="<?= $viewUrl ?>" class="email-link">
+            <?= $name ?>
+            </a>
+        </td>
             <td><?= $email ?></td>
             <td><?= $status ?></td>
             <td><?= $date ?></td>

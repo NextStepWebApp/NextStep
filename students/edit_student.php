@@ -26,16 +26,16 @@ $status = $config["status"];
 
 if (isset($_POST["submit"])) {
     if (
-        empty($_POST["student_name"]) ||
-        empty($_POST["student_email"]) ||
-        empty($_POST["student_phone"]) ||
-        empty($_POST["class_name"]) ||
-        empty($_POST["country_name"]) ||
-        empty($_POST["city_name"]) ||
-        empty($_POST["school_name"]) ||
-        empty($_POST["program_name"]) ||
-        empty($_POST["status"]) ||
-        empty($_POST["accessibility"])
+        empty(trim($_POST["student_name"])) ||
+        empty(trim($_POST["student_email"])) ||
+        empty(trim($_POST["student_phone"])) ||
+        empty(trim($_POST["class_name"])) ||
+        empty(trim($_POST["country_name"])) ||
+        empty(trim($_POST["city_name"])) ||
+        empty(trim($_POST["school_name"])) ||
+        empty(trim($_POST["program_name"])) ||
+        empty(trim($_POST["status"])) ||
+        empty(trim($_POST["accessibility"]))
     ) {
         $_SESSION["error"] = "All fields are required";
         header(
@@ -72,23 +72,18 @@ if (isset($_POST["submit"])) {
 
     $_POST["student_phone"] = $clean_phone;
 
-    # Check if another student has the same email, name, or phone (excluding current student)
+    # Check if another student has the same email or phone (excluding current student)
     $query = "SELECT students_id FROM STUDENTS WHERE
         (students_email = :email OR
-        students_name = :name OR
         students_phone_number = :phone)
         AND students_id != :current_id";
     $stmt = $db->prepare($query);
 
     if (!$stmt) {
-        errorMessages(
-            "Error preparing duplicate check query",
-            $db->lastErrorMsg(),
-        );
+        errorMessages("Error preparing duplicate check query", $db->lastErrorMsg());
     }
 
     $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
-    $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
     $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
     $stmt->bindValue(":current_id", $_POST["student_id"], SQLITE3_INTEGER);
     $result = $stmt->execute();
@@ -100,12 +95,8 @@ if (isset($_POST["submit"])) {
     $existing = $result->fetchArray();
 
     if ($existing) {
-        $_SESSION["error"] =
-            "Another student with this name, email, or phone number already exists";
-        header(
-            "Location: /NextStep/students/edit_student.php?student_id=" .
-                $_POST["student_id"],
-        );
+        $_SESSION["error"] = "Another student with this name, email, or phone number already exists";
+        header("Location: /NextStep/students/edit_student.php?student_id=" . $_POST["student_id"]);
         $db->close();
         exit();
     }
@@ -121,11 +112,7 @@ if (isset($_POST["submit"])) {
         !in_array($_POST["accessibility"], $accessibility)
     ) {
         $_SESSION["error"] = "Invalid selection detected";
-        error_log("Config validation error - invalid dropdown value submitted");
-        header(
-            "Location: /NextStep/students/edit_student.php?student_id=" .
-                $_POST["student_id"],
-        );
+        header("Location: /NextStep/students/edit_student.php?student_id=" . $_POST["student_id"]);
         $db->close();
         exit();
     }
@@ -210,11 +197,7 @@ if (isset($_POST["submit"])) {
     $stmt->bindValue(":school_id", $result_school_id, SQLITE3_INTEGER);
     $stmt->bindValue(":program_id", $result_program_id, SQLITE3_INTEGER);
     $stmt->bindValue(":status_id", $result_status_id, SQLITE3_INTEGER);
-    $stmt->bindValue(
-        ":accessibility_id",
-        $result_accessibility_id,
-        SQLITE3_INTEGER,
-    );
+    $stmt->bindValue(":accessibility_id", $result_accessibility_id, SQLITE3_INTEGER);
     $stmt->bindValue(":id", $_POST["student_id"], SQLITE3_INTEGER);
 
     $results = $stmt->execute();
@@ -222,7 +205,7 @@ if (isset($_POST["submit"])) {
         errorMessages("Error executing query", $db->lastErrorMsg());
     }
     $_SESSION["success"] = "Student information updated successfully";
-    header("Location: /NextStep/view.php?student_id=" . $_POST["student_id"]);
+    header("Location: /NextStep/overview/view.php?student_id=" . $_POST["student_id"]);
     $db->close();
     exit();
 }
@@ -275,7 +258,7 @@ $db->close();
 <input type="text" id="student_name" name="student_name" value="<?= $student_name ?>" required/>
 
 <label for="student_email">Email:</label>
-<input type="email" id="student_email" name="student_email" value="<?= $student_email ?>" required/>
+<input type="text" id="student_email" name="student_email" value="<?= $student_email ?>" required/>
 
 <label for="student_phone">Phone number:</label>
 <input type="tel" id="student_phone" name="student_phone" value="<?= $student_phone_number ?>" required/>
@@ -370,7 +353,7 @@ $accessibility_name
 
 <div class="button-container">
     <input type="submit" class="simple-btn" name="submit" value="Save Changes">
-    <a href="/NextStep/" class="simple-btn cancel-btn">Cancel</a>
+    <a href="/NextStep/overview/view.php?student_id=<?php echo $student_id; ?>" class="simple-btn cancel-btn">Cancel</a>
 </div>
 </form>
 </div>

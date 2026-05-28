@@ -5,15 +5,11 @@ loginSecurity();
 check_id($_GET["student_id"], "Students");
 require_permission("view_students");
 
-
 try {
     $db = new SQLite3($db_file);
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
 }
-
-# Get help from the theme helper
-$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 
 $row = full_students_database_query($db);
 
@@ -37,6 +33,9 @@ $created_date = htmlspecialchars($row["students_created_date"]);
 $last_update = htmlspecialchars($row["students_last_updated"]);
 $readable_date = date("Y-m-d H:i:s", $last_update);
 
+# Get help from the theme helper
+$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+
 $db->close();
 
 ?>
@@ -46,7 +45,7 @@ $db->close();
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="icon" type="image/x-icon" href="images/logo.webp"/>
+<link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
 <title>NextStep - View</title>
@@ -69,8 +68,9 @@ $db->close();
 <p>Accessibility: <strong><?= $accessibility ?></strong></p>
 <p>Date created: <strong><?= $created_date ?></strong></p>
 <p>Date last update: <strong><?= $readable_date ?></strong></p>
-<?php if ($_SESSION["teacher_username"] == "ADMIN") { ?>
-    <a href="<?= htmlspecialchars($editUrl) ?>" class="simple-btn">Edit</a>
+
+<?php if (has_permission("change_students", $_SESSION["teacher_id"])): ?>
+    <a href="/NextStep/students/edit_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Edit</a>
     <button class="simple-btn" data-open-modal>Delete</button>
     <dialog data-modal>
         <h2>Are you sure?</h2>
@@ -78,9 +78,9 @@ $db->close();
         <a href="/NextStep/students/delete_student.php?student_id=<?php echo $student_id; ?>" class="simple-btn">Confirm Delete</a>
         <button class="simple-btn" data-close-modal>Cancel</button>
     </dialog>
+<?php endif; ?>
 
-<?php } ?>
-<a href="/NextStep/#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
+<a href="/NextStep/overview/#student_<?php echo $student_id; ?>" class="simple-btn">Back</a>
 </div>
 <script src="../js/script.js"></script>
 </body>

@@ -130,10 +130,7 @@ function validate_student_phone(
         $_SESSION["error"] = "Phone number must be between 10-15 digits";
         switch ($page) {
             case "edit_student":
-                header(
-                    "Location: /NextStep/students/edit_student.php?student_id=" .
-                        $post_student_id,
-                );
+                header("Location: /NextStep/students/edit_student.php?student_id=" . $post_student_id);
                 break;
             case "create_student":
                 header("Location: /NextStep/students/create_student.php");

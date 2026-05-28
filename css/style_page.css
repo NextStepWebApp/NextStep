@@ -226,7 +226,7 @@ on the teacher page on the rigt side is in the box/container */
 
 /* These are the styles for the container/table */
 .table-container {
-    max-height: 400px;
+    max-height: 330px;
     border-radius: 20px;
     box-shadow: 0 4px 15px var(--shadow-lg);
     overflow: auto;
@@ -498,18 +498,22 @@ pages are create_teacer/student for example */
 .action-buttons {
     display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 15px;
     padding: 20px;
     border-radius: 12px;
     margin-bottom: 10px;
     position: relative;
 }
 
+
+/*
 .selected-info {
     color: var(--color-primary);
     font-weight: 600;
     font-size: 16px;
-    flex: 1;
 }
+*/
 
 .action-btn {
     padding: 12px 24px;
@@ -523,6 +527,7 @@ pages are create_teacer/student for example */
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px var(--shadow-lg);
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .action-btn:hover {
@@ -532,13 +537,13 @@ pages are create_teacer/student for example */
     border-color: var(--color-primary);
 }
 
-.action-btn:disabled {
+.action-btn.disabled-btn {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
 }
 
-.action-btn:disabled:hover {
+.action-btn.disabled-btn:hover {
     transform: none;
     background: var(--overlay-white-bright);
     border-color: var(--overlay-white-dark);
@@ -563,6 +568,7 @@ pages are create_teacer/student for example */
     justify-content: flex-end;
 }
 
+/*
 .select-all-container input[type="checkbox"],
 .check-box {
     width: 18px;
@@ -570,7 +576,8 @@ pages are create_teacer/student for example */
     cursor: pointer;
     accent-color: var(--color-primary);
 }
-
+*/
+/*
 .select-all-container label {
     color: var(--color-primary);
     font-weight: 600;
@@ -578,7 +585,7 @@ pages are create_teacer/student for example */
     margin: 0;
     font-size: 15px;
 }
-
+*/
 .no-students {
     padding: 40px;
     color: var(--color-text-muted);
