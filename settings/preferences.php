@@ -1,5 +1,7 @@
 <?php
 $app_name = $branding["app_name"]; # from utils
+$school_name = $branding["school_name"];
+
 # Connect to the db
 try {
     $db = new SQLite3($db_file);
@@ -38,6 +40,24 @@ if (isset($_POST["preferences"])) {
             }
         }
     }
+    if (isset($_POST["school_name"])) {
+        if (empty($_POST["school_name"])) {
+            $_SESSION["error"] = "School name cannot be empty";
+        } else {
+            $school_name = trim($_POST["school_name"]);
+
+            if (strlen($school_name) < 2) {
+                $_SESSION["error"] =
+                    "Application name must be at least 2 characters long";
+            } elseif (strlen($school_name) > 30) {
+                $_SESSION["error"] =
+                    "Application name must not exceed 30 characters";
+            } elseif (!preg_match("/^[a-zA-Z0-9\s\-_]+$/", $school_name)) {
+                $_SESSION["error"] =
+                    "Application name can only contain letters, numbers, spaces, hyphens and underscores";
+            }
+        }
+    }
 
     # Color theme
     if (isset($_POST["theme"])) {
@@ -51,6 +71,7 @@ if (isset($_POST["preferences"])) {
     if (!isset($_SESSION["error"])) {
         # Branding
         $branding["app_name"] = $app_name;
+        $branding["school_name"] = $school_name;
 
         if (
             file_put_contents(
@@ -142,6 +163,12 @@ $db->close();
         <h3 class="extra-spacing">Application Name</h3>
         <input type="text" name="app_name"
                value="<?= htmlspecialchars($app_name) ?>">
+    <?php endif; ?>
+
+    <?php if (has_permission("system_name", $_SESSION["teacher_id"])): ?>
+        <h3 class="extra-spacing">School Name</h3>
+        <input type="text" name="school_name"
+               value="<?= htmlspecialchars($school_name) ?>">
     <?php endif; ?>
 
     <h3 class="extra-spacing">Color Theme</h3>

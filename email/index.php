@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "../utils.php";
+require_once "../email_utils.php";
 setup_checker();
 loginSecurity();
 require_permission("email_compose");
@@ -40,34 +41,34 @@ if ($totalCountYes <= 0) {
 
 $alumnus_rows = [];
 
+// The goal of this script is to put the information in the 
+// email queue table
 if (isset($_POST["submit_email"])) {
     set_time_limit(0);
 
     $subject      = trim($_POST["subject"] ?? "");
     $body         = trim($_POST["email_body"] ?? "");
     
-    //$_SESSION["success"] = $body;
-    //header("Location: /NextStep/overview/");
-    //exit();
-
+    $update_email = false;
     if (isset($_POST["include_info"]) && $_POST["include_info"] == "1") {
-        $alumnus_rows = query_students($db, $search);
-    } else {
-        $alumnus_rows = query_students($db, $search, "emails");
+        $update_email = true;
     }
+
+    $alumnus_rows = query_students($db, $search, "id");
 
     if (empty($subject) || empty($body)) {
         $_SESSION["error"] = "Please fill in both the subject and the message body before sending";
         header("Location: /NextStep/email/");
         exit();
     } else {
-        $sent = 0;
+        $queue_count = 0;
+
         foreach ($alumnus_rows as $alumni_row) {
-        
+            $query = ""; 
           
 
             // your PHPMailer send here
-            $sent++;
+            $queue_count++;
         }
 
         header("Location: /NextStep/overview/");
@@ -76,7 +77,7 @@ if (isset($_POST["submit_email"])) {
 }
 
 
-$school_name = "Radulphus College";
+$school_name = $branding["school_name"];
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 $db->close();
 ?>

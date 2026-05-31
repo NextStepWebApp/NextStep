@@ -301,6 +301,7 @@ $query = <<<EOF
     queue_id INTEGER PRIMARY KEY AUTOINCREMENT,
     students_id INTEGER NOT NULL,
     teacher_id INTEGER NOT NULL,
+    queue_email_type INTEGER NOT NULL,
     queue_email_subject TEXT NOT NULL,
     queue_body TEXT NOT NULL,
     queue_attempts INTEGER NOT NULL,

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "../utils.php";
+require_once "../email_utils.php";
 setup_checker();
 loginSecurity();
 require_permission("view_students");
@@ -26,7 +27,7 @@ if (!empty($_SESSION["search"])) {
     $has_search = true;
     $search     = $_SESSION["search"];
     $totalCount = query_students($db, $search, "count");   
-    $rows       = query_students($db, $search, "all");   
+    $rows       = query_students($db, $search);   
 }
 
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
