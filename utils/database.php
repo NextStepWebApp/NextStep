@@ -149,3 +149,13 @@ function getForeignKey(
 
     return $row ? array_values($row)[0] : null;
 }
+
+function get_accessibility_names(SQLite3 $db) {
+    # Fetch accessibility from db
+    $result = $db->query("SELECT accessibility_name FROM ACCESSIBILITY ORDER BY accessibility_id");
+    $accessibility = [];
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $accessibility[] = $row["accessibility_name"];
+    }
+    return $accessibility;
+}

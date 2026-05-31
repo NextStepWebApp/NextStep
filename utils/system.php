@@ -11,3 +11,12 @@ function sys_get_node_status() {
     $data = file_get_contents(SYS_META_PATH);
     return substr($data, strlen(SYS_META_HDR));
 }
+
+function is_connected() {
+    $connected = @fsockopen("8.8.8.8", 53, timeout: 3);
+    if ($connected) {
+        fclose($connected);
+        return true;
+    }
+    return false;
+}

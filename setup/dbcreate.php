@@ -240,6 +240,31 @@ EOF;
 
 tableCreate($query, $db, "ACCESSIBILITY");
 
+
+# query to insert yes and no into accessibility table
+$query = "INSERT INTO ACCESSIBILITY (accessibility_name) VALUES (:name)";
+$stmt = $db->prepare($query);
+
+if (!$stmt) {
+    error_log("Error preparing query: " . $db->lastErrorMsg() . "\n");
+}
+
+$values = ["Yes", "No"];
+
+foreach ($values as $value) {
+    $stmt->bindValue(":name", $value, SQLITE3_TEXT);
+    $result = $stmt->execute();
+
+    if (!$result) {
+        error_log("Error inserting '$value': " . $db->lastErrorMsg() . "\n");
+    } else {
+        error_log("'$value' inserted successfully\n");
+    }
+
+    $stmt->reset(); 
+}
+
+
 # Create students table
 $query = <<<EOF
       CREATE TABLE STUDENTS (

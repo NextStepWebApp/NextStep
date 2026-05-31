@@ -74,7 +74,7 @@ if (isset($_POST["submit"])) {
 }
 
 // The data options from the config files
-$accessibility = $config["accessibility"];
+$accessibility = get_accessibility_names($db);
 $city = $config["city"];
 $class = $config["class"];
 $country = $config["country"];

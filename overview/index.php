@@ -20,95 +20,13 @@ try {
 
 $has_search = false;
 $totalCount = 0;
-$rows = [];
-$queryString = "";
+$rows       = [];
 
 if (!empty($_SESSION["search"])) {
     $has_search = true;
-
-    $search = $_SESSION["search"];
-
-    $conditions = [];
-    $params = [];
-
-    $like_fields = [
-        "students_name",
-        "students_email",
-        "students_phone_number",
-        "students_created_date"
-    ];
-
-    $name_fields = [
-        "class_name"         => ["table" => "CLASS",             "column" => "class_name"],
-        "country_name"       => ["table" => "COUNTRY",           "column" => "country_name"],
-        "city_name"          => ["table" => "CITY",              "column" => "city_name"],
-        "school_name"        => ["table" => "SCHOOL",            "column" => "school_name"],
-        "program_name"       => ["table" => "EDUCATION_PROGRAM", "column" => "program_name"],
-        "status_name"        => ["table" => "STATUS",            "column" => "status_name"],
-        "accessibility_name" => ["table" => "ACCESSIBILITY",     "column" => "accessibility_name"],
-    ];
-
-    foreach ($like_fields as $field) {
-        if (!empty($search[$field])) {
-            $placeholder = ":" . $field;
-            $conditions[] = "STUDENTS.$field LIKE $placeholder";
-            $params[$placeholder] = ["value" => "%" . $search[$field] . "%", "type" => SQLITE3_TEXT];
-        }
-    }
-
-    foreach ($name_fields as $key => $info) {
-        if (!empty($search[$key])) {
-            $placeholder = ":" . $key;
-            $conditions[] = "{$info['column']} = $placeholder";
-            $params[$placeholder] = ["value" => $search[$key], "type" => SQLITE3_TEXT];
-        }
-    }
-
-    $where_clause = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";
-
-    $joins = "JOIN STATUS ON STUDENTS.students_status_id = STATUS.status_id
-              JOIN CLASS ON STUDENTS.students_class_id = CLASS.class_id
-              JOIN COUNTRY ON STUDENTS.students_country_id = COUNTRY.country_id
-              JOIN CITY ON STUDENTS.students_city_id = CITY.city_id
-              JOIN SCHOOL ON STUDENTS.students_school_id = SCHOOL.school_id
-              JOIN EDUCATION_PROGRAM ON STUDENTS.students_education_program_id = EDUCATION_PROGRAM.program_id
-              JOIN ACCESSIBILITY ON STUDENTS.students_accessibility_id = ACCESSIBILITY.accessibility_id";
-
-    $query = "SELECT COUNT(*) as total FROM STUDENTS $joins $where_clause;";
-
-    $stmt = $db->prepare($query);
-    if (!$stmt) {
-        errorMessages("Error preparing count query", $db->lastErrorMsg());
-    }
-    foreach ($params as $key => $p) {
-        $stmt->bindValue($key, $p["value"], $p["type"]);
-    }
-    $result = $stmt->execute();
-    if ($result) {
-        $row = $result->fetchArray(SQLITE3_ASSOC);
-        $totalCount = $row["total"] ?? 0;
-    }
-
-    $query = "SELECT students_id, students_name, students_email,
-                students_created_date, status_name
-              FROM STUDENTS $joins $where_clause
-              ORDER BY STUDENTS.students_name ASC;";
-
-    $stmt = $db->prepare($query);
-    if (!$stmt) {
-        errorMessages("Error preparing main query", $db->lastErrorMsg());
-    }
-    foreach ($params as $key => $p) {
-        $stmt->bindValue($key, $p["value"], $p["type"]);
-    }
-    $result = $stmt->execute();
-    if (!$result) {
-        errorMessages("Error executing main query", $db->lastErrorMsg());
-    }
-
-    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-        $rows[] = $row;
-    }
+    $search     = $_SESSION["search"];
+    $totalCount = query_students($db, $search, "count");   
+    $rows       = query_students($db, $search, "all");   
 }
 
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
@@ -122,7 +40,7 @@ $db->close();
 <link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
-<title>NextStep</title>
+<title>NextStep - Overview</title>
 </head>
 <body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>
@@ -140,7 +58,7 @@ $db->close();
     <span class="workflow-indicator">→</span>
    
     <?php if ($has_search && $totalCount > 0): ?>
-        <a href="/NextStep/overview/email.php" class="action-btn">
+        <a href="/NextStep/email/" class="action-btn">
             Compose Email (<?= $totalCount ?> <?= $totalCount === 1 ? 'record' : 'records' ?>)
         </a>
     <?php else: ?>
@@ -191,9 +109,6 @@ $db->close();
             $email      = htmlspecialchars($row["students_email"]);
             $status     = htmlspecialchars($row["status_name"]);
             $viewUrl    = "view.php?student_id=$student_id";
-            if (!empty($queryString)) {
-                $viewUrl .= "&" . htmlspecialchars($queryString);
-            }
         ?>
         <tr id="student_<?= $student_id ?>">
         <td>

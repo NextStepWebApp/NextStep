@@ -19,6 +19,9 @@ $PERMISSION = [
     
     // Data/Map access
     "data_overview" => ["ADMIN", "SUPERUSER", "USER"],
+
+    // Compose email's
+    "email_compose" => ["USER", "SUPERUSER", "ADMIN"],
 ];
 
 function has_permission(string $permission, int $teacher_id, ?string $role_name = null)

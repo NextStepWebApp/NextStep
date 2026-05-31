@@ -16,13 +16,13 @@ try {
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 
 # The config is defined in utils
-$accessibility = $config["accessibility"];
 $city = $config["city"];
 $class = $config["class"];
 $country = $config["country"];
 $education = $config["education"];
 $schools = $config["school"];
 $status = $config["status"];
+$accessibility = get_accessibility_names($db);
 
 if (isset($_POST["submit"])) {
     if (
