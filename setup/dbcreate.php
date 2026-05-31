@@ -294,6 +294,41 @@ EOF;
 
 tableCreate($query, $db, "STUDENTS");
 
+
+# Create email queue table
+$query = <<<EOF
+    CREATE TABLE EMAIL_QUEUE (
+    queue_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    students_id INTEGER NOT NULL,
+    teacher_id INTEGER NOT NULL,
+    queue_email_subject TEXT NOT NULL,
+    queue_body TEXT NOT NULL,
+    queue_attempts INTEGER NOT NULL,
+    queue_created_at TEXT NOT NULL,
+    FOREIGN KEY (students_id) REFERENCES STUDENTS(students_id),
+    FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id)
+); 
+EOF;
+
+tableCreate($query, $db, "EMAIL_QUEUE");
+
+# Create email log table
+$query = <<<EOF
+    CREATE TABLE EMAIL_LOG (
+    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    students_id INTEGER NOT NULL,
+    teacher_id INTEGER NOT NULL,
+    log_email_subject TEXT NOT NULL,
+    log_status INTEGER NOT NULL,
+    log_message TEXT NOT NULL,
+    log_sent_at TEXT NOT NULL,
+    FOREIGN KEY (students_id) REFERENCES STUDENTS(students_id),
+    FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id)
+    );
+EOF;
+
+tableCreate($query, $db, "EMAIL_LOG");
+
 $db->close();
 
 # Change the value 0 in the setup.json to 1
