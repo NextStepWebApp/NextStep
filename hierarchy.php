@@ -30,6 +30,7 @@ function has_permission(string $permission, int $teacher_id, ?string $role_name 
 
     if ($role_name === null) {
         $db = new SQLite3($db_file);
+        $db->busyTimeout(10000);
         $stmt = $db->prepare("SELECT role_name FROM ROLES
                                JOIN TEACHERS ON TEACHERS.teacher_role_id = ROLES.role_id
                                WHERE TEACHERS.teacher_id = :id");
@@ -54,6 +55,7 @@ function require_permission(string $permission)
     global $PERMISSION, $db_file;
 
     $db = new SQLite3($db_file);
+    $db->busyTimeout(10000);
     $stmt = $db->prepare("SELECT role_name FROM ROLES
                             JOIN TEACHERS ON TEACHERS.teacher_role_id = ROLES.role_id
                             WHERE TEACHERS.teacher_id = :id");

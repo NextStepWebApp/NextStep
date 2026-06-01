@@ -294,6 +294,18 @@ EOF;
 
 tableCreate($query, $db, "STUDENTS");
 
+# Create table where to store the subject and body
+$query = <<<EOF
+    CREATE TABLE EMAIL_DATA (
+    data_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    data_email_type INTEGER NOT NULL,
+    data_email_subject TEXT NOT NULL,
+    data_email_body TEXT NOT NULL,
+    data_email_filter TEXT NOT NULL
+); 
+EOF;
+
+tableCreate($query, $db, "EMAIL_DATA");
 
 # Create email queue table
 $query = <<<EOF
@@ -301,13 +313,12 @@ $query = <<<EOF
     queue_id INTEGER PRIMARY KEY AUTOINCREMENT,
     students_id INTEGER NOT NULL,
     teacher_id INTEGER NOT NULL,
-    queue_email_type INTEGER NOT NULL,
-    queue_email_subject TEXT NOT NULL,
-    queue_body TEXT NOT NULL,
+    data_id INTEGER NOT NULL,
     queue_attempts INTEGER NOT NULL,
     queue_created_at TEXT NOT NULL,
     FOREIGN KEY (students_id) REFERENCES STUDENTS(students_id),
-    FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id)
+    FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id),
+    FOREIGN KEY (data_id) REFERENCES EMAIL_DATA(data_id)
 ); 
 EOF;
 
@@ -319,12 +330,13 @@ $query = <<<EOF
     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
     students_id INTEGER NOT NULL,
     teacher_id INTEGER NOT NULL,
-    log_email_subject TEXT NOT NULL,
+    data_id INTEGER NOT NULL,
     log_status INTEGER NOT NULL,
     log_message TEXT NOT NULL,
     log_sent_at TEXT NOT NULL,
     FOREIGN KEY (students_id) REFERENCES STUDENTS(students_id),
-    FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id)
+    FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id),
+    FOREIGN KEY (data_id) REFERENCES EMAIL_DATA(data_id)
     );
 EOF;
 

@@ -20,6 +20,7 @@ if (!is_connected()) {
 
 try {
     $db = new SQLite3($db_file);
+    $db->busyTimeout(10000);
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
 }
@@ -27,7 +28,6 @@ try {
 // What came from the search and filter from utils
 $search     = $_SESSION["search"];
 $totalCount = query_students($db, $search, "count");
-
 // Need to add the Yes filter, only those alumnus can get emails.
 $search["accessibility_name"] = "Yes";
 
@@ -35,6 +35,7 @@ $totalCountYes = query_students($db, $search, "count");
 
 if ($totalCountYes <= 0) {
     $_SESSION["error"] = "Cannot send emails with no alumnus selected";
+    $db->close();
     header("Location: /NextStep/overview/");
     exit();
 }
@@ -46,35 +47,99 @@ $alumnus_rows = [];
 if (isset($_POST["submit_email"])) {
     set_time_limit(0);
 
-    $subject      = trim($_POST["subject"] ?? "");
-    $body         = trim($_POST["email_body"] ?? "");
-    
-    $update_email = false;
-    if (isset($_POST["include_info"]) && $_POST["include_info"] == "1") {
-        $update_email = true;
-    }
+    // Email data
+    $subject = trim($_POST["subject"] ?? "");
+    $body = trim($_POST["email_body"] ?? "");
+    $type = EMAIL_NORMAL;
+    $filter = implode(', ', array_filter($search));
 
-    $alumnus_rows = query_students($db, $search, "id");
+    if (isset($_POST["include_info"]) && $_POST["include_info"] == "1") {
+        $type = EMAIL_FULL;
+    }
 
     if (empty($subject) || empty($body)) {
         $_SESSION["error"] = "Please fill in both the subject and the message body before sending";
         header("Location: /NextStep/email/");
+        $db->close();
         exit();
-    } else {
-        $queue_count = 0;
+    }
 
-        foreach ($alumnus_rows as $alumni_row) {
-            $query = ""; 
-          
+    // Insert email data in data table
+    $query = "INSERT INTO EMAIL_DATA (
+                data_email_type, 
+                data_email_subject, 
+                data_email_body,
+                data_email_filter 
+            ) VALUES (
+                :type, 
+                :subject, 
+                :body,
+                :filter
+            );";
+            
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
+        errorMessages("Error preparing insert query", $db->lastErrorMsg());
+    }
 
-            // your PHPMailer send here
-            $queue_count++;
+    $stmt->bindValue(":type", $type, SQLITE3_INTEGER);
+    $stmt->bindValue(":subject", $subject, SQLITE3_TEXT);
+    $stmt->bindValue(":body", $body, SQLITE3_TEXT);
+    $stmt->bindValue(":filter", $filter, SQLITE3_TEXT);
+
+    $result = $stmt->execute();
+    if (!$result) {
+        errorMessages("Error executing insert query", $db->lastErrorMsg());
+    }
+    $data_id = $db->lastInsertRowID();
+    
+    $alumnus_rows = query_students($db, $search, "id");
+
+    $queue_count = 0;
+    foreach ($alumnus_rows as $alumni_row) {
+
+        $student_id = $alumni_row["students_id"];
+        $teacher_id = $_SESSION["teacher_id"];
+
+        $query = "INSERT INTO EMAIL_QUEUE (
+                    students_id, 
+                    teacher_id, 
+                    data_id, 
+                    queue_attempts, 
+                    queue_created_at
+                ) VALUES (
+                    :student, 
+                    :teacher, 
+                    :data,
+                    :attempts,
+                    :created
+        );"; 
+
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            errorMessages("Error preparing insert query", $db->lastErrorMsg());
         }
 
+        $stmt->bindValue(":student", $student_id, SQLITE3_INTEGER);
+        $stmt->bindValue(":teacher", $teacher_id, SQLITE3_INTEGER);
+        $stmt->bindValue(":data", $data_id, SQLITE3_INTEGER);
+        $stmt->bindValue(":attempts", 0, SQLITE3_INTEGER);
+        $stmt->bindValue(":created", date('Y-m-d H:i:s'), SQLITE3_TEXT);
+         
+        $result = $stmt->execute();
+        if (!$result) {
+            errorMessages("Error executing insert query", $db->lastErrorMsg());
+        }
+
+            $queue_count++;
+    }
+
+        $db->close();
+        $_SESSION["success"] = "Added $queue_count email messages to the queue";
+        unset($_SESSION["search"]);
         header("Location: /NextStep/overview/");
         exit();
     }
-}
 
 
 $school_name = $branding["school_name"];
@@ -129,15 +194,14 @@ $db->close();
     </span>
     </div>
 
-    <div class="password-reset-container">
-        <input type="checkbox" name="include_info" value="1" class="checkbox-input"/>
-        <label class="checkbox-label">Include personal info block</label>
-        <p class="help-text">Appends each alumnus their own data and an update link at the bottom of the email</p>
-    </div>
-
     <hr class="compose-divider">
 
     <form method="POST" id="email-form">
+        <div class="password-reset-container">
+            <input type="checkbox" name="include_info" value="1" class="checkbox-input"/>
+            <label class="checkbox-label">Include personal info block</label>
+            <p class="help-text">Appends each alumnus their own data and an update link at the bottom of the email</p>
+        </div> 
 
         <label class="compose-label" for="subject">Subject</label>
         <input type="text" name="subject" id="subject" placeholder="Enter email subject...">
@@ -150,7 +214,7 @@ $db->close();
                 <p><br /></p>
                 <p><br /></p>
                 <p><br /></p>
-                <p><em>Sent via <a href="https://github.com/NextStepWebApp/NextStep/">NextStep</a> Alumni Tracking by <?= htmlspecialchars($school_name) ?></em></p>
+                <p><em>Sent via <a href="https://github.com/NextStepWebApp/NextStep/">NextStep</a> by <?= htmlspecialchars($school_name) ?></em></p>
             </div>
         </div>
 

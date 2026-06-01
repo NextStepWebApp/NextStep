@@ -8,7 +8,6 @@ require_permission("view_students");
 
 if (isset($_GET["clear"])) {
     unset($_SESSION["search"]);
-    unset($_SESSION["list"]);
     header("Location: /NextStep/overview/");
     exit();
 }
