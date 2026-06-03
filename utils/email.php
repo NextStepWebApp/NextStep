@@ -4,6 +4,10 @@
 define("EMAIL_NORMAL", 0);
 define("EMAIL_FULL", 1);
 
+// For verification status
+define("EMAIL_UNVERIFIED", 0);
+define("EMAIL_VERIFIED", 1);
+
 function query_students(SQLite3 $db, array $search, ?string $mode = "All") {
     $conditions = [];
     $params     = [];

@@ -1,11 +1,13 @@
 <?php
 require_once "../utils.php";
+require_once "../mailer.php";
 loginSecurity();
 $teacher_id = $_SESSION["teacher_id"];
 require_permission("system_smtp");
 
 try {
     $db = new SQLite3($db_file);
+    $db->busyTimeout(10000);
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
     exit();
@@ -31,30 +33,79 @@ if (isset($_POST["submit_smtp"])) {
     $stmt = $db->prepare("SELECT teacher_id FROM SMTP WHERE teacher_id = :id");
     $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
     $existing = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+
     if ($existing) {
+        $query = "SELECT smtp_email, smtp_host, smtp_port, smtp_password FROM SMTP WHERE teacher_id = :id";
+        $stmt = $db->prepare($query);
+        $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
+        $current = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+
+        $changed = false;
+        if ($current["smtp_email"] != $smtp_email) { $changed = true; }
+        if ($current["smtp_host"] != $smtp_host) { $changed = true; }
+        if ($current["smtp_port"] != (int)$smtp_port) { $changed = true; }
+        if (crypto_decrypt($current["smtp_password"], sys_get_node_status()) != trim($_POST["smtp_password"])) { $changed = true; }
+
+        if (!$changed) {
+            $_SESSION["success"] = "SMTP settings saved successfully, no changes!";
+            $db->close();
+            header("Location: /NextStep/settings/?tab=email");
+            exit();
+        }
+
         $query = "UPDATE SMTP 
-            SET smtp_email = :email, smtp_host = :host, smtp_port = :port, smtp_password = :password 
+            SET smtp_email = :email, smtp_host = :host, smtp_port = :port, smtp_password = :password,
+            verification_code = :code, verification_status = :status
             WHERE teacher_id = :id";
         $stmt = $db->prepare($query);
     } else {
-        $query = "INSERT INTO SMTP (teacher_id, smtp_email, smtp_host, smtp_port, smtp_password) 
-                  VALUES (:id, :email, :host, :port, :password)";
+        $query = "INSERT INTO SMTP (
+            teacher_id, 
+            smtp_email, 
+            smtp_host, 
+            smtp_port, 
+            smtp_password,
+            verification_code,
+            verification_status
+            ) 
+            VALUES (
+                :id, 
+                :email, 
+                :host, 
+                :port, 
+                :password,
+                :code,
+                :status
+            )";
         $stmt = $db->prepare($query);
     }
+
+    $verification_code = genVerificationCode(6);
 
     $stmt->bindValue(":password", $smtp_password, SQLITE3_TEXT);
     $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
     $stmt->bindValue(":email", $smtp_email, SQLITE3_TEXT);
     $stmt->bindValue(":host", $smtp_host, SQLITE3_TEXT);
     $stmt->bindValue(":port", $smtp_port, SQLITE3_INTEGER);
+    $stmt->bindValue(":code", $verification_code, SQLITE3_INTEGER);
+    $stmt->bindValue(":status", EMAIL_UNVERIFIED, SQLITE3_INTEGER);
 
-    if ($stmt->execute()) {
-        $_SESSION["success"] = "SMTP settings saved successfully!";
-    } else {
+    if (!$stmt->execute()) {
         $_SESSION["error"] = "Failed to save SMTP settings.";
-    }
-    $db->close(); 
-    header("Location: /NextStep/settings/?tab=email");
+        $db->close(); 
+        header("Location: /NextStep/settings/?tab=email");
+        exit();
+    } 
+
+    $_SESSION["success"] = "SMTP settings saved successfully!";
+    
+
+    // Send email with verification code and redirect to the verification page
+
+    mail_sender($smtp_host, $smtp_email, $smtp_password, $stmt_port, $smtp_username, $smtp_recever, $smtp_recever_username);
+    
+    $db->close();
+    header("Location: /NextStep/settings/verification.php");
     exit();
 }
 

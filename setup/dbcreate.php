@@ -82,39 +82,38 @@ $query = <<<EOF
       theme_name TEXT NOT NULL UNIQUE
       );
 EOF;
+
 tableCreate($query, $db, "THEME");
 
 # Create smtp settings table for teachers
 $query = <<<EOF
-      CREATE TABLE SMTP (
-      smtp_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      teacher_id INTEGER NOT NULL,
-      smtp_email TEXT NOT NULL,
-      smtp_host TEXT NOT NULL,
-      smtp_port INTEGER NOT NULL,
-      smtp_password TEXT NOT NULL,
-      FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id) ON DELETE CASCADE
+    CREATE TABLE SMTP (
+    smtp_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    teacher_id INTEGER NOT NULL,
+    smtp_email TEXT NOT NULL,
+    smtp_host TEXT NOT NULL,
+    smtp_port INTEGER NOT NULL,
+    smtp_password TEXT NOT NULL,
+    verification_code INTEGER NOT NULL,
+    verification_status INTEGER NOT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES TEACHERS(teacher_id) ON DELETE CASCADE
 );
 EOF;
 tablecreate($query, $db, "SMTP");
 
-# Create teachers table
 $query = <<<EOF
-      CREATE TABLE TEACHERS (
-      teacher_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      teacher_name TEXT NOT NULL,
-      teacher_username TEXT NOT NULL UNIQUE,
-      teacher_password TEXT NOT NULL,
-      teacher_theme_id INTEGER,
-      teacher_role_id INTEGER NOT NULL,
-      FOREIGN KEY (teacher_theme_id) REFERENCES THEME(theme_id),
-      FOREIGN KEY (teacher_role_id) REFERENCES ROLES(role_id)
-      );
+    CREATE TABLE TEACHERS (
+    teacher_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    teacher_name TEXT NOT NULL,
+    teacher_username TEXT NOT NULL UNIQUE,
+    teacher_password TEXT NOT NULL,
+    teacher_theme_id INTEGER,
+    teacher_role_id INTEGER NOT NULL,
+    FOREIGN KEY (teacher_theme_id) REFERENCES THEME(theme_id),
+    FOREIGN KEY (teacher_role_id) REFERENCES ROLES(role_id)
+);
 EOF;
-# The teacher role is table for permission roles
-
-# tablecreate is a function in utils.php
-tableCreate($query, $db, "TEACHERS");
+tablecreate($query, $db, "TEACHERS");
 
 # genPassword is a funtion in utils.php
 $unsafe_password = genPassword(8);

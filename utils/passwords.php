@@ -14,3 +14,12 @@ function genPassword(int $length)
     }
     return $password;
 }
+
+function genVerificationCode(int $length)
+{
+    $code = "";
+    for ($i = 0; $i < $length; $i++) {
+        $code .= rand(0, 9);
+    }
+    return $code;
+}
