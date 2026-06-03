@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once "../utils.php";
-require_once "../email_utils.php";
+require_once "../mailer.php";
 setup_checker();
 loginSecurity();
 require_permission("email_compose");

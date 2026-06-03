@@ -8,23 +8,26 @@ use PHPMailer\PHPMailer\Exception;
 require "vendor/autoload.php";
 
 function mail_sender(string $smtp_host, string $smtp_email, 
-    string $smtp_password, int $stmt_port, string $smtp_username,
-    string $smtp_recever, string $smtp_recever_username 
-
+    string $smtp_password, int $smtp_port, string $smtp_username,
+    string $smtp_recever, string $smtp_recever_username,
+    string $mail_subject, string $mail_template,
+    int $verification_code, string $school_name
 ) {
 
     $mail = new PHPMailer(true);
 
     try {
         //Server settings
-        $mail->SMTPDebug = SMTP::DEBUG_SERVER;                     
+        //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                     
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;
         $mail->isSMTP();                                          
         $mail->Host       = $smtp_host; 
         $mail->SMTPAuth   = true;                                 
         $mail->Username   = $smtp_email;                   
         $mail->Password   = $smtp_password;                             
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            
-        $mail->Port       = $stmt_port;                                   
+        $mail->Port       = $smtp_port;                                   
+        $mail->Timeout    = 5;
 
         //Recipients
         $mail->setFrom($smtp_email, $smtp_username);
@@ -33,14 +36,21 @@ function mail_sender(string $smtp_host, string $smtp_email,
 
         //Content
         $mail->isHTML(true);                                  
-        $mail->Subject = 'Here is the subject';
-        $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-        $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+        $mail->Subject = $mail_subject;
+        
+        // Email body
+        if (!defined("SECURE_ACCESS")) {
+            define("SECURE_ACCESS", true);
+        }
+        ob_start();
+        require $mail_template;
+        $mail->Body = ob_get_clean();
 
         $mail->send();
-        echo 'Message has been sent';
+        return true;
 
     } catch (Exception $e) {
-        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        $_SESSION["error"] = $mail->ErrorInfo;
+        return false;
     }
 }

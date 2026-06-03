@@ -5,6 +5,12 @@ loginSecurity();
 $teacher_id = $_SESSION["teacher_id"];
 require_permission("system_smtp");
 
+if (!is_connected()) {
+    $_SESSION["error"] = "No internet connection, required for email settings";
+    header("Location: /NextStep/settings/?tab=general");
+    exit();
+}
+
 try {
     $db = new SQLite3($db_file);
     $db->busyTimeout(10000);
@@ -35,7 +41,7 @@ if (isset($_POST["submit_smtp"])) {
     $existing = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
 
     if ($existing) {
-        $query = "SELECT smtp_email, smtp_host, smtp_port, smtp_password FROM SMTP WHERE teacher_id = :id";
+        $query = "SELECT smtp_email, smtp_host, smtp_port, smtp_password, verification_status FROM SMTP WHERE teacher_id = :id";
         $stmt = $db->prepare($query);
         $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
         $current = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
@@ -46,7 +52,7 @@ if (isset($_POST["submit_smtp"])) {
         if ($current["smtp_port"] != (int)$smtp_port) { $changed = true; }
         if (crypto_decrypt($current["smtp_password"], sys_get_node_status()) != trim($_POST["smtp_password"])) { $changed = true; }
 
-        if (!$changed) {
+        if (!$changed && $current["verification_status"] == EMAIL_VERIFIED) {
             $_SESSION["success"] = "SMTP settings saved successfully, no changes!";
             $db->close();
             header("Location: /NextStep/settings/?tab=email");
@@ -97,13 +103,41 @@ if (isset($_POST["submit_smtp"])) {
         exit();
     } 
 
-    $_SESSION["success"] = "SMTP settings saved successfully!";
-    
-
     // Send email with verification code and redirect to the verification page
 
-    mail_sender($smtp_host, $smtp_email, $smtp_password, $stmt_port, $smtp_username, $smtp_recever, $smtp_recever_username);
-    
+    // function mail_sender(string $smtp_host, string $smtp_email, 
+    // string $smtp_password, int $smtp_port, string $smtp_username,
+    // string $smtp_recever, string $smtp_recever_username,
+    // string $mail_subject, string $mail_template,
+    // int $verification_code, string $school_name) 
+
+    // Get teacher name
+    $query = "SELECT teacher_name FROM TEACHERS WHERE teacher_id = :id";
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
+        errorMessages("Error preparing insert query", $db->lastErrorMsg());
+    }
+    $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
+    $result = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+    if (!$result) {
+        errorMessages("Error executing insert query", $db->lastErrorMsg());
+    }
+
+    $smtp_username = $result["teacher_name"];
+    $mail_subject = "NextStep - Email Settings Verification";
+    $mail_template = "templates/verification.php";
+    $school_name = $branding["school_name"];
+    $smtp_password_decrypted = crypto_decrypt($smtp_password, sys_get_node_status());
+
+    $mail = mail_sender($smtp_host, $smtp_email, $smtp_password_decrypted, 
+        $smtp_port, $smtp_username, $smtp_email, $smtp_username, 
+        $mail_subject, $mail_template, $verification_code, $school_name);
+
+    if (!$mail) {
+        $db->close();
+        header("Location: /NextStep/settings/?tab=email");
+        exit();
+    }
     $db->close();
     header("Location: /NextStep/settings/verification.php");
     exit();

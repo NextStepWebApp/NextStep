@@ -65,7 +65,7 @@ if (isset($_POST["submit_verification"])){
     $stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
 
     if ($stmt->execute()) {
-        $_SESSION["success"] = "Updated verification status successfully";
+        $_SESSION["success"] = "Email Settings added and verified successfully";
     } else {
         $_SESSION["error"] = "Failed to update verification status";
     }
