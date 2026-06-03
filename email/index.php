@@ -25,6 +25,32 @@ try {
     errorMessages("Database connection failed", $e->getMessage());
 }
 
+
+// Check to see if teacher account is present and verified
+$query = "SELECT verification_status FROM SMTP WHERE teacher_id = :id";
+$stmt = $db->prepare($query);
+if (!$stmt) {
+    errorMessages("Error preparing insert query", $db->lastErrorMsg());
+}
+    
+$teacher_id = $_SESSION["teacher_id"];
+$stmt->bindValue(":id", $teacher_id, SQLITE3_INTEGER);
+$result = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+
+if (!$result) {
+    $_SESSION["error"] = "No email settings set up";
+    $db->close();
+    header("Location: /NextStep/overview/");
+    exit();
+}
+if ($result["verification_status"] == EMAIL_UNVERIFIED) {
+    $_SESSION["error"] = "Email settings not verified";
+    $db->close();
+    header("Location: /NextStep/settings/verification.php");
+    exit();
+}
+
+
 // What came from the search and filter from utils
 $search     = $_SESSION["search"];
 $totalCount = query_students($db, $search, "count");
