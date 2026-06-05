@@ -8,6 +8,10 @@ define("EMAIL_FULL", 1);
 define("EMAIL_UNVERIFIED", 0);
 define("EMAIL_VERIFIED", 1);
 
+// For email sending status
+define("EMAIL_FAILED", 0);
+define("EMAIL_SUCCESS", 1);
+
 function query_students(SQLite3 $db, array $search, ?string $mode = "All") {
     $conditions = [];
     $params     = [];

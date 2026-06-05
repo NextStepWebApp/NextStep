@@ -268,7 +268,7 @@ foreach ($values as $value) {
 $query = <<<EOF
       CREATE TABLE STUDENTS (
       students_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      students_name TEXT NOT NULL UNIQUE,
+      students_name TEXT NOT NULL,
       students_email TEXT NOT NULL UNIQUE,
       students_phone_number TEXT UNIQUE,
       students_class_id INTEGER,

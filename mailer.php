@@ -10,8 +10,9 @@ require "vendor/autoload.php";
 function mail_sender(string $smtp_host, string $smtp_email, 
     string $smtp_password, int $smtp_port, string $smtp_username,
     string $smtp_recever, string $smtp_recever_username,
-    string $mail_subject, string $mail_template,
-    int $verification_code, string $school_name
+    string $mail_subject, string $mail_template, string $mail_body,
+    ?int $verification_code, string $school_name, ?array $alumni_data,
+    ?string $update_url, ?array $filters
 ) {
 
     $mail = new PHPMailer(true);
@@ -47,10 +48,17 @@ function mail_sender(string $smtp_host, string $smtp_email,
         $mail->Body = ob_get_clean();
 
         $mail->send();
-        return true;
+
+        return [
+            "status" => true,
+            "message" => "Email sent successfully"
+        ];
 
     } catch (Exception $e) {
-        $_SESSION["error"] = $mail->ErrorInfo;
-        return false;
+
+        return [
+            "status" => false,
+            "message" => $mail->ErrorInfo
+        ];
     }
 }

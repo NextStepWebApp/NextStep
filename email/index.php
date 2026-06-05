@@ -150,7 +150,7 @@ if (isset($_POST["submit_email"])) {
         $stmt->bindValue(":teacher", $teacher_id, SQLITE3_INTEGER);
         $stmt->bindValue(":data", $data_id, SQLITE3_INTEGER);
         $stmt->bindValue(":attempts", 0, SQLITE3_INTEGER);
-        $stmt->bindValue(":created", date('Y-m-d H:i:s'), SQLITE3_TEXT);
+        $stmt->bindValue(":created", date("Y-m-d H:i:s"), SQLITE3_TEXT);
          
         $result = $stmt->execute();
         if (!$result) {
