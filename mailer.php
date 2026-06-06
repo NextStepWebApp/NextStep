@@ -12,7 +12,7 @@ function mail_sender(string $smtp_host, string $smtp_email,
     string $smtp_recever, string $smtp_recever_username,
     string $mail_subject, string $mail_template, string $mail_body,
     ?int $verification_code, string $school_name, ?array $alumni_data,
-    ?string $update_url, ?array $filters
+    ?string $update_url, ?string $filters
 ) {
 
     $mail = new PHPMailer(true);

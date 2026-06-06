@@ -1,0 +1,13 @@
+[Unit]
+Description=NextStep email worker
+After=network.target
+
+[Service]
+Type=oneshot
+User=http
+Group=http
+WorkingDirectory=/srv/httpd/NextStep
+ExecStart=/usr/bin/php /srv/httpd/NextStep/workers/email_worker.php
+
+[Install]
+WantedBy=multi-user.target

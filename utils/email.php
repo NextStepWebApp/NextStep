@@ -12,6 +12,9 @@ define("EMAIL_VERIFIED", 1);
 define("EMAIL_FAILED", 0);
 define("EMAIL_SUCCESS", 1);
 
+// Max queue attempts
+define("QUEUE_LIMIT", 3);
+
 function query_students(SQLite3 $db, array $search, ?string $mode = "All") {
     $conditions = [];
     $params     = [];
