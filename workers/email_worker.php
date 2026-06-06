@@ -1,6 +1,6 @@
 <?php
-require_once "../utils.php";
-require_once "../mailer.php";
+require_once "/srv/http/NextStep/utils.php";
+require_once "/srv/http/NextStep/mailer.php";
 setup_checker();
 
 try {
