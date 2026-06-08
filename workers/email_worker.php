@@ -60,7 +60,7 @@ while ($row_queue = $result->fetchArray(SQLITE3_ASSOC)) {
 
     $smtp_host = $result_SMTP["smtp_host"];
     $smtp_email = $result_SMTP["smtp_email"];
-    $smtp_password = $result_SMTP["smtp_password"];
+    $smtp_password = crypto_decrypt($result_SMTP["smtp_password"], sys_get_node_status());
     $smtp_port = $result_SMTP["smtp_port"];
     $smtp_username = $row_queue["teacher_name"];
     $smtp_recever = $row_queue["students_email"];
@@ -147,6 +147,8 @@ if (!$found) {
 
 
 function save_to_log(SQLite3 $db, array $row_queue, array $mail, int $status) {
+    $db->exec('BEGIN');
+
     $query = "INSERT INTO EMAIL_LOG (
             students_id,
             teacher_id,
@@ -199,4 +201,6 @@ function save_to_log(SQLite3 $db, array $row_queue, array $mail, int $status) {
             error_log("Failed to delete failed email from queue, email did not send", 0);
         }
     }
+
+    $db->exec('COMMIT');
 }

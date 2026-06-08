@@ -27,7 +27,8 @@ Expected variables:
     <tr>
         <td align="center">
 
-            <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" 
+            style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;table-layout:fixed;">
 
                 <!-- ───────────── Header ───────────── -->
                 <tr>
@@ -66,59 +67,47 @@ Expected variables:
 
                 <!-- ───────────── Body message ───────────── -->
                 <tr>
-                    <td style="padding:36px 30px 0 30px;">
-                        <h1 style="margin:0 0 16px 0;color:#0f172a;font-size:26px;font-family:Arial,sans-serif;">
-                            <?php echo(htmlspecialchars($mail_subject)); ?> 
-                        </h1>
-                        <p style="margin:0;color:#334155;font-size:15px;line-height:1.7;font-family:Arial,sans-serif;white-space:pre-line;">
-                            <?php echo nl2br(htmlspecialchars($mail_body)); ?>
-                        </p>
-                    </td>
-                </tr>
-
+                <td style="padding:20px 30px 0 30px;">
+                <h1 style="margin:0 0 8px 0;color:#0f172a;font-size:26px;font-family:Arial,sans-serif;">
+                    <?php echo htmlspecialchars($mail_subject); ?> 
+                </h1>
+                <div style="margin:0;color:#334155;font-size:15px;line-height:1.7;font-family:Arial,sans-serif;">
+                <?php echo $mail_body; ?>
+                </div>
+                </td>
+                </td>
+                </tr>            
+              
                 <!-- ───────────── Applied filters ───────────── -->
                 <?php if (!empty($filters)): ?>
                 <tr>
-                    <td style="padding:30px 30px 0 30px;">
-                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
-                            <tr>
-                                <td style="background:#f1f5f9;border-bottom:1px solid #e2e8f0;padding:12px 18px;">
-                                    <span style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">
-                                        Search Filters Applied
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding:14px 18px;">
-                                    <table cellpadding="0" cellspacing="0" border="0">
-                                        <?php foreach ($filters as $label => $value): ?>
-                                        <?php if (!empty($value)): ?>
-                                        <tr>
-                                            <td style="font-family:Arial,sans-serif;font-size:13px;color:#64748b;padding:3px 10px 3px 0;white-space:nowrap;vertical-align:top;">
-                                                <?php echo htmlspecialchars($label); ?>:
-                                            </td>
-                                            <td style="font-family:Arial,sans-serif;font-size:13px;font-weight:600;color:#1e3a8a;padding:3px 0;vertical-align:top;">
-                                                <?php echo htmlspecialchars($value); ?>
-                                            </td>
-                                        </tr>
-                                        <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
+                    <td style="padding:30px 30px 30px 30px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
+                <tr>
+                    <td style="background:#f1f5f9;border-bottom:1px solid #e2e8f0;padding:12px 18px;">
+                        <span style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">
+                            Search Filters Applied
+                        </span>
                     </td>
                 </tr>
-                <?php endif; ?>
-
+                <tr>
+                    <td style="padding:14px 18px;font-family:Arial,sans-serif;font-size:13px;color:#334155;line-height:1.6;">
+                        <?php echo htmlspecialchars($filters); ?>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+<?php endif; ?>
+                
                 <!-- ───────────── Alumni info card ───────────── -->
                 <?php if (!empty($alumni_data)): ?>
                 <tr>
-                    <td style="padding:30px 30px 0 30px;">
+                    <td style="padding:30px 30px 30px 30px;">
 
                         <!-- Section label -->
                         <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">
-                            Your Information On File
+                            Your Information
                         </p>
 
                         <!-- Card -->

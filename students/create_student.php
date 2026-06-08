@@ -4,19 +4,23 @@ session_start();
 loginSecurity();
 require_permission("change_students");
 
-$accessibility = $config["accessibility"];
+try {
+    $db = new SQLite3($db_file);
+    $db->busyTimeout(10000);
+} catch (Exception $e) {
+    errorMessages("Database connection failed", $e->getMessage());
+}
+
+
 $city = $config["city"];
 $class = $config["class"];
 $country = $config["country"];
 $education = $config["education"];
 $schools = $config["school"];
 $status = $config["status"];
+$accessibility = get_accessibility_names($db);
 
-try {
-    $db = new SQLite3($db_file);
-} catch (Exception $e) {
-    errorMessages("Database connection failed", $e->getMessage());
-}
+
 
 # Get help from the theme helper
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
@@ -24,16 +28,16 @@ $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 if (isset($_POST["submit"])) {
     // Check if all fields are filled
     if (
-        empty($_POST["student_name"]) ||
-        empty($_POST["student_email"]) ||
-        empty($_POST["student_phone"]) ||
-        empty($_POST["class_name"]) ||
-        empty($_POST["country_name"]) ||
-        empty($_POST["city_name"]) ||
-        empty($_POST["school_name"]) ||
-        empty($_POST["program_name"]) ||
-        empty($_POST["status"]) ||
-        empty($_POST["accessibility"])
+        empty(trim($_POST["student_name"])) ||
+        empty(trim($_POST["student_email"])) ||
+        empty(trim($_POST["student_phone"])) ||
+        empty(trim($_POST["class_name"])) ||
+        empty(trim($_POST["country_name"])) ||
+        empty(trim($_POST["city_name"])) ||
+        empty(trim($_POST["school_name"])) ||
+        empty(trim($_POST["program_name"])) ||
+        empty(trim($_POST["status"])) ||
+        empty(trim($_POST["accessibility"]))
     ) {
         $_SESSION["error"] = "All fields are required";
         header("Location: create_student.php");

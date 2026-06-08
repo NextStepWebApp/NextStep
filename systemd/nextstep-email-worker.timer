@@ -1,0 +1,9 @@
+[Unit]
+Description=Run NextStep email worker
+
+[Timer]
+OnBootSec=30s
+OnUnitInactiveSec=30s
+
+[Install]
+WantedBy=timers.target

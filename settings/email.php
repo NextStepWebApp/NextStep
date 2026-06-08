@@ -104,12 +104,12 @@ if (isset($_POST["submit_smtp"])) {
     } 
 
     // Send email with verification code and redirect to the verification page
-
-    // function mail_sender(string $smtp_host, string $smtp_email, 
-    // string $smtp_password, int $smtp_port, string $smtp_username,
-    // string $smtp_recever, string $smtp_recever_username,
-    // string $mail_subject, string $mail_template,
-    // int $verification_code, string $school_name) 
+    //function mail_sender(string $smtp_host, string $smtp_email, 
+    //string $smtp_password, int $smtp_port, string $smtp_username,
+    //string $smtp_recever, string $smtp_recever_username,
+    //string $mail_subject, string $mail_template, string $mail_body,
+    //?int $verification_code, string $school_name, ?array $alumni_data,
+    //?string $update_url, ?string $filters)
 
     // Get teacher name
     $query = "SELECT teacher_name FROM TEACHERS WHERE teacher_id = :id";
@@ -131,7 +131,8 @@ if (isset($_POST["submit_smtp"])) {
 
     $mail = mail_sender($smtp_host, $smtp_email, $smtp_password_decrypted, 
         $smtp_port, $smtp_username, $smtp_email, $smtp_username, 
-        $mail_subject, $mail_template, $verification_code, $school_name);
+        $mail_subject, $mail_template, null, $verification_code, $school_name,
+        null, null, null);
 
     if (!$mail) {
         $db->close();

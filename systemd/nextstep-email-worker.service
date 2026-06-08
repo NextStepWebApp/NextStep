@@ -3,12 +3,7 @@ Description=NextStep email worker
 After=network.target
 
 [Service]
-Type=simple
+Type=oneshot
 User=http
 Group=http
 ExecStart=/usr/bin/php /srv/http/NextStep/workers/email_worker.php
-Restart=always
-RestartSec=30
-
-[Install]
-WantedBy=multi-user.target

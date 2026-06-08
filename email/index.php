@@ -205,20 +205,11 @@ $db->close();
     <?php endif; ?>
 
     <div class="active-filters">
-    <span class="filters-label">Your search found</span>
-    <span class="filter-tag"><?= $totalCount ?></span>
-    <span class="filters-label">
-        <?= $totalCount === 1 ? 'alumni record' : 'alumni records' ?>.
-    </span>
-
-    <span class="filters-label">Sending to</span>
-    <span class="filter-tag"><?= $totalCountYes ?></span>
-    <span class="filters-label">
-        <?= $totalCountYes === 1 ? 'alumnus' : 'alumni' ?>
-        <?= $totalCountYes === 1 ? 'with' : 'with' ?>
-        accessibility permission enabled.
-    </span>
+        <span class="filters-label">Your search found <?= $totalCount ?> <?= $totalCount === 1 ? 'alumni record' : 'alumni records' ?>. 
+        Sending to <?= $totalCountYes ?> <?= $totalCountYes === 1 ? 'alumnus' : 'alumni' ?> with accessibility permission enabled.</span>
     </div>
+
+
 
     <hr class="compose-divider">
 
