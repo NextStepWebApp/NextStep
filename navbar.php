@@ -21,7 +21,7 @@ loginSecurity();
 
 <!-- STUDENTS -->
 <?php if (has_permission("change_students", $_SESSION["teacher_id"])): ?>
-    <a href="/NextStep/students/" class="nav-btn">Students</a>
+    <a href="/NextStep/students/" class="nav-btn">Alumnus</a>
 <?php endif; ?>
 
 <!-- TEACHERS -->

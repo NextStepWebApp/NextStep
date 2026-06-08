@@ -192,7 +192,7 @@ $db->close();
 <body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>
 
-<div class="page-box-wide">
+<div class="page-box-wide custom-top">
     <?php flashMessages(); ?>
     <h2>Compose Email</h2>
     <?php if (!empty($search)): ?>

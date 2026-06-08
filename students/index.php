@@ -23,16 +23,18 @@ $db->close();
 <link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
-<title>NextStep - Student</title>
+<title>NextStep - Alumnus</title>
 </head>
 <body class="theme-<?= $color_theme ?>">
 
 <?php include "../navbar.php"; ?>
 <div class="page-box">
     <?php flashMessages(); ?>
-    <a href="create_student.php" class="simple-btn">Create Student</a>
-    <a href="import_students.php" class="simple-btn">Import Data</a>
-    <a href="export_students.php" class="simple-btn">Export Data</a>
+     <div class="button-group">
+        <a href="create_student.php" class="simple-btn">Create Alumni</a>
+        <a href="import_students.php" class="simple-btn">Import Data ↓</a>
+        <a href="export_students.php" class="simple-btn">Export Data ↑</a>
+    </div>
 
     <?php if (isset($_SESSION["import_results_python"])):
         $output = $_SESSION["import_results_python"];
