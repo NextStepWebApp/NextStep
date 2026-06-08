@@ -5,6 +5,7 @@ setup_checker();
 
 try {
     $db = new SQLite3($db_file);
+    $db->busyTimeout(10000);
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
     header("Location: login.php");

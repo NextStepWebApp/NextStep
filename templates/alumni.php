@@ -3,16 +3,6 @@ if (!defined("SECURE_ACCESS")) {
     exit('Direct access not permitted');
 }
 
-/*
-Expected variables:
-    $school_name (string)  
-    $mail_body (string)  
-    $alumni_data (array)   
-    $update_url (string)  
-    $filters (array)   
-    $mail_subject (string) 
-*/
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

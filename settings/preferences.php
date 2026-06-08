@@ -2,9 +2,9 @@
 $app_name = $branding["app_name"]; # from utils
 $school_name = $branding["school_name"];
 
-# Connect to the db
 try {
     $db = new SQLite3($db_file);
+    $db->busyTimeout(10000);
 } catch (Exception $e) {
     errorMessages("Database connection failed", $e->getMessage());
 }
