@@ -13,70 +13,17 @@ NextStep is the main project of the NextStep ecosystem and serves as the foundat
 
 Setting up the NextStep web app is pretty straightforward - the NextStep Deploy script handles the installation process. For more information, visit https://github.com/NextStepWebApp/NextStep-Deploy
 
-## Current Features
-
-At this moment, student data can be imported via CSV files that can be collected through Google Forms. This is a good solution but more of a temporary one until more features are implemented.
-
-## About This Project
-
-This is a senior year high school final project. The reason why the NextStep web app did not reach the initial deadline for a stable version is because development effort was redirected to nstep, which became an awesome project in its own right. In a way, NextStep would be useless without a good way of deploying and distributing updates to end users. That's why nstep was created.
-
-nstep allows NextStep to run a marathon instead of having one big sprint to finish something at a deadline. It's a package manager specifically designed to update the NextStep web app and will have multi-package support in the future.
-
 ## To-Do List
 
 There is a lot to do still, but the most important tasks are:
 
 ### Critical Features (needed to make the web app usable)
-- Add email support
+- Add email support (finished)
 - Add search capability (finished)
-- Add user hierarchy, frontend already exists
+- Add user hierarchy, frontend already exists (finished)
 - Fix alumni data import/export
+- Add a log system
+- Add home page
+- Add data analyses
+- Add a map visualization
 
-### Quality of Life Features (after critical features)
-- Performance testing - we want the web app to work on old computers with 50,000 alumni
-- Add data visualization
-- Add PDF export option
-- More quality of life options
-
-## Vision
-
-Our vision is to become a full alumni system where not only teachers have access to it, but also alumni themselves - creating a sort of alumni social media platform.
-
-Keep in mind this is our vision. This project is made for a last year school project and is just a side hustle, but it's good to dream big! We want to provide "the option" for an alumni system that is open source.
-
-## Contributing
-
-Contributions are very welcome!
-Please communicate and open an issue before starting work on a feature or fix to avoid duplicate efforts.
-
-If you encounter any problems or bugs, feel free to open an issue and you will be assisted.
-
-### New Contributors & Students
-
-If you are a student or interested in contributing but don’t yet have strong computer science or programming knowledge, here is the learning roadmap I recommend:
-
-* **Python for Everybody**
-  [https://www.py4e.com/](https://www.py4e.com/)
-  A great Python course and an excellent place to start your programming journey.
-
-* **Web Applications for Everybody**
-  [https://www.wa4e.com/](https://www.wa4e.com/)
-  After completing the Python course, this is a solid next step for learning web applications.
-
-These are two courses I personally completed and highly recommend.
-
-### Git, Linux & Bash
-
-* **Git & GitHub Course**
-  [https://youtu.be/zTjRZNkhiEU](https://youtu.be/zTjRZNkhiEU)
-  A very good introduction to Git and GitHub. I recommend completing this early, as Git is essential for contributing to open-source projects.
-
-To learn Linux, I recommend trying different Linux distributions and experimenting on your own. Have fun with it! There is a huge amount of free information available online (for example, on YouTube).
-
-* **Bash Scripting Course (Optional)**
-  [https://youtu.be/Sx9zG7wa4FA](https://youtu.be/Sx9zG7wa4FA)
-  This is a very good Bash scripting course. I recommend it after learning the basics of Python, PHP, and Linux.
-
-
-With this knowledge, you can become a **NextStep Contributor!**
