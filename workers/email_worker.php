@@ -3,6 +3,13 @@ require_once "/srv/http/NextStep/utils.php";
 require_once "/srv/http/NextStep/mailer.php";
 setup_checker();
 
+// Check internet connection 
+if (!is_connected()) {
+    error_log("No internet connection", 0);
+    exit();
+}
+
+
 try {
     $db = new SQLite3($db_file);
     $db->busyTimeout(20000);
