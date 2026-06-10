@@ -22,7 +22,11 @@ if (!$row) {
 $student_id = htmlspecialchars($row["students_id"]);
 $student_name = htmlspecialchars($row["students_name"]);
 $student_email = htmlspecialchars($row["students_email"]);
-$student_phone_number = htmlspecialchars($row["students_phone_number"]);
+$student_company = htmlspecialchars($row["students_company"] ?? "");
+$student_job_title = htmlspecialchars($row["students_job_title"] ?? "");
+$student_linkedin_url = htmlspecialchars($row["students_linkedin_url"] ?? "");
+$student_website = htmlspecialchars($row["students_website"] ?? "");
+$student_bio = htmlspecialchars($row["students_bio"] ?? "");
 $class_name = htmlspecialchars($row["class_name"]);
 $country_name = htmlspecialchars($row["country_name"]);
 $city_name = htmlspecialchars($row["city_name"]);
@@ -32,7 +36,7 @@ $status = htmlspecialchars($row["status_name"]);
 $accessibility = htmlspecialchars($row["accessibility_name"]);
 $created_date = htmlspecialchars($row["students_created_date"]);
 $last_update = htmlspecialchars($row["students_last_updated"]);
-$readable_date = date("Y-m-d H:i:s", $last_update);
+$readable_date = $last_update;
 
 # Get help from the theme helper
 $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
@@ -42,7 +46,6 @@ $db->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -59,7 +62,27 @@ $db->close();
 <?php flashMessages(); ?>
 <p>Name: <strong><?= $student_name ?></strong></p>
 <p>Email: <strong><?= $student_email ?></strong></p>
-<p>Phone number: <strong><?= $student_phone_number ?></strong></p>
+
+<?php if (!empty($student_company)): ?>
+<p>Company: <strong><?= $student_company ?></strong></p>
+<?php endif; ?>
+
+<?php if (!empty($student_job_title)): ?>
+<p>Job Title: <strong><?= $student_job_title ?></strong></p>
+<?php endif; ?>
+
+<?php if (!empty($student_linkedin_url)): ?>
+<p>LinkedIn: <strong><a href="<?= $student_linkedin_url ?>" target="_blank"><?= $student_linkedin_url ?></a></strong></p>
+<?php endif; ?>
+
+<?php if (!empty($student_website)): ?>
+<p>Website: <strong><a href="<?= $student_website ?>" target="_blank"><?= $student_website ?></a></strong></p>
+<?php endif; ?>
+
+<?php if (!empty($student_bio)): ?>
+<p>Bio: <strong><?= $student_bio ?></strong></p>
+<?php endif; ?>
+
 <p>Class name: <strong><?= $class_name ?></strong></p>
 <p>Country: <strong><?= $country_name ?></strong></p>
 <p>City: <strong><?= $city_name ?></strong></p>

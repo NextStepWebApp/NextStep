@@ -3,7 +3,7 @@ require_once "../utils.php";
 setup_checker();
 session_start();
 loginSecurity();
-require_permission("view_students");
+require_permission("data_overview");
 
 try {
     $db = new SQLite3($db_file);
@@ -22,7 +22,7 @@ $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
-<title>NextStep - Map </title>
+<title>NextStep - Data </title>
 </head>
 <body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>

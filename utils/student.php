@@ -116,32 +116,3 @@ function validate_student_email(
         exit();
     }
 }
-
-function validate_student_phone(
-    SQLite3 $db,
-    string $post_student_phone,
-    string $page,
-    int $post_student_id = 0,
-) {
-    $student_phone = trim($post_student_phone);
-    $clean_phone = preg_replace("/[\s\-\(\)]/", "", $student_phone);
-
-    if (!preg_match("/^\+?[0-9]{10,15}$/", $clean_phone)) {
-        $_SESSION["error"] = "Phone number must be between 10-15 digits";
-        switch ($page) {
-            case "edit_student":
-                header("Location: /NextStep/students/edit_student.php?student_id=" . $post_student_id);
-                break;
-            case "create_student":
-                header("Location: /NextStep/students/create_student.php");
-                break;
-            default:
-                header("Location: /NextStep/students/index.php");
-                break;
-        }
-        $db->close();
-        exit();
-    }
-
-    return $clean_phone;
-}

@@ -29,7 +29,6 @@ if (isset($_POST["submit"])) {
     if (
         empty(trim($_POST["student_name"])) ||
         empty(trim($_POST["student_email"])) ||
-        empty(trim($_POST["student_phone"])) ||
         empty(trim($_POST["class_name"])) ||
         empty(trim($_POST["country_name"])) ||
         empty(trim($_POST["city_name"])) ||
@@ -63,20 +62,8 @@ if (isset($_POST["submit"])) {
         $_POST["student_id"],
     );
 
-    # Validate phone number
-    $clean_phone = validate_student_phone(
-        $db,
-        $_POST["student_phone"],
-        "edit_student",
-        $_POST["student_id"],
-    );
-
-    $_POST["student_phone"] = $clean_phone;
-
-    # Check if another student has the same email or phone (excluding current student)
-    $query = "SELECT students_id FROM STUDENTS WHERE
-        (students_email = :email OR
-        students_phone_number = :phone)
+     # Check if another student has the same email (excluding current student)
+    $query = "SELECT students_id FROM STUDENTS WHERE students_email = :email
         AND students_id != :current_id";
     $stmt = $db->prepare($query);
 
@@ -85,7 +72,6 @@ if (isset($_POST["submit"])) {
     }
 
     $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
-    $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
     $stmt->bindValue(":current_id", $_POST["student_id"], SQLITE3_INTEGER);
     $result = $stmt->execute();
 
@@ -96,7 +82,7 @@ if (isset($_POST["submit"])) {
     $existing = $result->fetchArray();
 
     if ($existing) {
-        $_SESSION["error"] = "Another student with this name, email, or phone number already exists";
+        $_SESSION["error"] = "Another student with this email already exists";
         header("Location: /NextStep/students/edit_student.php?student_id=" . $_POST["student_id"]);
         $db->close();
         exit();
@@ -173,7 +159,11 @@ if (isset($_POST["submit"])) {
     $query = "UPDATE STUDENTS SET
         students_name = :name,
         students_email = :email,
-        students_phone_number = :phone,
+        students_company = :company,
+        students_job_title = :job_title,
+        students_linkedin_url = :linkedin_url,
+        students_website = :website,
+        students_bio = :bio,
         students_class_id = :class_id,
         students_country_id = :country_id,
         students_city_id = :city_id,
@@ -181,7 +171,7 @@ if (isset($_POST["submit"])) {
         students_education_program_id = :program_id,
         students_status_id = :status_id,
         students_accessibility_id = :accessibility_id,
-        students_last_updated = CAST(strftime('%s', 'now') AS INTEGER)
+        students_last_updated = :updated, 
         WHERE students_id = :id";
 
     $stmt = $db->prepare($query);
@@ -189,9 +179,8 @@ if (isset($_POST["submit"])) {
         errorMessages("Error preparing query", $db->lastErrorMsg());
     }
 
-    $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
-    $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
-    $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
+    $stmt->bindValue(":name", trim($_POST["student_name"]), SQLITE3_TEXT);
+    $stmt->bindValue(":email", trim($_POST["student_email"]), SQLITE3_TEXT);
     $stmt->bindValue(":class_id", $result_class_id, SQLITE3_INTEGER);
     $stmt->bindValue(":country_id", $result_country_id, SQLITE3_INTEGER);
     $stmt->bindValue(":city_id", $result_city_id, SQLITE3_INTEGER);
@@ -199,7 +188,21 @@ if (isset($_POST["submit"])) {
     $stmt->bindValue(":program_id", $result_program_id, SQLITE3_INTEGER);
     $stmt->bindValue(":status_id", $result_status_id, SQLITE3_INTEGER);
     $stmt->bindValue(":accessibility_id", $result_accessibility_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":updated", date("Y-m-d H:i:s"), SQLITE3_TEXT);
     $stmt->bindValue(":id", $_POST["student_id"], SQLITE3_INTEGER);
+
+    // Optional fields
+    $company = trim($_POST["company"] ?? "");
+    $job_title = trim($_POST["job_title"] ?? "");
+    $linkedin_url = trim($_POST["linkedin_url"] ?? "");
+    $website = trim($_POST["website"] ?? "");
+    $bio = trim($_POST["bio"] ?? "");
+
+    $stmt->bindValue(":company", !empty($company) ? $company : null, SQLITE3_TEXT);
+    $stmt->bindValue(":job_title", !empty($job_title) ? $job_title : null, SQLITE3_TEXT);
+    $stmt->bindValue(":linkedin_url", !empty($linkedin_url) ? $linkedin_url : null, SQLITE3_TEXT);
+    $stmt->bindValue(":website", !empty($website) ? $website : null, SQLITE3_TEXT);
+    $stmt->bindValue(":bio", !empty($bio) ? $bio : null, SQLITE3_TEXT);
 
     $results = $stmt->execute();
     if (!$results) {
@@ -225,14 +228,21 @@ if (!$row) {
 $student_id = htmlspecialchars($row["students_id"]);
 $student_name = htmlspecialchars($row["students_name"]);
 $student_email = htmlspecialchars($row["students_email"]);
-$student_phone_number = htmlspecialchars($row["students_phone_number"]);
-$class_name = $row["class_name"];
-$country_name = $row["country_name"];
-$city_name = $row["city_name"];
-$school_name = $row["school_name"];
-$program_name = $row["program_name"];
-$status_name = $row["status_name"];
-$accessibility_name = $row["accessibility_name"];
+$class_name = htmlspecialchars($row["class_name"]);
+$country_name = htmlspecialchars($row["country_name"]);
+$city_name = htmlspecialchars($row["city_name"]);
+$school_name = htmlspecialchars($row["school_name"]);
+$program_name = htmlspecialchars($row["program_name"]);
+$status_name = htmlspecialchars($row["status_name"]);
+$accessibility_name = htmlspecialchars($row["accessibility_name"]);
+
+// Optional fields
+$student_company = htmlspecialchars($row["students_company"] ?? "");
+$student_job_title = htmlspecialchars($row["students_job_title"] ?? "");
+$student_linkedin_url = htmlspecialchars($row["students_linkedin_url"] ?? "");
+$student_website = htmlspecialchars($row["students_website"] ?? "");
+$student_bio = htmlspecialchars($row["students_bio"] ?? "");
+
 $db->close();
 
 ?>
@@ -260,9 +270,6 @@ $db->close();
 
 <label for="student_email">Email:</label>
 <input type="text" id="student_email" name="student_email" value="<?= $student_email ?>" required/>
-
-<label for="student_phone">Phone number:</label>
-<input type="tel" id="student_phone" name="student_phone" value="<?= $student_phone_number ?>" required/>
 
 <label for="class_name">Class name:</label>
 <select id="class_name" name="class_name" required>
@@ -351,6 +358,20 @@ $accessibility_name
     <?php endforeach; ?>
 </select>
 
+<label for="company">Company (optional):</label>
+<input type="text" id="company" name="company" value="<?= $student_company ?>"/>
+
+<label for="job_title">Job Title (optional):</label>
+<input type="text" id="job_title" name="job_title" value="<?= $student_job_title ?>"/>
+
+<label for="linkedin_url">LinkedIn (optional):</label>
+<input type="text" id="linkedin_url" name="linkedin_url" value="<?= $student_linkedin_url ?>"/>
+
+<label for="website">Website (optional):</label>
+<input type="text" id="website" name="website" value="<?= $student_website ?>"/>
+
+<label for="bio">Bio (optional):</label>
+<input type="text" id="bio" name="bio" value="<?= $student_bio ?>"/>
 
 <div class="button-container">
     <input type="submit" class="simple-btn" name="submit" value="Save Changes">

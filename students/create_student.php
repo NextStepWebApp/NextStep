@@ -30,7 +30,6 @@ if (isset($_POST["submit"])) {
     if (
         empty(trim($_POST["student_name"])) ||
         empty(trim($_POST["student_email"])) ||
-        empty(trim($_POST["student_phone"])) ||
         empty(trim($_POST["class_name"])) ||
         empty(trim($_POST["country_name"])) ||
         empty(trim($_POST["city_name"])) ||
@@ -39,13 +38,13 @@ if (isset($_POST["submit"])) {
         empty(trim($_POST["status"])) ||
         empty(trim($_POST["accessibility"]))
     ) {
-        $_SESSION["error"] = "All fields are required";
+        $_SESSION["error"] = "All required fields are required";
         header("Location: create_student.php");
         $db->close();
         exit();
     }
 
-    # This section will be validations of name, email and phone
+    # This section will be validations of name and email
 
     # validate student name
     validate_student_name($db, $_POST["student_name"], "create_student");
@@ -53,46 +52,26 @@ if (isset($_POST["submit"])) {
     # Validate email
     validate_student_email($db, $_POST["student_email"], "create_student");
 
-    # Validate phone number
-    $clean_phone = validate_student_phone(
-        $db,
-        $_POST["student_phone"],
-        "create_student",
-    );
-
-    $_POST["student_phone"] = $clean_phone;
-
-    # Check to see if the student already exists
+       # Check to see if the student already exists
     $query = "SELECT students_id FROM STUDENTS WHERE
-          students_email = :email OR
-          students_name = :name OR
-          students_phone_number = :phone";
+          students_email = :email";
     $stmt = $db->prepare($query);
 
     if (!$stmt) {
-        errorMessages(
-            "Error preparing insert query check",
-            $db->lastErrorMsg(),
-        );
+        errorMessages("Error preparing insert query check", $db->lastErrorMsg());
     }
 
     $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
-    $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
-    $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
     $result = $stmt->execute();
 
     if (!$result) {
-        errorMessages(
-            "Error creating new record in check",
-            $db->lastErrorMsg(),
-        );
+        errorMessages("Error creating new record in check", $db->lastErrorMsg());
     }
 
     $existing = $result->fetchArray();
 
     if ($existing) {
-        $_SESSION["error"] =
-            "A student with this name, email, or phone number already exists";
+        $_SESSION["error"] = "A student with this email already exists";
         header("Location: create_student.php");
         $db->close();
         exit();
@@ -169,43 +148,51 @@ if (isset($_POST["submit"])) {
     );
 
     $query = "
-        INSERT INTO STUDENTS (
-            students_name,
-            students_email,
-            students_phone_number,
-            students_class_id,
-            students_country_id,
-            students_city_id,
-            students_school_id,
-            students_education_program_id,
-            students_status_id,
-            students_accessibility_id,
-            students_created_date,
-            students_last_updated
-        ) VALUES (
-            :name,
-            :email,
-            :phone,
-            :class_id,
-            :country_id,
-            :city_id,
-            :school_id,
-            :program_id,
-            :status_id,
-            :accessibility_id,
-            CAST(strftime('%Y', 'now') AS INTEGER),
-            CAST(strftime('%s', 'now') AS INTEGER)
-        )
-    ";
+    INSERT INTO STUDENTS (
+        students_name,
+        students_email,
+        students_company,
+        students_job_title,
+        students_linkedin_url,
+        students_website,
+        students_bio,
+        students_class_id,
+        students_country_id,
+        students_city_id,
+        students_school_id,
+        students_education_program_id,
+        students_status_id,
+        students_accessibility_id,
+        students_created_date,
+        students_last_updated
+    ) VALUES (
+        :name,
+        :email,
+        :company,
+        :job_title,
+        :linkedin_url,
+        :website,
+        :bio,
+        :class_id,
+        :country_id,
+        :city_id,
+        :school_id,
+        :program_id,
+        :status_id,
+        :accessibility_id,
+        :created,
+        :updated
+    )
+";
+    
 
     $stmt = $db->prepare($query);
     if (!$stmt) {
         errorMessages("Error preparing query in main", $db->lastErrorMsg());
     }
 
-    $stmt->bindValue(":name", $_POST["student_name"], SQLITE3_TEXT);
-    $stmt->bindValue(":email", $_POST["student_email"], SQLITE3_TEXT);
-    $stmt->bindValue(":phone", $_POST["student_phone"], SQLITE3_TEXT);
+    $stmt->bindValue(":name", trim($_POST["student_name"]), SQLITE3_TEXT);
+    $stmt->bindValue(":email", trim($_POST["student_email"]), SQLITE3_TEXT);
     $stmt->bindValue(":class_id", $result_class_id, SQLITE3_INTEGER);
     $stmt->bindValue(":country_id", $result_country_id, SQLITE3_INTEGER);
     $stmt->bindValue(":city_id", $result_city_id, SQLITE3_INTEGER);
@@ -213,6 +200,21 @@ if (isset($_POST["submit"])) {
     $stmt->bindValue(":program_id", $result_program_id, SQLITE3_INTEGER);
     $stmt->bindValue(":status_id", $result_status_id, SQLITE3_INTEGER);
     $stmt->bindValue(":accessibility_id", $result_accessibility_id, SQLITE3_INTEGER);
+    $stmt->bindValue(":created", (int) date("Y"), SQLITE3_INTEGER);
+    $stmt->bindValue(":updated", date("Y-m-d H:i:s"), SQLITE3_TEXT);
+
+    // For optional fields
+    $company = trim($_POST["company"] ?? "");
+    $job_title = trim($_POST["job_title"] ?? "");
+    $linkedin_url = trim($_POST["linkedin_url"] ?? "");
+    $website = trim($_POST["website"] ?? "");
+    $bio = trim($_POST["bio"] ?? "");
+
+    $stmt->bindValue(":company", !empty($company) ? $company : null, SQLITE3_TEXT);
+    $stmt->bindValue(":job_title", !empty($job_title) ? $job_title : null, SQLITE3_TEXT);
+    $stmt->bindValue(":linkedin_url", !empty($linkedin_url) ? $linkedin_url : null, SQLITE3_TEXT);
+    $stmt->bindValue(":website", !empty($website) ? $website : null, SQLITE3_TEXT);
+    $stmt->bindValue(":bio", !empty($bio) ? $bio : null, SQLITE3_TEXT);
 
     $result = $stmt->execute();
     if (!$result) {
@@ -234,12 +236,12 @@ $db->close();
 <link rel="icon" type="image/x-icon" href="../images/logo.webp"/>
 <link rel="stylesheet" href="../css/style_navbar.css"/>
 <link rel="stylesheet" href="../css/style_page.css"/>
-<title>NextStep - Create Student</title>
+<title>NextStep - Create Alumni</title>
 </head>
 <body class="theme-<?= $color_theme ?>">
 <?php include "../navbar.php"; ?>
 <div class="page-box-wide">
-<h2>Create Student</h2>
+<h2>Create Alumni</h2>
 <?php flashMessages(); ?>
 
 <form method="POST" action="create_student.php">
@@ -248,9 +250,6 @@ $db->close();
 
     <label for="student_email">Email:</label>
     <input type="email" id="student_email" name="student_email"/>
-
-    <label for="student_phone">Phone number:</label>
-    <input type="tel" id="student_phone" name="student_phone"/>
 
     <label for="class_name">Class name:</label>
     <select id="class_name" name="class_name">
@@ -321,6 +320,22 @@ $db->close();
             </option>
         <?php endforeach; ?>
     </select>
+
+    <label for="company">Company (optional):</label>
+    <input type="text" id="company" name="company"/>
+
+    <label for="job_title">Job Titel (optional):</label>
+    <input type="text" id="job_title" name="job_title"/>
+
+    <label for="linkedin_url">Linkedin (optional):</label>
+    <input type="text" id="linkedin_url" name="linkedin_url"/>
+
+    <label for="website">Website (optional):</label>
+    <input type="text" id="website" name="website"/>
+
+    <label for="bio">Bio (optional):</label>
+    <input type="text" id="bio" name="bio"/>
+
     <div class="button-container">
         <input type="submit" class="simple-btn" name="submit" value="Create Student">
         <a href="/NextStep/students/" class="simple-btn cancel-btn">Cancel</a>

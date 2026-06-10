@@ -35,7 +35,7 @@ loginSecurity();
 
 <!-- DATA -->
 <?php if (has_permission("data_overview", $_SESSION["teacher_id"])): ?>
-    <a href="/NextStep/map" class="nav-btn">Data</a>
+    <a href="/NextStep/data" class="nav-btn">Data</a>
 <?php endif; ?>
 
 
