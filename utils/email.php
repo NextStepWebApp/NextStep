@@ -70,10 +70,16 @@ function query_students(SQLite3 $db, array $search, ?string $mode = "All") {
                 ORDER BY STUDENTS.students_name ASC;";
     } else {
         // All
-        $sql = "SELECT students_id, students_name, students_email,
-                       students_created_date, status_name
-                FROM STUDENTS $joins $where_clause
-                ORDER BY STUDENTS.students_name ASC;";
+        $sql = "SELECT 
+            STUDENTS.students_id,
+            STUDENTS.students_name,
+            STUDENTS.students_email,
+            STUDENTS.students_created_date,
+            STATUS.status_name,
+            SCHOOL.school_name,
+            EDUCATION_PROGRAM.program_name
+            FROM STUDENTS $joins $where_clause
+            ORDER BY STUDENTS.students_name ASC;";
     }
 
     $stmt = $db->prepare($sql);

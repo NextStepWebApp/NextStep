@@ -81,47 +81,52 @@ $db->close();
 <table>
 <thead>
 <tr>
-<th>Name</th>
-<th>Email</th>
-<th>Status</th>
-<th>Date</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Program</th>
+    <th>School</th>
+    <th>Status</th>
+    <th>Date</th>
 </tr>
 </thead>
 <tbody id="tableBody">
 <?php if (!$has_search): ?>
     <tr>
-        <td colspan="5" class="no-students">
+        <td colspan="6" class="no-students">
             Use <strong>Search & Filter</strong> to find alumni.
         </td>
     </tr>
 <?php elseif ($totalCount === 0): ?>
     <tr>
-        <td colspan="5" class="no-students">
+        <td colspan="6" class="no-students">
             No students found.
             <a href="/NextStep/students">Add Students</a>
         </td>
     </tr>
 <?php else: ?>
-    <?php foreach ($rows as $row): ?>
-        <?php
-            $student_id = htmlspecialchars($row["students_id"]);
-            $date       = htmlspecialchars($row["students_created_date"]);
-            $name       = htmlspecialchars($row["students_name"]);
-            $email      = htmlspecialchars($row["students_email"]);
-            $status     = htmlspecialchars($row["status_name"]);
-            $viewUrl    = "view.php?student_id=$student_id";
-        ?>
-        <tr id="student_<?= $student_id ?>">
+<?php foreach ($rows as $row): ?>
+    <?php
+        $student_id = htmlspecialchars($row["students_id"]);
+        $name       = htmlspecialchars($row["students_name"]);
+        $email      = htmlspecialchars($row["students_email"]);
+        $program    = htmlspecialchars($row["program_name"]);
+        $school     = htmlspecialchars($row["school_name"]);
+        $status     = htmlspecialchars($row["status_name"]);
+        $date       = htmlspecialchars($row["students_created_date"]);
+        $viewUrl    = "view.php?student_id=$student_id";
+    ?>
+    <tr id="student_<?= $student_id ?>">
         <td>
-            <a href="<?= $viewUrl ?>" class="email-link">
-            <?= $name ?>
-            </a>
+            <a href="<?= $viewUrl ?>" class="email-link"><?= $name ?></a>
         </td>
-            <td><?= $email ?></td>
-            <td><?= $status ?></td>
-            <td><?= $date ?></td>
-        </tr>
-    <?php endforeach; ?>
+        <td><?= $email ?></td>
+        <td><?= $program ?></td>
+        <td><?= $school ?></td>
+        <td><?= $status ?></td>
+        <td><?= $date ?></td>
+    </tr>
+<?php endforeach; ?>
+
 <?php endif; ?>
 </tbody>
 </table>
