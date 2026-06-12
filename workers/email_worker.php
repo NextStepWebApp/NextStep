@@ -83,9 +83,11 @@ while ($row_queue = $result->fetchArray(SQLITE3_ASSOC)) {
     $alumni_data = [];
     if ($email_type == EMAIL_FULL) {
         // Select full alumni data
-        $query = "SELECT STUDENTS.students_id, STUDENTS.students_name, STUDENTS.students_email,
-            STUDENTS.students_phone_number, CLASS.class_name, COUNTRY.country_name, CITY.city_name,
+        $query = "SELECT STUDENTS.students_name, STUDENTS.students_email,
+            CLASS.class_name, COUNTRY.country_name, CITY.city_name,
             SCHOOL.school_name, EDUCATION_PROGRAM.program_name, STATUS.status_name, ACCESSIBILITY.accessibility_name,
+            STUDENTS.students_company, STUDENTS.students_job_title,
+            STUDENTS.students_linkedin_url, STUDENTS.students_website, STUDENTS.students_bio,
             STUDENTS.students_created_date, STUDENTS.students_last_updated
             FROM STUDENTS
             JOIN CLASS ON STUDENTS.students_class_id = CLASS.class_id
@@ -100,6 +102,7 @@ while ($row_queue = $result->fetchArray(SQLITE3_ASSOC)) {
         $stmt = $db->prepare($query);
         if (!$stmt) {
             error_log($db->lastErrorMsg(), 0);
+            exit();
         }
 
         $stmt->bindValue(":id", $row_queue["students_id"], SQLITE3_INTEGER);
@@ -135,11 +138,13 @@ while ($row_queue = $result->fetchArray(SQLITE3_ASSOC)) {
         $stmt = $db->prepare($query);
         if (!$stmt) {
             error_log($db->lastErrorMsg(), 0);
+            exit();
         }
         $stmt->bindValue(":queue_id", $row_queue["queue_id"], SQLITE3_INTEGER);
 
         if (!$stmt->execute()) {
             error_log("Failed to add 1 to email queue, email did not send", 0);
+            exit();
         } 
     } else {    
         // Move the queue to log as failed!

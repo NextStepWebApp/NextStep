@@ -171,7 +171,7 @@ if (isset($_POST["submit"])) {
         students_education_program_id = :program_id,
         students_status_id = :status_id,
         students_accessibility_id = :accessibility_id,
-        students_last_updated = :updated, 
+        students_last_updated = :updated
         WHERE students_id = :id";
 
     $stmt = $db->prepare($query);
