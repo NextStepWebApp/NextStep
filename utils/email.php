@@ -22,8 +22,6 @@ function query_students(SQLite3 $db, array $search, ?string $mode = "All") {
     $like_fields = [
         "students_name",
         "students_email",
-        "students_phone_number",
-        "students_created_date",
     ];
 
     $name_fields = [
@@ -50,6 +48,16 @@ function query_students(SQLite3 $db, array $search, ?string $mode = "All") {
             $conditions[] = "$column = $placeholder";
             $params[$placeholder] = ["value" => $search[$key], "type" => SQLITE3_TEXT];
         }
+    }
+
+    if (!empty($search["date_from"])) {
+        $conditions[] = "STUDENTS.students_created_date >= :date_from";
+        $params[":date_from"] = ["value" => $search["date_from"], "type" => SQLITE3_TEXT];
+    }
+    
+    if (!empty($search["date_to"])) {
+        $conditions[] = "STUDENTS.students_created_date <= :date_to";
+        $params[":date_to"] = ["value" => $search["date_to"], "type" => SQLITE3_TEXT];
     }
 
     $where_clause = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";

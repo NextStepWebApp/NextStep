@@ -16,7 +16,6 @@ if (isset($_POST["submit"])) {
     if (
         empty(trim($_POST["student_name"])) &&
         empty(trim($_POST["student_email"])) &&
-        empty(trim($_POST["student_phone"])) &&
         empty(trim($_POST["class_name"])) &&
         empty(trim($_POST["country_name"])) &&
         empty(trim($_POST["city_name"])) &&
@@ -24,7 +23,8 @@ if (isset($_POST["submit"])) {
         empty(trim($_POST["program_name"])) &&
         empty(trim($_POST["status"])) &&
         empty(trim($_POST["accessibility"])) &&
-        empty(trim($_POST["date"]))
+        empty(trim($_POST["date_from"])) &&
+        empty(trim($_POST["date_to"]))
     ) {
         $_SESSION["error"] = "At least one field is required";
         header("Location: /NextStep/overview/search-filter.php");
@@ -39,9 +39,6 @@ if (isset($_POST["submit"])) {
     }
     if (!empty(trim($_POST["student_email"]))) {
         $search["students_email"] = trim($_POST["student_email"]);
-    }
-    if (!empty(trim($_POST["student_phone"]))) {
-        $search["students_phone_number"] = trim($_POST["student_phone"]);
     }
     if (!empty($_POST["class_name"])) {
         $search["class_name"] = $_POST["class_name"];
@@ -64,8 +61,11 @@ if (isset($_POST["submit"])) {
     if (!empty($_POST["accessibility"])) {
         $search["accessibility_name"] = $_POST["accessibility"];
     }
-    if (!empty($_POST["date"])) {
-        $search["students_created_date"] = $_POST["date"];
+    if (!empty($_POST["date_from"])) {
+        $search["date_from"] = $_POST["date_from"];
+    }
+    if (!empty($_POST["date_to"])) {
+        $search["date_to"] = $_POST["date_to"];
     }
 
     $_SESSION["search"] = $search;
@@ -84,7 +84,10 @@ $schools = $config["school"];
 $status = $config["status"];
 
 // Get all the created dates from the database
-$query = "SELECT DISTINCT students_created_date FROM STUDENTS;";
+$query = "SELECT DISTINCT students_created_date 
+    FROM STUDENTS
+    ORDER BY students_created_date
+    DESC;";
 $stmt = $db->prepare($query);
 if (!$stmt) {
     errorMessages("Error preparing query $query", $db->lastErrorMsg());
@@ -124,9 +127,6 @@ $db->close();
 
     <label for="student_email">Email:</label>
     <input type="email" id="student_email" name="student_email"/>
-
-    <label for="student_phone">Phone number:</label>
-    <input type="tel" id="student_phone" name="student_phone"/>
 
     <label for="class_name">Class name:</label>
     <select id="class_name" name="class_name">
@@ -198,8 +198,19 @@ $db->close();
         <?php endforeach; ?>
     </select>
 
-    <label for="date">Date:</label>
-      <select id="date" name="date">
+    <label for="date_from">Date from:</label>
+      <select id="date_from" name="date_from">
+          <option value="">Select</option>
+          <?php foreach ($dates as $date): ?>
+              <option value="<?= htmlspecialchars($date) ?>">
+                  <?= htmlspecialchars($date) ?>
+              </option>
+          <?php endforeach; ?>
+
+      </select>
+
+    <label for="date_to">Date to:</label>
+      <select id="date_to" name="date_to">
           <option value="">Select</option>
           <?php foreach ($dates as $date): ?>
               <option value="<?= htmlspecialchars($date) ?>">

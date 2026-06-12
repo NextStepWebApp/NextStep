@@ -11,7 +11,6 @@ from functions_nstep import (
     compare_data,
     validate_email,
     validate_name,
-    validate_phone,
 )
 
 start_time = time.time()
@@ -29,24 +28,12 @@ nextstep_config_path = "/etc/nextstepwebapp/nextstep_config.json"
 nextstep_config = open(nextstep_config_path)
 nextstep_data = json.load(nextstep_config)
 
-# path_config = "/var/www/html/NextStep/config/config.json"
 path_config = nextstep_data["config_path"]
-
-# path_database = "/var/www/html/NextStep/setup/nextstep_data.db"
 path_database = nextstep_data["database_file_path"]
-
-# errors_path = "/var/www/html/NextStep/data/errors.json"
 errors_path = nextstep_data["errors_path"]
 
 nextstep_config.close()
 
-
-# Example csv_file_name = "/var/www/html/NextStep/data/data.csv"
-
-# This is the file path to the configs and the csv file name
-# path_config = "/home/william/Documents/programming/PWS/NextStep/config/config.json"
-
-# path_database = "/home/william/Documents/programming/PWS/NextStep/setup/nextstep_data.db"
 
 # This is the json template
 errors = {"validation_errors": [], "duplicate_errors": [], "format_errors": []}
@@ -82,10 +69,16 @@ try:
     reader = csv.DictReader(fhand_csv)
 
     # Validate CSV headers before processing
+    # NOTE: CSV has 'time' as first column, then the rest
     required_columns = [
-        "name",
+        "time",
         "email",
-        "phone",
+        "name",
+        "company",
+        "job_title",
+        "linkedin_url",
+        "website",
+        "bio",
         "class",
         "country",
         "city",
@@ -100,9 +93,8 @@ try:
         fhand_csv.close()
         exit()
 
-    csv_headers = []
-    for header in reader.fieldnames:
-        csv_headers.append(header.strip())
+    # Strip whitespace from headers for comparison
+    csv_headers = [header.strip() for header in reader.fieldnames]
 
     missing = []
     for col in required_columns:
@@ -110,6 +102,7 @@ try:
             missing.append(col)
     if missing:
         print(f"ERROR: CSV missing required columns: {missing}")
+        print(f"CSV headers found: {csv_headers}")
         fhand_csv.close()
         exit()
 
@@ -133,12 +126,8 @@ valid_people = []
 for person in csv_data:
     person_valid = True
 
-    # Format validation (email, phone, name)
+    # Format validation (email, name)
     if not validate_email(person["email"]):
-        errors["format_errors"].append(person)
-        continue
-
-    if not validate_phone(person["phone"]):
         errors["format_errors"].append(person)
         continue
 
@@ -146,7 +135,17 @@ for person in csv_data:
         errors["format_errors"].append(person)
         continue
 
+    # Parse time column into Unix timestamp for created_date
+    try:
+        # Parse datetime string like "2026-03-01 08:00:00"
+        dt = time.strptime(person["time"], "%Y-%m-%d %H:%M:%S")
+        person["created_date"] = dt.tm_year  # Integer: 2026
+    except (ValueError, TypeError):
+        errors["format_errors"].append(person)
+        continue
+
     # Config validation, only if format validation passed
+    # NOTE: accessibility is NOT validated against config since it's Yes/No
     fields_to_check = [
         ("class", "class"),
         ("country", "country"),
@@ -154,7 +153,6 @@ for person in csv_data:
         ("school", "school"),
         ("education_program", "education"),
         ("status", "status"),
-        ("accessibility", "accessibility"),
     ]
 
     for field, config_key in fields_to_check:
@@ -177,7 +175,7 @@ except Exception as e:
     exit()
 
 
-# Insert all data from the tables
+# Insert all data from the lookup tables
 for person in valid_people:
     INSERT_OR_IGNORE("ACCESSIBILITY", person["accessibility"], cursor)
     INSERT_OR_IGNORE("CITY", person["city"], cursor)
@@ -237,16 +235,14 @@ for person in valid_people:
     )
     result_email = cursor.fetchone()
 
-    # Check if name or phone already exists (but with different email)
+    # Check if name already exists (but with different email)
     cursor.execute(
-        "SELECT students_id FROM STUDENTS WHERE (students_phone_number = ? OR students_name = ?) AND students_email != ?",
-        (
-            person["phone"],
-            person["name"],
-            person["email"],
-        ),
+        "SELECT students_id FROM STUDENTS WHERE students_name = ? AND students_email != ?",
+        (person["name"], person["email"]),
     )
-    result_name_phone = cursor.fetchone()
+    result_name = cursor.fetchone()
+
+    created_date = person["created_date"]
 
     if result_email:
         # Student exists with this email, UPDATE the record
@@ -254,7 +250,11 @@ for person in valid_people:
         cursor.execute(
             """UPDATE STUDENTS SET
             students_name = ?,
-            students_phone_number = ?,
+            students_company = ?,
+            students_job_title = ?,
+            students_linkedin_url = ?,
+            students_website = ?,
+            students_bio = ?,
             students_class_id = ?,
             students_country_id = ?,
             students_city_id = ?,
@@ -266,7 +266,11 @@ for person in valid_people:
             WHERE students_id = ?""",
             (
                 person["name"],
-                person["phone"],
+                person["company"] if person["company"] else None,
+                person["job_title"] if person["job_title"] else None,
+                person["linkedin_url"] if person["linkedin_url"] else None,
+                person["website"] if person["website"] else None,
+                person["bio"] if person["bio"] else None,
                 class_id,
                 country_id,
                 city_id,
@@ -277,21 +281,39 @@ for person in valid_people:
                 student_id,
             ),
         )
-    elif result_name_phone:
-        # Name or phone exists with different email, skip and add to errors
+    elif result_name:
+        # Name exists with different email, skip and add to errors
         errors["duplicate_errors"].append(person)
         continue
     else:
         # Student doesn't exist, INSERT new record
         cursor.execute(
-            """INSERT INTO STUDENTS (students_name, students_email, students_phone_number, students_class_id,
-            students_country_id, students_city_id, students_school_id, students_education_program_id, students_status_id,
-            students_accessibility_id, students_created_date, students_last_updated)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  CAST(strftime('%Y', 'now') AS INTEGER), CAST(strftime('%s', 'now') AS INTEGER))""",
+            """INSERT INTO STUDENTS (
+                students_name,
+                students_email,
+                students_company,
+                students_job_title,
+                students_linkedin_url,
+                students_website,
+                students_bio,
+                students_class_id,
+                students_country_id,
+                students_city_id,
+                students_school_id,
+                students_education_program_id,
+                students_status_id,
+                students_accessibility_id,
+                students_created_date,
+                students_last_updated
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST(strftime('%s', 'now') AS INTEGER))""",
             (
                 person["name"],
                 person["email"],
-                person["phone"],
+                person["company"] if person["company"] else None,
+                person["job_title"] if person["job_title"] else None,
+                person["linkedin_url"] if person["linkedin_url"] else None,
+                person["website"] if person["website"] else None,
+                person["bio"] if person["bio"] else None,
                 class_id,
                 country_id,
                 city_id,
@@ -299,6 +321,7 @@ for person in valid_people:
                 program_id,
                 status_id,
                 accessibility_id,
+                created_date,
             ),
         )
 
@@ -329,7 +352,7 @@ total_errors = (
 if total_errors > 0:
     print(f"\nERROR - Import completed with {total_errors} error(s):")
     if len(errors["format_errors"]) > 0:
-        print(f"  - {len(errors['format_errors'])} format error(s) (email/phone/name)")
+        print(f"  - {len(errors['format_errors'])} format error(s) (email/name/time)")
     if len(errors["validation_errors"]) > 0:
         print(f"  - {len(errors['validation_errors'])} config validation error(s)")
     if len(errors["duplicate_errors"]) > 0:
