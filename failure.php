@@ -4,16 +4,13 @@ setup_checker();
 session_start();
 loginSecurity();
 
-try {
-    $db = new SQLite3($db_file);
-    $db->busyTimeout(10000);
-} catch (Exception $e) {
-    errorMessages("Database connection failed", $e->getMessage());
-}
+$message = $_SESSION["error"] ?? "Something went wrong";
+$details = $_SESSION["error_details"] ?? "An unexpected error occurred. Please try again later.";
 
-$color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
+unset($_SESSION["error"]);
+unset($_SESSION["error_details"]);
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -21,12 +18,43 @@ $color_theme = color_theme_helper($db, $color_theme_system["theme_color"]);
 <link rel="icon" type="image/x-icon" href="images/logo.webp"/>
 <link rel="stylesheet" href="css/style_navbar.css"/>
 <link rel="stylesheet" href="css/style_page.css"/>
-<title>NextStep - Map </title>
+<title>NextStep - Error</title>
+<style>
+    .error-wrapper {
+        max-width: 500px;
+        margin: 150px auto 50px;
+    }
+  
+    .error-message {
+        font-size: 25px;
+        font-weight: 600;
+        color: var(--color-text-medium);
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    .error-details {
+        font-size: 13px;
+        color: var(--color-text-muted);
+        background: var(--color-bg-light);
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        word-break: break-word;
+        border: 1px solid var(--color-border-gray);
+    }
+</style>
 </head>
-<body class="theme-<?= $color_theme ?>">
+<body class="theme-<?= $color_theme ?? "blue" ?>">
 <?php include "navbar.php"; ?>
-<?php flashMessages(); ?>
+
+<div class="error-wrapper page-box">
+    <div class="error-message"><?= htmlspecialchars($message) ?></div>
+    <div class="error-details"><?= htmlspecialchars($details) ?></div>
+    <div class="button-container" style="justify-content: center;">
+        <a href="javascript:history.back()" class="simple-btn">Go Back</a>
+    </div>
+</div>
+
 <script src="js/script.js"></script>
 </body>
 </html>
-
